@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             });
 
-            Preference avatar = findPreference("key_avatar");
+            Preference avatar = findPreference(getString(R.string.key_avatar));
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -198,7 +198,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Bitmap resizedBitmap = Utils.getCircleBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeFile(picturePath), 200, 200, false));
 
-            Preference avatar = findPreference("key_avatar");
+            Preference avatar = findPreference(getString(R.string.key_avatar));
 
             Drawable drawableAvatar = new BitmapDrawable(getResources(), resizedBitmap);
 

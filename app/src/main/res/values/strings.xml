@@ -16,13 +16,12 @@
     <string name="url_terms">https://www.androidhive.info/terms-of-service/</string>
     <string name="title_version">Version</string>
     <string name="choose_email_client">Choose email client</string>
-    <string name="title_gallery_storage">Default Storage</string>
     <string name="key_username">key_username</string>
     <string name="key_avatar">key_avatar</string>
     <string name="key_send_feedback">key_send_feedback</string>
     <string name="avatar">Avatar</string>
     <string name="choose_avatar">Click to choose your avatar</string>
     <string name="username">Username</string>
-    <string name="edit_username">Edit username</string>
     <string name="default_username">User</string>
+    <string name="title_activity_game">GameActivity</string>
 </resources>
