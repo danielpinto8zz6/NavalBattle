@@ -24,4 +24,8 @@
     <string name="username">Username</string>
     <string name="default_username">User</string>
     <string name="title_activity_game">GameActivity</string>
+
+    <string name="title_activity_board">BoardActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

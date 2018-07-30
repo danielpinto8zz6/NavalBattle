@@ -25,7 +25,9 @@ import android.support.v4.content.ContextCompat;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+import java.io.Serializable;
+
+public class SettingsActivity extends AppCompatPreferenceActivity implements Serializable {
     private static final String TAG = SettingsActivity.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1234;
     /**

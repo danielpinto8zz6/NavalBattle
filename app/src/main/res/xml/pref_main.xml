@@ -9,7 +9,7 @@
 
         <Preference
             android:capitalize="words"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/player_avatar"
             android:inputType="textCapWords"
             android:key="@string/key_avatar"
             android:summary="@string/choose_avatar"

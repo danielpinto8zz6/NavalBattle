@@ -1,5 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -53,5 +55,17 @@ public class Utils {
         bitmap.recycle();
 
         return output;
+    }
+
+    public static float convertPixelsToDp(float px) {
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return Math.round(dp);
+    }
+
+    public static int convertDpToPixel(float dp) {
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
     }
 }
