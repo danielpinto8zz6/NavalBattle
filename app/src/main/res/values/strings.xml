@@ -28,4 +28,9 @@
     <string name="title_activity_board">BoardActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="against_computer">Against Computer</string>
+    <string name="against_friend_network">Against a friend (Network)</string>
+    <string name="choose_mode">Choose a mode</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -1,5 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -13,7 +14,24 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class ImageAdapter extends BaseAdapter {
     private Context context;
-    private ImageView imageView;
+    public Integer[] mThumbIds = {
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white,
+            R.color.white, R.color.white, R.color.white, R.color.white
+    };
 
     public ImageAdapter(Context c) {
         context = c;
@@ -21,21 +39,24 @@ public class ImageAdapter extends BaseAdapter {
 
     //---returns the number of images---
     public int getCount() {
-        return Constants.boardSize;
+        return mThumbIds.length;
     }
 
     //---returns the ID of an item---
     public Object getItem(int position) {
-        return position;
+        return mThumbIds[position];
     }
 
     public long getItemId(int position) {
         return position;
     }
 
-    //---returns an ImageView view---
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ImageView imageView;
+
         if (convertView == null) {
+
             WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
             final DisplayMetrics displayMetrics = new DisplayMetrics();
             wm.getDefaultDisplay().getMetrics(displayMetrics);
@@ -60,7 +81,18 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(R.color.white);
+        imageView.setImageResource(mThumbIds[position]);
+        imageView.setTag(position);
+
         return imageView;
     }
+
+    public void changeResource(int position, int resource) {
+        if (position < 0 || position > mThumbIds.length) {
+            return;
+        }
+        mThumbIds[position] = resource;
+        notifyDataSetChanged(); // refresh the gridview
+    }
+
 }

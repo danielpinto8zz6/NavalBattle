@@ -163,8 +163,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                         }
                     } else {
-                        Intent intent = new Intent(Intent.ACTION_PICK);
-                        intent.setType("image/*");
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 10);
                         return true;
                     }

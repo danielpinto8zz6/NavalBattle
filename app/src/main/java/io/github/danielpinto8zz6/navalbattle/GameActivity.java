@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -29,19 +31,31 @@ public class GameActivity extends AppCompatActivity implements Serializable {
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+
+        // Set player & opponent avatar/username
+
         ImageView imageViewPlayer = (ImageView) findViewById(R.id.player_avatar);
         ImageView imageViewOpponent = (ImageView) findViewById(R.id.opponent_avatar);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String base64 = prefs.getString("avatar", "");
+        String playerAvatarBase64 = prefs.getString("avatar", "");
+        // String opponentAvatarBase64 = getOpponentAvatarBase64();
 
-        if (base64.length() > 0) {
-            Bitmap bitmap = Utils.decodeBase64(base64);
+        String playerUsername = prefs.getString("key_username", "");
+
+        if (playerAvatarBase64.length() > 0) {
+            Bitmap bitmap = Utils.decodeBase64(playerAvatarBase64);
 
             Drawable drawableAvatar = new BitmapDrawable(getResources(), bitmap);
 
             imageViewPlayer.setImageDrawable(drawableAvatar);
+        }
+
+        if (playerUsername.length() > 0) {
+            TextView playerName = (TextView) findViewById(R.id.player_name);
+
+            playerName.setText(playerUsername);
         }
 
         final GridView gridview = (GridView) findViewById(R.id.game_board);
@@ -60,6 +74,9 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             }
         });
 
+        ImageAdapter adapter = (ImageAdapter) gridview.getAdapter();
+        adapter.changeResource(4, R.drawable.ic_launcher_background);
+
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
 
@@ -70,7 +87,5 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             gridview.setColumnWidth(width / 8);
         else
             gridview.setColumnWidth((height - actionbarSize) / 8);
-
-
     }
 }
