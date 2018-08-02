@@ -20,16 +20,80 @@ import android.widget.Toast;
 import java.io.Serializable;
 
 public class GameActivity extends AppCompatActivity implements Serializable {
+    private ImageAdapter playerImageAdapter;
+    private ImageAdapter opponentImageAdapter;
+    private GridView playerGridView;
+    private GridView opponentGridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        setupToolbar();
+
+        setupGrids();
+
+        if (savedInstanceState != null) {
+            playerImageAdapter.setBoard(savedInstanceState.getIntArray("player_board"));
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putIntArray("player_board", playerImageAdapter.getBoard());
+    }
+
+    public void setupGrids() {
+        playerGridView = (GridView) findViewById(R.id.player_game_board);
+        playerGridView.setAdapter(playerImageAdapter = new ImageAdapter(this));
+
+        playerGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                playerImageAdapter.changeResource(position, R.drawable.player_avatar);
+            }
+        });
+
+        playerImageAdapter.changeResource(4, R.drawable.ic_launcher_background);
+
+        int bordersSize = Utils.convertDpToPixel(32);
+        int actionbarSize = Utils.convertDpToPixel(56);
+
+        int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
+        int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
+
+        if (width < height) {
+            // Center gridview
+            playerGridView.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
+
+            playerGridView.setColumnWidth((height / 2) / 8);
+        } else {
+            playerGridView.setPadding((width / 2) - height, 0, 0, 0);
+
+            playerGridView.setColumnWidth(height / 8);
+        }
+
+        opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
+        opponentGridView.setAdapter(opponentImageAdapter = new ImageAdapter(this));
+
+        if (width < height) {
+            opponentGridView.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
+
+            opponentGridView.setColumnWidth((height / 2) / 8);
+        } else {
+            opponentGridView.setColumnWidth(height / 8);
+        }
+    }
+
+    public void setupToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
 
         // Set player & opponent avatar/username
 
@@ -55,53 +119,6 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             TextView playerName = (TextView) findViewById(R.id.player_name);
 
             playerName.setText(playerUsername);
-        }
-
-        final GridView gridview = (GridView) findViewById(R.id.player_game_board);
-        gridview.setAdapter(new ImageAdapter(this));
-
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                int column = position % 8;
-                int row = (int) Math.ceil(position / 8);
-                Toast.makeText(GameActivity.this, "Line : " + row + " Column : " + column,
-                        Toast.LENGTH_SHORT).show();
-                ImageView imageView = (ImageView) v;
-                imageView.setImageResource(R.drawable.player_avatar);
-            }
-        });
-
-        ImageAdapter adapter = (ImageAdapter) gridview.getAdapter();
-        adapter.changeResource(4, R.drawable.ic_launcher_background);
-
-        int bordersSize = Utils.convertDpToPixel(32);
-        int actionbarSize = Utils.convertDpToPixel(56);
-
-        int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
-        int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
-
-        if (width < height) {
-            // Center gridview
-            gridview.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
-
-            gridview.setColumnWidth((height / 2) / 8);
-        } else {
-            gridview.setPadding((width / 2) - height, 0, 0, 0);
-
-            gridview.setColumnWidth(height / 8);
-        }
-
-        final GridView opponentGridview = (GridView) findViewById(R.id.opponent_game_board);
-        opponentGridview.setAdapter(new ImageAdapter(this));
-
-        if (width < height) {
-            opponentGridview.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
-
-            opponentGridview.setColumnWidth((height / 2) / 8);
-        } else {
-            opponentGridview.setColumnWidth(height / 8);
         }
     }
 }

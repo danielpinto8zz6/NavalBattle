@@ -1,8 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import android.content.ClipData;
 import android.content.Context;
-import android.support.constraint.ConstraintLayout;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,7 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class ImageAdapter extends BaseAdapter {
     private Context context;
-    public Integer[] mThumbIds = {
+    public int[] mThumbIds = {
             R.color.white, R.color.white, R.color.white, R.color.white,
             R.color.white, R.color.white, R.color.white, R.color.white,
             R.color.white, R.color.white, R.color.white, R.color.white,
@@ -87,6 +85,17 @@ public class ImageAdapter extends BaseAdapter {
         imageView.setTag(position);
 
         return imageView;
+    }
+
+    public int[] getBoard() {
+        return mThumbIds;
+    }
+
+    public void setBoard(int[] board) {
+        for (int i = 0; i < board.length; i++) {
+            mThumbIds[i] = board[i];
+            notifyDataSetChanged(); // refresh the gridview
+        }
     }
 
     public void changeResource(int position, int resource) {
