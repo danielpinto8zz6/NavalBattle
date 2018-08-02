@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -58,7 +57,7 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             playerName.setText(playerUsername);
         }
 
-        final GridView gridview = (GridView) findViewById(R.id.game_board);
+        final GridView gridview = (GridView) findViewById(R.id.player_game_board);
         gridview.setAdapter(new ImageAdapter(this));
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -81,11 +80,28 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         int actionbarSize = Utils.convertDpToPixel(56);
 
         int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
-        int height = getResources().getDisplayMetrics().heightPixels - bordersSize;
+        int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
-        if (width < height)
-            gridview.setColumnWidth(width / 8);
-        else
-            gridview.setColumnWidth((height - actionbarSize) / 8);
+        if (width < height) {
+            // Center gridview
+            gridview.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
+
+            gridview.setColumnWidth((height / 2) / 8);
+        } else {
+            gridview.setPadding((width / 2) - height, 0, 0, 0);
+
+            gridview.setColumnWidth(height / 8);
+        }
+
+        final GridView opponentGridview = (GridView) findViewById(R.id.opponent_game_board);
+        opponentGridview.setAdapter(new ImageAdapter(this));
+
+        if (width < height) {
+            opponentGridview.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
+
+            opponentGridview.setColumnWidth((height / 2) / 8);
+        } else {
+            opponentGridview.setColumnWidth(height / 8);
+        }
     }
 }

@@ -2,6 +2,7 @@ package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,15 +65,16 @@ public class ImageAdapter extends BaseAdapter {
             int bordersSize = Utils.convertDpToPixel(32);
             int actionbarSize = Utils.convertDpToPixel(56);
 
-            int height = displayMetrics.heightPixels - bordersSize;
+            int height = displayMetrics.heightPixels - bordersSize - actionbarSize;
             int width = displayMetrics.widthPixels - bordersSize;
 
             imageView = new ImageView(context);
 
             if (width < height)
-                imageView.setLayoutParams(new GridView.LayoutParams(width / 8, width / 8));
+                // we're in potrait mode
+                imageView.setLayoutParams(new GridView.LayoutParams((height / 2) / 8, (height / 2) / 8));
             else
-                imageView.setLayoutParams(new GridView.LayoutParams((height - actionbarSize) / 8, (height - actionbarSize) / 8));
+                imageView.setLayoutParams(new GridView.LayoutParams(height / 8, height / 8));
 
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 

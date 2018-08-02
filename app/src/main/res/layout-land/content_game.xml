@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="@dimen/game_board_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".GameActivity"
@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:numColumns="8"
         android:stretchMode="none"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,10 +26,7 @@
         android:layout_height="wrap_content"
         android:numColumns="8"
         android:stretchMode="none"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_game_board" />
+        app:layout_constraintLeft_toRightOf="@id/player_game_board" />
 
 </android.support.constraint.ConstraintLayout>
