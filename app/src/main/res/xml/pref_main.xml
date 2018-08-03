@@ -15,6 +15,11 @@
             android:summary="@string/choose_avatar"
             android:title="@string/avatar" />
 
+        <Preference
+            android:key="@string/key_take_photo"
+            android:summary="@string/summary_take_photo"
+            android:title="@string/title_take_photo" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_about">

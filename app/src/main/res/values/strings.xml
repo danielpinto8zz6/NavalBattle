@@ -31,4 +31,7 @@
     <string name="against_friend_network">Against a friend (Network)</string>
     <string name="choose_mode">Choose a mode</string>
     <string name="cancel">Cancel</string>
+    <string name="key_take_photo">key_take_photo</string>
+    <string name="summary_take_photo">Click to take a photo directly from camera</string>
+    <string name="title_take_photo">Take photo</string>
 </resources>

@@ -35,7 +35,8 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         setupGrids();
 
         if (savedInstanceState != null) {
-            playerImageAdapter.setBoard(savedInstanceState.getIntArray("player_board"));
+            playerImageAdapter.setBoard(savedInstanceState.getIntArray("player_grid"));
+            opponentImageAdapter.setBoard(savedInstanceState.getIntArray("opponent_grid"));
         }
     }
 
@@ -43,7 +44,8 @@ public class GameActivity extends AppCompatActivity implements Serializable {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putIntArray("player_board", playerImageAdapter.getBoard());
+        outState.putIntArray("player_grid", playerImageAdapter.getBoard());
+        outState.putIntArray("opponent_grid", opponentImageAdapter.getBoard());
     }
 
     public void setupGrids() {
