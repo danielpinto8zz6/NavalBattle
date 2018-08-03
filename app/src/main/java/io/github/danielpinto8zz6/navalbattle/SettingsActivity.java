@@ -19,6 +19,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -130,34 +131,42 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                 }
             });
 
+            PackageManager pm = getActivity().getApplicationContext().getPackageManager();
+
             Preference takePhoto = findPreference("key_take_photo");
-            takePhoto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED) {
 
-                        // Should we show an explanation?
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                Manifest.permission.CAMERA)) {
-                            Snackbar.make(getView(), "You need to accept permission in order to take photo.", Snackbar.LENGTH_LONG).show();
+            if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+                takePhoto.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    public boolean onPreferenceClick(Preference preference) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(getActivity(),
+                                Manifest.permission.CAMERA)
+                                != PackageManager.PERMISSION_GRANTED) {
 
-                            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                    Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                            // Should we show an explanation?
+                            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                    Manifest.permission.CAMERA)) {
+                                Snackbar.make(getView(), "You need to accept permission in order to take photo.", Snackbar.LENGTH_LONG).show();
+
+                                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                        Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                            } else {
+                                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                        Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                            }
                         } else {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                    Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                                startActivityForResult(intent, Constants.REQUEST_IMAGE_CAPTURE);
+                            }
+                            return true;
                         }
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                            startActivityForResult(intent, Constants.REQUEST_IMAGE_CAPTURE);
-                        }
-                        return true;
+                        return false;
                     }
-                    return false;
-                }
-            });
+                });
+            } else {
+                PreferenceScreen screen = getPreferenceScreen();
+                screen.removePreference(takePhoto);
+            }
 
             Preference avatar = findPreference(getString(R.string.key_avatar));
 

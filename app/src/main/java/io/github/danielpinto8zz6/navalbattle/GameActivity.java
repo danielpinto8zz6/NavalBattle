@@ -56,11 +56,9 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                playerImageAdapter.changeResource(position, R.drawable.player_avatar);
+                playerImageAdapter.changeResource(position, R.color.black);
             }
         });
-
-        playerImageAdapter.changeResource(4, R.drawable.ic_launcher_background);
 
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
