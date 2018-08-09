@@ -110,6 +110,51 @@ public class BattleField {
         this.showShips = showShips;
     }
 
+    public boolean isMoveValid(ArrayList<Coordinates> pos) {
+        // check first position
+        for (Coordinates c : pos) {
+            // Check if position is not occupied
+            if (field[c.x][c.y] != R.color.white) return false;
+
+            if (c.x > 0 && c.y > 0)
+                if (field[c.x - 1][c.y - 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y - 1))) return false;
+
+            if (c.x < 7 && c.y < 7)
+                if (field[c.x + 1][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y + 1))) return false;
+
+            if (c.x < 7 && c.y > 0)
+                if (field[c.x + 1][c.y - 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y - 1))) return false;
+
+            if (c.x > 0 && c.y > 7)
+                if (field[c.x - 1][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y + 1))) return false;
+
+            if (c.x > 0)
+                if (field[c.x - 1][c.y] != R.color.white)
+                    // If position is not part of the ship than it means position is not valid to be occupied
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y))) return false;
+
+
+            if (c.y > 0)
+                if (field[c.x][c.y - 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x, c.y - 1))) return false;
+
+
+            if (c.x < 7)
+                if (field[c.x + 1][c.y] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y))) return false;
+
+            if (c.y < 7)
+                if (field[c.x][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x, c.y + 1))) return false;
+        }
+
+        return true;
+    }
+
     public boolean canRotate(Ship ship) {
         Coordinates c = ship.getPositions().get(0);
 

@@ -77,4 +77,8 @@ public class Ship {
     public void setPositions(ArrayList<Coordinates> positions) {
         this.positions = positions;
     }
+
+    public boolean contains (Coordinates c){
+        return positions.contains(c);
+    }
 }
