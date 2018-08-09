@@ -33,6 +33,10 @@
             android:name=".GameActivity"
             android:label="@string/title_activity_game"
             android:theme="@style/Theme.AppCompat.Dark.NoActionBar.FullScreen" />
+        <activity
+            android:name=".ShipSetupActivity"
+            android:label="@string/title_activity_ship_setup"
+            android:theme="@style/Theme.AppCompat.Dark.NoActionBar.FullScreen" />
     </application>
 
 </manifest>

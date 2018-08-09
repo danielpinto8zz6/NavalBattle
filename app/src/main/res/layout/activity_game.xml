@@ -31,26 +31,23 @@
                     android:paddingEnd="5dp"
                     android:paddingStart="5dp"
                     android:paddingTop="5dp"
-                    android:scaleType="fitStart"
-                    android:src="@drawable/player_avatar" />
+                    android:scaleType="fitStart" />
 
                 <TextView
                     android:id="@+id/player_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="64dp"
-                    android:text="Player" />
+                    android:layout_marginLeft="64dp" />
 
                 <TextView
                     android:id="@+id/opponent_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:gravity="right"
                     android:layout_marginRight="79dp"
                     android:drawablePadding="5dp"
-                    android:text="Opponent" />
+                    android:gravity="right" />
 
                 <ImageView
                     android:id="@+id/opponent_avatar"
@@ -61,8 +58,7 @@
                     android:paddingEnd="20dp"
                     android:paddingStart="5dp"
                     android:paddingTop="5dp"
-                    android:scaleType="fitEnd"
-                    android:src="@drawable/opponent_avatar" />
+                    android:scaleType="fitEnd" />
 
             </FrameLayout>
 

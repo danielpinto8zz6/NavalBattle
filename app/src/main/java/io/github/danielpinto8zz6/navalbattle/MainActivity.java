@@ -37,9 +37,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 });
                 gamemodeDialog.setItems(R.array.game_modes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(MainActivity.this, "You selected: " + getResources().getStringArray(R.array.game_modes)[which], Toast.LENGTH_LONG).show();
-                        Intent game = new Intent(getApplicationContext(), GameActivity.class);
-                        startActivity(game);
+                        switch (getResources().getStringArray(R.array.game_modes)[which]) {
+                            case "Against Computer" :
+                                Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
+                                startActivity(setup);
+                                break;
+                            default:
+                                Intent game = new Intent(getApplicationContext(), GameActivity.class);
+                                startActivity(game);
+                                break;
+                        }
                     }
                 });
                 gamemodeDialog.show();

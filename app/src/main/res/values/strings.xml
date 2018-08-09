@@ -23,10 +23,6 @@
     <string name="default_username">User</string>
     <string name="title_activity_game">GameActivity</string>
 
-    <string name="title_activity_board">BoardActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-
     <string name="against_computer">Against Computer</string>
     <string name="against_friend_network">Against a friend (Network)</string>
     <string name="choose_mode">Choose a mode</string>
@@ -34,4 +30,6 @@
     <string name="key_take_photo">key_take_photo</string>
     <string name="summary_take_photo">Click to take a photo directly from camera</string>
     <string name="title_take_photo">Take photo</string>
+    <string name="computer">Computer</string>
+    <string name="title_activity_ship_setup">Setup ships</string>
 </resources>

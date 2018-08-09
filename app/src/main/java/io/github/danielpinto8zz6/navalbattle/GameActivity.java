@@ -1,12 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,23 +15,27 @@ import android.widget.Toast;
 import java.io.Serializable;
 
 public class GameActivity extends AppCompatActivity implements Serializable {
-    private ImageAdapter playerImageAdapter;
-    private ImageAdapter opponentImageAdapter;
-    private GridView playerGridView;
-    private GridView opponentGridView;
+    private BattleField playerBattleField;
+    private BattleField opponentBattleField;
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        game = new Game(this, Constants.GameMode.Local);
+
+        playerBattleField = game.getPlayerBattleField();
+        opponentBattleField = game.getOpponentBattleField();
+
         setupToolbar();
 
         setupGrids();
 
         if (savedInstanceState != null) {
-            playerImageAdapter.setBoard(savedInstanceState.getIntArray("player_grid"));
-            opponentImageAdapter.setBoard(savedInstanceState.getIntArray("opponent_grid"));
+//            playerBattleField.setField(savedInstanceState.getIntegerArrayList("player_grid"));
+//            opponentBattleField.setField(savedInstanceState.getIntegerArrayList("opponent_grid"));
         }
     }
 
@@ -44,21 +43,13 @@ public class GameActivity extends AppCompatActivity implements Serializable {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putIntArray("player_grid", playerImageAdapter.getBoard());
-        outState.putIntArray("opponent_grid", opponentImageAdapter.getBoard());
+//        outState.putIntegerArrayList("player_grid", playerBattleField.getField());
+//        outState.putIntegerArrayList("opponent_grid", opponentBattleField.getField());
     }
 
     public void setupGrids() {
-        playerGridView = (GridView) findViewById(R.id.player_game_board);
-        playerGridView.setAdapter(playerImageAdapter = new ImageAdapter(this));
-
-        playerGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                playerImageAdapter.changeResource(position, R.color.black);
-            }
-        });
+        GridView playerGridView = (GridView) findViewById(R.id.player_game_board);
+        playerGridView.setAdapter(playerBattleField.getAdapter());
 
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
@@ -77,8 +68,22 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             playerGridView.setColumnWidth(height / 8);
         }
 
-        opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
-        opponentGridView.setAdapter(opponentImageAdapter = new ImageAdapter(this));
+        GridView opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
+        opponentGridView.setAdapter(opponentBattleField.getAdapter());
+
+        opponentGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                int x = position % 8;
+                int y = (int) Math.ceil(position / 8);
+
+                Toast.makeText(GameActivity.this, "Line : " + x + " Column : " + y,
+                        Toast.LENGTH_SHORT).show();
+
+                opponentBattleField.attackPosition(new Coordinates(x, y));
+            }
+        });
 
         if (width < height) {
             opponentGridView.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
@@ -100,25 +105,21 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         ImageView imageViewPlayer = (ImageView) findViewById(R.id.player_avatar);
         ImageView imageViewOpponent = (ImageView) findViewById(R.id.opponent_avatar);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        TextView playerName = (TextView) findViewById(R.id.player_name);
+        TextView opponentName = (TextView) findViewById(R.id.opponent_name);
 
-        String playerAvatarBase64 = prefs.getString("avatar", "");
-        // String opponentAvatarBase64 = getOpponentAvatarBase64();
+        imageViewPlayer.setImageDrawable(getPlayer().getAvatar());
+        imageViewOpponent.setImageDrawable(getOpponent().getAvatar());
 
-        String playerUsername = prefs.getString("key_username", "");
+        playerName.setText(getPlayer().getName());
+        opponentName.setText(getOpponent().getName());
+    }
 
-        if (playerAvatarBase64.length() > 0) {
-            Bitmap bitmap = Utils.decodeBase64(playerAvatarBase64);
+    public Player getPlayer() {
+        return game.getPlayer();
+    }
 
-            Drawable drawableAvatar = new BitmapDrawable(getResources(), bitmap);
-
-            imageViewPlayer.setImageDrawable(drawableAvatar);
-        }
-
-        if (playerUsername.length() > 0) {
-            TextView playerName = (TextView) findViewById(R.id.player_name);
-
-            playerName.setText(playerUsername);
-        }
+    public Opponent getOpponent() {
+        return game.getOpponent();
     }
 }

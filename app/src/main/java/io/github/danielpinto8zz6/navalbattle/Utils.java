@@ -16,11 +16,10 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
-public class Utils {
+class Utils {
     public static String encodeTobase64(Bitmap image) {
-        Bitmap immage = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        immage.compress(Bitmap.CompressFormat.PNG, 85, baos);
+        image.compress(Bitmap.CompressFormat.PNG, 85, baos);
         byte[] b = baos.toByteArray();
         String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
 
