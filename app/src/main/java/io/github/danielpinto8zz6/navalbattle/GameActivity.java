@@ -17,6 +17,8 @@ import java.io.Serializable;
 public class GameActivity extends AppCompatActivity implements Serializable {
     private BattleField playerBattleField;
     private BattleField opponentBattleField;
+    private BattleFieldAdapter playerBattleFieldAdapter;
+    private BattleFieldAdapter opponentBattleFieldAdapter;
     private Game game;
 
     @Override
@@ -37,6 +39,9 @@ public class GameActivity extends AppCompatActivity implements Serializable {
 //            playerBattleField.setField(savedInstanceState.getIntegerArrayList("player_grid"));
 //            opponentBattleField.setField(savedInstanceState.getIntegerArrayList("opponent_grid"));
         }
+
+        playerBattleFieldAdapter.notifyDataSetChanged();
+        opponentBattleFieldAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -49,7 +54,7 @@ public class GameActivity extends AppCompatActivity implements Serializable {
 
     public void setupGrids() {
         GridView playerGridView = (GridView) findViewById(R.id.player_game_board);
-        playerGridView.setAdapter(playerBattleField.getAdapter());
+        playerGridView.setAdapter(playerBattleFieldAdapter = new BattleFieldAdapter(this, playerBattleField));
 
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
@@ -68,8 +73,8 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             playerGridView.setColumnWidth(height / 8);
         }
 
-        GridView opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
-        opponentGridView.setAdapter(opponentBattleField.getAdapter());
+        final GridView opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
+        opponentGridView.setAdapter(opponentBattleFieldAdapter = new BattleFieldAdapter(this, opponentBattleField));
 
         opponentGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -78,10 +83,9 @@ public class GameActivity extends AppCompatActivity implements Serializable {
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                Toast.makeText(GameActivity.this, "Line : " + x + " Column : " + y,
-                        Toast.LENGTH_SHORT).show();
-
                 opponentBattleField.attackPosition(new Coordinates(x, y));
+
+                opponentBattleFieldAdapter.notifyDataSetChanged();
             }
         });
 

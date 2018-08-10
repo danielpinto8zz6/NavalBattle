@@ -16,7 +16,7 @@ public class Player {
     public Player(Context c) {
         context = c;
 
-        battleField = new BattleField(context);
+        battleField = new BattleField();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

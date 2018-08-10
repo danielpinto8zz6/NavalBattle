@@ -2,6 +2,7 @@ package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.Context;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,15 +11,9 @@ public class BattleField {
     private int[][] field = new int[8][8];
     private ArrayList<Ship> ships = new ArrayList<>();
     private ArrayList<Coordinates> attackedPositions = new ArrayList<>();
-    private BattleFieldAdapter adapter;
-    private Context context;
     private boolean showShips = true;
 
-    public BattleField(Context c) {
-        context = c;
-
-        adapter = new BattleFieldAdapter(c, this);
-
+    public BattleField() {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 field[x][y] = R.color.white;
@@ -51,8 +46,6 @@ public class BattleField {
             }
         }
 
-        refreshBattleField(); // refresh the gridviewvoid
-
         return true;
     }
 
@@ -69,17 +62,12 @@ public class BattleField {
 
         ships.add(ship);
 
-        refreshBattleField();
         return true;
 
     }
 
     private boolean isPositionEmpty(Coordinates position) {
         return (field[position.x][position.y] == R.color.white) ? true : false;
-    }
-
-    private void refreshBattleField() {
-        adapter.notifyDataSetChanged();
     }
 
     public int[][] getField() {
@@ -102,15 +90,11 @@ public class BattleField {
         return field.length;
     }
 
-    public BattleFieldAdapter getAdapter() {
-        return adapter;
-    }
-
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
     }
 
-    public boolean isMoveValid(ArrayList<Coordinates> pos) {
+    public boolean isMoveValid(ArrayList<Coordinates> pos, ArrayList<Coordinates> whiteList) {
         // check first position
         for (Coordinates c : pos) {
             // Check if position is not occupied
@@ -118,41 +102,65 @@ public class BattleField {
 
             if (c.x > 0 && c.y > 0)
                 if (field[c.x - 1][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y - 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)) && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
+                        return false;
 
             if (c.x < 7 && c.y < 7)
                 if (field[c.x + 1][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y + 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)) && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
+                        return false;
 
             if (c.x < 7 && c.y > 0)
                 if (field[c.x + 1][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y - 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)) && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
+                        return false;
 
             if (c.x > 0 && c.y > 7)
                 if (field[c.x - 1][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y + 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)) && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
+                        return false;
 
             if (c.x > 0)
                 if (field[c.x - 1][c.y] != R.color.white)
                     // If position is not part of the ship than it means position is not valid to be occupied
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y))) return false;
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y)) && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
+                        return false;
 
 
             if (c.y > 0)
                 if (field[c.x][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x, c.y - 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x, c.y - 1)) && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
+                        return false;
 
 
             if (c.x < 7)
                 if (field[c.x + 1][c.y] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y))) return false;
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y)) && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
+                        return false;
 
             if (c.y < 7)
                 if (field[c.x][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x, c.y + 1))) return false;
+                    if (!pos.contains(new Coordinates(c.x, c.y + 1)) && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
+                        return false;
         }
 
         return true;
+    }
+
+
+    public boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
+        if (!isMoveValid(newPositions, ship.getPositions())) {
+            for (Coordinates c : ship.getPositions())
+                field[c.x][c.y] = R.color.white;
+
+            ship.setPositions(newPositions);
+
+            for (Coordinates c : ship.getPositions())
+                field[c.x][c.y] = R.color.ship;
+            return true;
+        }
+
+        return false;
     }
 
     public boolean canRotate(Ship ship) {
@@ -279,7 +287,6 @@ public class BattleField {
         }
 
         ship.setPositions(newPositions);
-        refreshBattleField();
 
         return true;
     }

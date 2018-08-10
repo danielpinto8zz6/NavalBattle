@@ -9,7 +9,7 @@ public class Opponent {
     private BattleField battleField;
 
     public Opponent(Context context, Constants.OpponentType type) {
-        battleField = new BattleField(context);
+        battleField = new BattleField();
         battleField.setShowShips(false);
 
         if (type == Constants.OpponentType.Computer) {

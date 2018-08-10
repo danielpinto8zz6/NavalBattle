@@ -12,8 +12,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 public class ShipSetupActivity extends AppCompatActivity {
-
-    private Player player;
+    BattleField battleField;
+    BattleFieldAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +23,10 @@ public class ShipSetupActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        player = new Player(this);
+        battleField = new BattleField();
 
         GridView playerGridView = (GridView) findViewById(R.id.player_game_board);
-        playerGridView.setAdapter(player.getBattleField().getAdapter());
+        playerGridView.setAdapter(adapter = new BattleFieldAdapter(this, battleField));
 
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
@@ -52,25 +52,30 @@ public class ShipSetupActivity extends AppCompatActivity {
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                int field[][] = player.getBattleField().getField();
+                int field[][] = battleField.getField();
 
                 if (field[x][y] != R.color.ship) {
                     return;
                 }
 
-                Ship ship = player.getBattleField().getShipAtPosition(new Coordinates(x, y));
+                Ship ship = battleField.getShipAtPosition(new Coordinates(x, y));
 
                 if (ship == null) {
                     return;
                 }
 
-                if (!player.getBattleField().rotateShip(ship)) {
+                if (!battleField.rotateShip(ship)) {
                     Toast.makeText(ShipSetupActivity.this, "Can't rotate!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                adapter.notifyDataSetChanged();
             }
         });
 
         Toast.makeText(ShipSetupActivity.this, "Click on ship to rotate!", Toast.LENGTH_LONG).show();
+
+        adapter.notifyDataSetChanged();
     }
 
 }
