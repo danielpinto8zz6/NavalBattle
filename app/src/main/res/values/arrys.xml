@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="game_modes">
-        <item>@string/against_computer</item>
-        <item>@string/against_friend_network</item>
-    </string-array>
-</resources>
