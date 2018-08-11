@@ -1,17 +1,16 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import android.content.Context;
-
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class BattleField {
+public class BattleField implements Serializable {
     private int[][] field = new int[8][8];
     private ArrayList<Ship> ships = new ArrayList<>();
     private ArrayList<Coordinates> attackedPositions = new ArrayList<>();
     private boolean showShips = true;
+    private Ship selectedShip = null;
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -25,10 +24,10 @@ public class BattleField {
         addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
         addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
 
-        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 1), new Coordinates(6, 2), new Coordinates(6, 3)))));
-        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 5), new Coordinates(1, 6), new Coordinates(1, 7)))));
+        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
 
-        addShip(new Ship(3, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 6), new Coordinates(6, 7)))));
+        addShip(new Ship(3, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
     }
 
     public boolean attackPosition(Coordinates c) {
@@ -58,7 +57,7 @@ public class BattleField {
 
     public boolean addShip(Ship ship) {
         for (Coordinates pos : ship.getPositions()) {
-            if (!isPositionEmpty(pos)) {
+            if (!isPositionEmpty(pos.x, pos.y)) {
                 return false;
             }
         }
@@ -73,8 +72,8 @@ public class BattleField {
 
     }
 
-    private boolean isPositionEmpty(Coordinates position) {
-        return (field[position.x][position.y] == R.color.white) ? true : false;
+    private boolean isPositionEmpty(int x, int y) {
+        return (field[x][y] == R.color.white) ? true : false;
     }
 
     public int[][] getField() {
@@ -85,12 +84,18 @@ public class BattleField {
         this.field = field;
     }
 
-    public int get(Coordinates c) {
+    public int get(int x, int y) {
         // don't show your ships to your opponent
-        if (!showShips && field[c.getX()][c.getY()] == R.color.ship) {
+        if (!showShips && field[x][y] == R.color.ship) {
             return R.color.white;
         }
-        return field[c.getX()][c.getY()];
+
+        if (selectedShip != null) {
+            if (selectedShip.getPositions().contains(new Coordinates(x, y)))
+                return R.color.ship_selected;
+        }
+
+        return field[x][y];
     }
 
     public int getSize() {
@@ -102,56 +107,55 @@ public class BattleField {
     }
 
     public boolean isMoveValid(ArrayList<Coordinates> pos, ArrayList<Coordinates> whiteList) {
-        int auxField[][] = field;
-        for (Coordinates c : whiteList) {
-            auxField[c.x][c.y] = R.color.white;
-        }
         // check first position
         for (Coordinates c : pos) {
+            if (c.x < 0 || c.y < 0 || c.x > 7 || c.y > 7)
+                return false;
+
             // Check if position is not occupied
-            if (auxField[c.x][c.y] != R.color.white)
+            if (field[c.x][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y)))
                 return false;
 
             if (c.x > 0 && c.y > 0)
-                if (auxField[c.x - 1][c.y - 1] != R.color.white)
+                if (field[c.x - 1][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)))
                         return false;
 
             if (c.x < 7 && c.y < 7)
-                if (auxField[c.x + 1][c.y + 1] != R.color.white)
+                if (field[c.x + 1][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)))
                         return false;
 
             if (c.x < 7 && c.y > 0)
-                if (auxField[c.x + 1][c.y - 1] != R.color.white)
+                if (field[c.x + 1][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)))
                         return false;
 
             if (c.x > 0 && c.y > 7)
-                if (auxField[c.x - 1][c.y + 1] != R.color.white)
+                if (field[c.x - 1][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)))
                         return false;
 
             if (c.x > 0)
-                if (auxField[c.x - 1][c.y] != R.color.white)
+                if (field[c.x - 1][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
                     // If position is not part of the ship than it means position is not valid to be occupied
                     if (!pos.contains(new Coordinates(c.x - 1, c.y)))
                         return false;
 
 
             if (c.y > 0)
-                if (field[c.x][c.y - 1] != R.color.white)
+                if (field[c.x][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y - 1)))
                         return false;
 
 
             if (c.x < 7)
-                if (auxField[c.x + 1][c.y] != R.color.white)
+                if (field[c.x + 1][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y)))
                         return false;
 
             if (c.y < 7)
-                if (auxField[c.x][c.y + 1] != R.color.white)
+                if (field[c.x][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y + 1)))
                         return false;
         }
@@ -161,130 +165,265 @@ public class BattleField {
 
 
     public boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
-        if (isMoveValid(newPositions, ship.getPositions())) {
-            for (Coordinates c : ship.getPositions())
-                field[c.x][c.y] = R.color.white;
+        if (!isMoveValid(newPositions, ship.getPositions()))
+            return false;
 
-            ship.setPositions(newPositions);
+        for (Coordinates c : ship.getPositions())
+            field[c.x][c.y] = R.color.white;
 
-            for (Coordinates c : newPositions)
-                field[c.x][c.y] = R.color.ship;
-            return true;
-        }
+        ship.setPositions(newPositions);
 
-        return false;
-    }
-
-    public boolean canRotate(Ship ship) {
-        Coordinates c = ship.getPositions().get(0);
-
-        if (ship.getOrientation() == Constants.Orientation.Vertical) {
-            // Move to horizontal if possible
-            if (c.x + ship.getSize() > 8) {
-                return false;
-            }
-
-            for (int x = c.x + 1; x < c.x + ship.getSize(); x++) {
-                if (field[x][c.y] != R.color.white) {
-                    if (c.y > 0) {
-                        if (field[x][c.y + 1] != R.color.white) {
-                            return false;
-                        }
-                    }
-                    if (c.y < 7) {
-                        if (field[x][c.y + 1] != R.color.white) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            if (c.x + ship.getSize() < 8) {
-                if (field[c.x + ship.getSize()][c.y] != R.color.white) {
-                    if (c.y > 0) {
-                        if (field[c.x + ship.getSize()][c.y - 1] != R.color.white) {
-                            return false;
-                        }
-                    }
-                    if (c.y < 7) {
-                        if (field[c.x + ship.getSize()][c.y + 1] != R.color.white) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-        } else if (ship.getOrientation() == Constants.Orientation.Horizontal) {
-            if (c.y + ship.getSize() > 8) {
-                return false;
-            }
-
-            for (int y = c.y + 1; y < c.y + ship.getSize(); y++) {
-                if (field[c.x][y] != R.color.white) {
-                    if (c.x > 0) {
-                        if (field[c.x + 1][y] != R.color.white) {
-                            return false;
-                        }
-                    }
-                    if (c.x < 7) {
-                        if (field[c.x + 1][y] != R.color.white) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            if (c.y + ship.getSize() < 8) {
-                if (field[c.x][c.y + ship.getSize()] != R.color.white) {
-                    if (c.x > 0) {
-                        if (field[c.x - 1][c.y + ship.getSize()] != R.color.white) {
-                            return false;
-                        }
-                    }
-                    if (c.y < 7) {
-                        if (field[c.x + 1][c.y + ship.getSize()] != R.color.white) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
+        for (Coordinates c : newPositions)
+            field[c.x][c.y] = R.color.ship;
         return true;
     }
 
     public boolean rotateShip(Ship ship) {
-        if (ship.getType() == 3) return false;
-
-        if (!canRotate(ship)) return false;
-
         ArrayList<Coordinates> newPositions = new ArrayList<>();
-        Coordinates c = ship.getPositions().get(0);
+        Coordinates base = ship.getPositions().get(0);
 
-        // Clear old position on map
-        for (Coordinates position : ship.getPositions()) {
-            field[position.x][position.y] = R.color.white;
+        switch (ship.getRotation()) {
+            case 0:
+                // Rotate to 90
+                switch (ship.getType()) {
+                    case 0:
+                        return true;
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(90);
+                            return true;
+                        }
+                        return false;
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(90);
+                            return true;
+                        }
+                        return false;
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y + 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(90);
+                            return true;
+                        }
+                        return false;
+                }
+                break;
+            case 90:
+                // Rotate to 180
+                switch (ship.getType()) {
+                    case 0:
+                        return true;
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(180);
+                            return true;
+                        }
+                        return false;
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(180);
+                            return true;
+                        }
+                        return false;
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y + 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y + 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(180);
+                            return true;
+                        }
+                        return false;
+                }
+                break;
+            case 180:
+                // Rotate to 270
+                switch (ship.getType()) {
+                    case 0:
+                        return true;
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(270);
+                            return true;
+                        }
+                        return false;
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(270);
+                            return true;
+                        }
+                        return false;
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x - 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y + 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(270);
+                            return true;
+                        }
+                        return false;
+                }
+                break;
+            case 270:
+                // Rotate to 0
+                switch (ship.getType()) {
+                    case 0:
+                        return true;
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(0);
+                            return true;
+                        }
+                        return false;
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(0);
+                            return true;
+                        }
+                        return false;
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y - 1));
+                        if (moveShip(ship, newPositions)) {
+                            ship.setRotation(0);
+                            return true;
+                        }
+                        return false;
+                }
+                break;
         }
+        return true;
+    }
 
-        if (ship.getOrientation() == Constants.Orientation.Horizontal) {
-            for (int y = c.y; y < c.y + ship.getSize(); y++) {
-                newPositions.add(new Coordinates(c.x, y));
-                field[c.x][y] = R.color.ship;
-            }
+    public boolean move(Ship ship, Coordinates base) {
+        ArrayList<Coordinates> newPositions = new ArrayList<>();
 
-            ship.setOrientation(Constants.Orientation.Vertical);
-
-        } else if (ship.getOrientation() == Constants.Orientation.Vertical) {
-            for (int x = c.x; x < c.x + ship.getSize(); x++) {
-                newPositions.add(new Coordinates(x, c.y));
-                field[x][c.y] = R.color.ship;
-            }
-
-            ship.setOrientation(Constants.Orientation.Horizontal);
+        switch (ship.getRotation()) {
+            case 0:
+                switch (ship.getType()) {
+                    case 0:
+                        newPositions.add(base);
+                        return moveShip(ship, newPositions);
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        return moveShip(ship, newPositions);
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        return moveShip(ship, newPositions);
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y - 1));
+                        return moveShip(ship, newPositions);
+                }
+                break;
+            case 90:
+                switch (ship.getType()) {
+                    case 0:
+                        newPositions.add(base);
+                        return moveShip(ship, newPositions);
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        return moveShip(ship, newPositions);
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        return moveShip(ship, newPositions);
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y + 1));
+                        return moveShip(ship, newPositions);
+                }
+                break;
+            case 180:
+                switch (ship.getType()) {
+                    case 0:
+                        newPositions.add(base);
+                        return moveShip(ship, newPositions);
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        return moveShip(ship, newPositions);
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        return moveShip(ship, newPositions);
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        newPositions.add(new Coordinates(base.x, base.y + 1));
+                        newPositions.add(new Coordinates(base.x + 1, base.y + 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y + 1));
+                        return moveShip(ship, newPositions);
+                }
+                break;
+            case 270:
+                switch (ship.getType()) {
+                    case 0:
+                        newPositions.add(base);
+                        return moveShip(ship, newPositions);
+                    case 1:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x, base.y - 1));
+                        return moveShip(ship, newPositions);
+                    case 2:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        return moveShip(ship, newPositions);
+                    case 3:
+                        newPositions.add(base);
+                        newPositions.add(new Coordinates(base.x - 1, base.y));
+                        newPositions.add(new Coordinates(base.x + 1, base.y));
+                        newPositions.add(new Coordinates(base.x - 1, base.y - 1));
+                        newPositions.add(new Coordinates(base.x - 1, base.y + 1));
+                        return moveShip(ship, newPositions);
+                }
+                break;
         }
-
-        ship.setPositions(newPositions);
-
         return true;
     }
 
@@ -305,5 +444,9 @@ public class BattleField {
 
     public void set(int x, int y, int res) {
         field[x][y] = res;
+    }
+
+    public void setSelectedShip(Ship ship) {
+        this.selectedShip = ship;
     }
 }

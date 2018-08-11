@@ -1,5 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -29,6 +30,13 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         game = new Game(this, Constants.GameMode.Local);
 
         playerBattleField = game.getPlayerBattleField();
+
+
+        Intent i = getIntent();
+        BattleField bf = (BattleField) i.getSerializableExtra("battle_field");
+        game.setPlayerBattleField(bf);
+        playerBattleField = bf;
+
         opponentBattleField = game.getOpponentBattleField();
 
         setupToolbar();

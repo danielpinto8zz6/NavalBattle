@@ -1,8 +1,11 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,11 +13,13 @@ import android.view.DragEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ShipSetupActivity extends AppCompatActivity {
+public class ShipSetupActivity extends AppCompatActivity implements Serializable {
     BattleField battleField;
     BattleFieldAdapter adapter;
     AdapterView.OnItemClickListener onItemClickListener;
@@ -26,6 +31,17 @@ public class ShipSetupActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_setup_complete);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent game = new Intent(getApplicationContext(), GameActivity.class);
+                game.putExtra("battle_field", battleField);
+                startActivity(game);
+            }
+        });
 
         battleField = new BattleField();
 
@@ -87,8 +103,7 @@ public class ShipSetupActivity extends AppCompatActivity {
 
                 if (ship == null) return true;
 
-                for (Coordinates c : ship.getPositions())
-                    battleField.set(c.x, c.y, R.color.ship_selected);
+                battleField.setSelectedShip(ship);
 
                 adapter.notifyDataSetChanged();
 
@@ -99,35 +114,14 @@ public class ShipSetupActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View v,
                                             int position, long id) {
 
-                        Toast.makeText(ShipSetupActivity.this, "got here", Toast.LENGTH_SHORT).show();
-
-                        ArrayList<Coordinates> newPositions = new ArrayList<>();
-                        ArrayList<Coordinates> currentPositions = ship.getPositions();
-
                         int x = position % 8;
                         int y = (int) Math.ceil(position / 8);
 
-                        if (ship.getType() == 3) {
-                            newPositions.add(new Coordinates(x, y));
-                            newPositions.add(new Coordinates(x + 1, y));
-                            newPositions.add(new Coordinates(x + 2, y));
-                            newPositions.add(new Coordinates(x + 1, y + 1));
-                            newPositions.add(new Coordinates(x + 1, y + 2));
-                        } else if (ship.getOrientation() == Constants.Orientation.Vertical) {
-                            for (int i = y; i < currentPositions.size() + y; i++) {
-                                newPositions.add(new Coordinates(x, i));
-                            }
-                        } else {
-                            for (int i = x; i < currentPositions.size() + x; i++) {
-                                newPositions.add(new Coordinates(i, y));
-                            }
+                        if (!battleField.move(ship, new Coordinates(x, y))) {
+                            Toast.makeText(ShipSetupActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
                         }
 
-                        if (!battleField.moveShip(ship, newPositions)) {
-                            Toast.makeText(ShipSetupActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
-                            for (Coordinates c : ship.getPositions())
-                                battleField.set(c.x, c.y, R.color.ship);
-                        }
+                        battleField.setSelectedShip(null);
 
                         adapter.notifyDataSetChanged();
 
@@ -142,9 +136,7 @@ public class ShipSetupActivity extends AppCompatActivity {
             }
         });
 
-        final Snackbar snackbar = Snackbar.make(
-
-                findViewById(android.R.id.content), "Click on ship to rotate!\nLong press to move!", Snackbar.LENGTH_INDEFINITE);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_ship_setup_layout), "Click on ship to rotate!\nLong press to move!", Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

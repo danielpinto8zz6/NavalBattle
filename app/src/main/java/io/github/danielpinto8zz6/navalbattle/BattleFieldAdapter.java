@@ -34,7 +34,7 @@ public class BattleFieldAdapter extends BaseAdapter {
         int x = position % 8;
         int y = (int) Math.ceil(position / 8);
 
-        return battleField.get(new Coordinates(x, y));
+        return battleField.get(x, y);
     }
 
     public long getItemId(int position) {
@@ -46,7 +46,6 @@ public class BattleFieldAdapter extends BaseAdapter {
         int x = position % 8;
         int y = (int) Math.ceil(position / 8);
 
-        Coordinates c = new Coordinates(x, y);
         ImageView imageView;
 
         if (convertView == null) {
@@ -76,7 +75,7 @@ public class BattleFieldAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(battleField.get(c));
+        imageView.setImageResource(battleField.get(x, y));
 
         return imageView;
     }

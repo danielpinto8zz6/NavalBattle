@@ -2,13 +2,15 @@ package io.github.danielpinto8zz6.navalbattle;
 
 import android.util.ArrayMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Ship {
+public class Ship implements Serializable {
     //  Destroyed flag, Position
     private ArrayList<Coordinates> positions = new ArrayList<>();
     private int type;
     private Constants.Orientation orientation;
+    private int rotation = 0;
 
     public Ship(int type, Constants.Orientation orientation, ArrayList<Coordinates> positions) {
         this.type = type;
@@ -80,5 +82,13 @@ public class Ship {
 
     public boolean contains (Coordinates c){
         return positions.contains(c);
+    }
+
+    public int getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(int rotation) {
+        this.rotation = rotation;
     }
 }

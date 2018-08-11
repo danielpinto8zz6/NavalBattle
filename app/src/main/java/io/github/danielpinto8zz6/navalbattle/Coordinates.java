@@ -1,6 +1,8 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-public class Coordinates {
+import java.io.Serializable;
+
+public class Coordinates implements Serializable {
     public int x;
     public int y;
     private boolean isAttacked = false;
@@ -32,5 +34,18 @@ public class Coordinates {
 
     public void setAttacked(boolean attacked) {
         isAttacked = attacked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o instanceof Coordinates){
+            Coordinates c = (Coordinates)o;
+            if (c.x == x && c.y == y) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
