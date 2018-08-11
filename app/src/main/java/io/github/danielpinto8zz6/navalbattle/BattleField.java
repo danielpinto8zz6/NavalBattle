@@ -19,9 +19,16 @@ public class BattleField {
                 field[x][y] = R.color.white;
             }
         }
+        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 1)))));
+        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 3)))));
 
-        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(0, 2), new Coordinates(0, 3), new Coordinates(0, 4)))));
-        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 3), new Coordinates(6, 4)))));
+        addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+        addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+
+        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 1), new Coordinates(6, 2), new Coordinates(6, 3)))));
+        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 5), new Coordinates(1, 6), new Coordinates(1, 7)))));
+
+        addShip(new Ship(3, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 6), new Coordinates(6, 7)))));
     }
 
     public boolean attackPosition(Coordinates c) {
@@ -95,52 +102,57 @@ public class BattleField {
     }
 
     public boolean isMoveValid(ArrayList<Coordinates> pos, ArrayList<Coordinates> whiteList) {
+        int auxField[][] = field;
+        for (Coordinates c : whiteList) {
+            auxField[c.x][c.y] = R.color.white;
+        }
         // check first position
         for (Coordinates c : pos) {
             // Check if position is not occupied
-            if (field[c.x][c.y] != R.color.white) return false;
+            if (auxField[c.x][c.y] != R.color.white)
+                return false;
 
             if (c.x > 0 && c.y > 0)
-                if (field[c.x - 1][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)) && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
+                if (auxField[c.x - 1][c.y - 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)))
                         return false;
 
             if (c.x < 7 && c.y < 7)
-                if (field[c.x + 1][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)) && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
+                if (auxField[c.x + 1][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)))
                         return false;
 
             if (c.x < 7 && c.y > 0)
-                if (field[c.x + 1][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)) && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
+                if (auxField[c.x + 1][c.y - 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)))
                         return false;
 
             if (c.x > 0 && c.y > 7)
-                if (field[c.x - 1][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)) && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
+                if (auxField[c.x - 1][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)))
                         return false;
 
             if (c.x > 0)
-                if (field[c.x - 1][c.y] != R.color.white)
+                if (auxField[c.x - 1][c.y] != R.color.white)
                     // If position is not part of the ship than it means position is not valid to be occupied
-                    if (!pos.contains(new Coordinates(c.x - 1, c.y)) && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
+                    if (!pos.contains(new Coordinates(c.x - 1, c.y)))
                         return false;
 
 
             if (c.y > 0)
                 if (field[c.x][c.y - 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x, c.y - 1)) && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
+                    if (!pos.contains(new Coordinates(c.x, c.y - 1)))
                         return false;
 
 
             if (c.x < 7)
-                if (field[c.x + 1][c.y] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x + 1, c.y)) && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
+                if (auxField[c.x + 1][c.y] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x + 1, c.y)))
                         return false;
 
             if (c.y < 7)
-                if (field[c.x][c.y + 1] != R.color.white)
-                    if (!pos.contains(new Coordinates(c.x, c.y + 1)) && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
+                if (auxField[c.x][c.y + 1] != R.color.white)
+                    if (!pos.contains(new Coordinates(c.x, c.y + 1)))
                         return false;
         }
 
@@ -149,13 +161,13 @@ public class BattleField {
 
 
     public boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
-        if (!isMoveValid(newPositions, ship.getPositions())) {
+        if (isMoveValid(newPositions, ship.getPositions())) {
             for (Coordinates c : ship.getPositions())
                 field[c.x][c.y] = R.color.white;
 
             ship.setPositions(newPositions);
 
-            for (Coordinates c : ship.getPositions())
+            for (Coordinates c : newPositions)
                 field[c.x][c.y] = R.color.ship;
             return true;
         }
@@ -165,21 +177,6 @@ public class BattleField {
 
     public boolean canRotate(Ship ship) {
         Coordinates c = ship.getPositions().get(0);
-
-//        if (ship.getOrientation() == Constants.Orientation.Horizontal) {
-//            for (int y = c.y + 1; y < c.y + ship.getSize(); y++) {
-//                if (field[c.x][y] != R.color.white){
-//                    return false;
-//                }
-//            }
-//        } else if (ship.getOrientation() == Constants.Orientation.Vertical) {
-//            for (int x = c.x + 1; x < c.x + ship.getSize(); x++) {
-//                if (field[x][c.y] != R.color.white){
-//                    System.out.println("x :" + x + " y : " + c.y);
-//                    return false;
-//                }
-//            }
-//        }
 
         if (ship.getOrientation() == Constants.Orientation.Vertical) {
             // Move to horizontal if possible
@@ -257,9 +254,9 @@ public class BattleField {
     }
 
     public boolean rotateShip(Ship ship) {
-        if (!canRotate(ship)) {
-            return false;
-        }
+        if (ship.getType() == 3) return false;
+
+        if (!canRotate(ship)) return false;
 
         ArrayList<Coordinates> newPositions = new ArrayList<>();
         Coordinates c = ship.getPositions().get(0);
@@ -304,5 +301,9 @@ public class BattleField {
 
     public ArrayList<Ship> getShips() {
         return ships;
+    }
+
+    public void set(int x, int y, int res) {
+        field[x][y] = res;
     }
 }

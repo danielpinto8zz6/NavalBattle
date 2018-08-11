@@ -7,4 +7,5 @@
     <color name="white">#FDD835</color>
 
     <color name="ship">#ffffff</color>
+    <color name="ship_selected">#C62828</color>
 </resources>
