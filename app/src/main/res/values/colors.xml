@@ -8,4 +8,6 @@
 
     <color name="ship">#ffffff</color>
     <color name="ship_selected">#C62828</color>
+    <color name="destroyed">#ffffff</color>
+    <color name="attacked">#ffffff</color>
 </resources>

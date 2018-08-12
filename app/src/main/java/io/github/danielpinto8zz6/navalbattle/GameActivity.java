@@ -3,6 +3,8 @@ package io.github.danielpinto8zz6.navalbattle;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +15,13 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.Serializable;
-
-public class GameActivity extends AppCompatActivity implements Serializable {
+public class GameActivity extends AppCompatActivity implements GameInterface {
     private BattleFieldAdapter playerBattleFieldAdapter;
     private BattleFieldAdapter opponentBattleFieldAdapter;
     private DeviceAI device;
     private Game game;
+    private int shots = 0;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +34,27 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
         } else {
-            game.getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
-            game.getOpponent().setDevice(true);
+            BattleField bf = (BattleField) getIntent().getSerializableExtra("battle_field");
+            if (bf != null)
+                game.getPlayer().setBattleField(bf);
         }
 
         setupToolbar();
 
         setupGrids();
 
-        device = new DeviceAI(game);
+        mHandler = new Handler(Looper.getMainLooper()) {
+        };
+
+        device = new DeviceAI(game, this);
         Thread thread = new Thread(device);
         thread.start();
 
+        GameActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                playerBattleFieldAdapter.notifyDataSetChanged();
+            }
+        });
 
         playerBattleFieldAdapter.notifyDataSetChanged();
         opponentBattleFieldAdapter.notifyDataSetChanged();
@@ -84,12 +95,24 @@ public class GameActivity extends AppCompatActivity implements Serializable {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
+                if (!game.getPlayer().isYourTurn()) return;
+
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
                 game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y));
 
                 opponentBattleFieldAdapter.notifyDataSetChanged();
+
+                shots++;
+
+                if (shots >= 3) {
+                    game.getPlayer().setYourTurn(false);
+                    game.getOpponent().setYourTurn(true);
+                    shots = 0;
+                    return;
+                }
+
             }
         });
 
@@ -135,5 +158,15 @@ public class GameActivity extends AppCompatActivity implements Serializable {
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .show();
+    }
+
+    public void dataChanged() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                playerBattleFieldAdapter.notifyDataSetChanged();
+                opponentBattleFieldAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

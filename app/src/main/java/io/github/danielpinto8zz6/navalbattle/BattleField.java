@@ -44,14 +44,14 @@ public class BattleField implements Serializable {
 
         field[c.x][c.y] = R.color.black;
 
-        for (Ship ship : ships) {
-            if (ship.getPositions().contains(c)) {
-                ship.destroy(c.y, c.y);
-                if (ship.isDestroyed()) {
-                    removeShip(ship);
-                }
-            }
-        }
+//        for (Ship ship : ships) {
+//            if (ship.getPositions().contains(c)) {
+//                ship.destroy(c.y, c.y);
+//                if (ship.isDestroyed()) {
+//                    removeShip(ship);
+//                }
+//            }
+//        }
 
         return true;
     }
@@ -470,5 +470,18 @@ public class BattleField implements Serializable {
                 return false;
         }
         return true;
+    }
+
+    public ArrayList<Coordinates> getValidPositions() {
+        ArrayList<Coordinates> validPositions = new ArrayList<>();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (field[x][y] != R.color.attacked || field[x][y] != R.color.destroyed)
+                    validPositions.add(new Coordinates(x, y));
+            }
+        }
+
+        return validPositions;
     }
 }

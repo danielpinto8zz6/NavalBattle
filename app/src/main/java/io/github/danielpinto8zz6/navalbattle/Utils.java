@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Random;
 
 class Utils {
     public static String encodeTobase64(Bitmap image) {
@@ -91,5 +92,10 @@ class Utils {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    static int generateRandomNumber(int low, int high) {
+        Random r = new Random();
+        return r.nextInt(high - low) + low;
     }
 }

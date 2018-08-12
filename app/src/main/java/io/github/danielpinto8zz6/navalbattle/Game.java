@@ -7,24 +7,21 @@ import java.io.Serializable;
 import io.github.danielpinto8zz6.navalbattle.Constants.GameMode;
 
 public class Game implements Serializable {
-    private Context context;
     private Player player;
     private Player opponent;
     private GameMode mode;
 
-    public Game(Context context) {
-        this.context = context;
-
-        player = new Player(context);
-        opponent = new Player(context, false, true);
+    public Game(Context c) {
+        player = new Player(c);
+        opponent = new Player(c, true, true);
+        player.setYourTurn(true);
     }
 
-    public Game(Context context, GameMode mode) {
-        this.context = context;
+    public Game(Context c, GameMode mode) {
         this.mode = mode;
 
-        player = new Player(context);
-        opponent = new Player(context, false, true);
+        player = new Player(c);
+        opponent = new Player(c, false, true);
     }
 
     public Player getPlayer() {

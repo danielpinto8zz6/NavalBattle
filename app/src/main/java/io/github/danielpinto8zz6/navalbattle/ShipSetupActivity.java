@@ -15,9 +15,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import java.io.Serializable;
-
-public class ShipSetupActivity extends AppCompatActivity implements Serializable {
+public class ShipSetupActivity extends AppCompatActivity {
     BattleField battleField;
     BattleFieldAdapter adapter;
     AdapterView.OnItemClickListener onItemClickListener;
@@ -35,6 +33,7 @@ public class ShipSetupActivity extends AppCompatActivity implements Serializable
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ShipSetupActivity.this.finish();
                 Intent game = new Intent(getApplicationContext(), GameActivity.class);
                 game.putExtra("battle_field", battleField);
                 startActivity(game);

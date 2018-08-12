@@ -11,50 +11,38 @@ import java.io.Serializable;
 public class Player implements Serializable {
     private String name;
     private String avatarBase64;
-    private Context context;
     private BattleField battleField;
     private boolean isDevice;
-    private boolean isYourTurn;
+    private boolean isYourTurn = false;
     private boolean isEnemy;
 
     public Player(Context c) {
-        context = c;
-
         battleField = new BattleField();
 
-        setupProfile();
-
+        setupProfile(c);
     }
 
     public Player(Context c, BattleField bf) {
-        context = c;
-
         battleField = bf;
 
-        setupProfile();
+        setupProfile(c);
     }
 
     public Player(Context c, boolean isDevice, boolean isEnemy) {
-        context = c;
-
         battleField = new BattleField();
 
         if (isDevice) {
-            name = context.getResources().getString(R.string.computer);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.computer));
+            name = c.getResources().getString(R.string.computer);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.computer));
         } else
-            setupProfile();
+            setupProfile(c);
 
-        if (isEnemy) {
-            name = context.getResources().getString(R.string.default_username);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.opponent_avatar));
+        if (isEnemy)
             battleField.setShowShips(false);
-        }
+
     }
 
-    public Player(Context c, String name, String avatarBase64) {
-        context = c;
-
+    public Player(String name, String avatarBase64) {
         battleField = new BattleField();
 
         this.isEnemy = true;
@@ -80,8 +68,8 @@ public class Player implements Serializable {
         this.battleField = battleField;
     }
 
-    private void setupProfile() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private void setupProfile(Context c) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
 
         String playerAvatarBase64 = prefs.getString("avatar", "");
 
@@ -90,7 +78,7 @@ public class Player implements Serializable {
         if (playerAvatarBase64.length() > 0) {
             avatarBase64 = playerAvatarBase64;
         } else {
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_avatar));
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
         }
 
         if (playerUsername.length() > 0) {
@@ -105,9 +93,6 @@ public class Player implements Serializable {
     }
 
     public void setDevice(boolean device) {
-        name = context.getResources().getString(R.string.computer);
-        avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.computer));
-
         isDevice = device;
     }
 
@@ -129,5 +114,13 @@ public class Player implements Serializable {
 
     public Bitmap getAvatar() {
         return Utils.decodeBase64(avatarBase64);
+    }
+
+    public void setAvatarBase64(String avatarBase64) {
+        this.avatarBase64 = avatarBase64;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

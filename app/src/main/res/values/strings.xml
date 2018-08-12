@@ -34,9 +34,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="dismiss">Dismiss</string>
     <string name="sure_want_to_exit">Are you sure you want to exit?</string>
     <string name="wait_connection">Waiting for a client...</string>

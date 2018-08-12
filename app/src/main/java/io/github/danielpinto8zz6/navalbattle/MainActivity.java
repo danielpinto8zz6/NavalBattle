@@ -33,13 +33,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import static io.github.danielpinto8zz6.navalbattle.Constants.PORT;
 
-public class MainActivity extends AppCompatActivity implements Serializable, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Animation fabOpenAnimation;
     private Animation fabCloseAnimation;
     private boolean isFabMenuOpen = false;
@@ -53,8 +52,37 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
     private ServerSocket serverSocket = null;
     private Socket socketGame = null;
     private Handler procMsg = null;
+    Thread commThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                input = new BufferedReader(new InputStreamReader(
+                        socketGame.getInputStream()));
+                output = new PrintWriter(socketGame.getOutputStream());
+                while (!Thread.currentThread().isInterrupted()) {
+                    String read = input.readLine();
+                    final int move = Integer.parseInt(read);
+                    Log.d("Naval Battle", "Received: " + move);
+                    procMsg.post(new Runnable() {
+                        @Override
+                        public void run() {
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                procMsg.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                        Toast.makeText(getApplicationContext(),
+                                R.string.game_finished, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+            }
+        }
+    });
     private ProgressDialog pd = null;
-
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
@@ -353,35 +381,4 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
         });
         t.start();
     }
-
-    Thread commThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                input = new BufferedReader(new InputStreamReader(
-                        socketGame.getInputStream()));
-                output = new PrintWriter(socketGame.getOutputStream());
-                while (!Thread.currentThread().isInterrupted()) {
-                    String read = input.readLine();
-                    final int move = Integer.parseInt(read);
-                    Log.d("Naval Battle", "Received: " + move);
-                    procMsg.post(new Runnable() {
-                        @Override
-                        public void run() {
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                procMsg.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        Toast.makeText(getApplicationContext(),
-                                R.string.game_finished, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-            }
-        }
-    });
 }
