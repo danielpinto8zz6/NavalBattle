@@ -1,9 +1,11 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
-public class Ship implements Serializable {
+public class Ship implements Parcelable {
     //  Destroyed flag, Position
     private ArrayList<Coordinates> positions;
     private int type;
@@ -68,4 +70,34 @@ public class Ship implements Serializable {
     public void setRotation(int rotation) {
         this.rotation = rotation;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(this.positions);
+        dest.writeInt(this.type);
+        dest.writeInt(this.rotation);
+    }
+
+    protected Ship(Parcel in) {
+        this.positions = in.createTypedArrayList(Coordinates.CREATOR);
+        this.type = in.readInt();
+        this.rotation = in.readInt();
+    }
+
+    public static final Creator<Ship> CREATOR = new Creator<Ship>() {
+        @Override
+        public Ship createFromParcel(Parcel source) {
+            return new Ship(source);
+        }
+
+        @Override
+        public Ship[] newArray(int size) {
+            return new Ship[size];
+        }
+    };
 }

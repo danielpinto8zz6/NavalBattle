@@ -4,57 +4,41 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 
-import java.io.Serializable;
-
-public class Player implements Serializable {
+public class Player implements Parcelable {
     private String name;
     private String avatarBase64;
-    private Context context;
     private BattleField battleField;
     private boolean isDevice;
     private boolean isYourTurn;
     private boolean isEnemy;
 
     public Player(Context c) {
-        context = c;
-
         battleField = new BattleField();
 
-        setupProfile();
-
-    }
-
-    public Player(Context c, BattleField bf) {
-        context = c;
-
-        battleField = bf;
-
-        setupProfile();
+        setupProfile(c);
     }
 
     public Player(Context c, boolean isDevice, boolean isEnemy) {
-        context = c;
-
         battleField = new BattleField();
 
         if (isDevice) {
-            name = context.getResources().getString(R.string.computer);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.computer));
+            name = c.getResources().getString(R.string.computer);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.computer));
         } else
-            setupProfile();
+            setupProfile(c);
 
         if (isEnemy) {
-            name = context.getResources().getString(R.string.default_username);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.opponent_avatar));
+            name = c.getResources().getString(R.string.default_username);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
             battleField.setShowShips(false);
         }
     }
 
-    public Player(Context c, String name, String avatarBase64) {
-        context = c;
-
+    public Player(String name, String avatarBase64) {
         battleField = new BattleField();
 
         this.isEnemy = true;
@@ -80,8 +64,8 @@ public class Player implements Serializable {
         this.battleField = battleField;
     }
 
-    private void setupProfile() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private void setupProfile(Context c) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
 
         String playerAvatarBase64 = prefs.getString("avatar", "");
 
@@ -90,7 +74,7 @@ public class Player implements Serializable {
         if (playerAvatarBase64.length() > 0) {
             avatarBase64 = playerAvatarBase64;
         } else {
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.player_avatar));
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
         }
 
         if (playerUsername.length() > 0) {
@@ -105,9 +89,6 @@ public class Player implements Serializable {
     }
 
     public void setDevice(boolean device) {
-        name = context.getResources().getString(R.string.computer);
-        avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(context.getResources(), R.drawable.computer));
-
         isDevice = device;
     }
 
@@ -130,4 +111,48 @@ public class Player implements Serializable {
     public Bitmap getAvatar() {
         return Utils.decodeBase64(avatarBase64);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvatarBase64 (String avatarBase64) {
+        this.avatarBase64 = avatarBase64;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.avatarBase64);
+        dest.writeParcelable(this.battleField, flags);
+        dest.writeByte(this.isDevice ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isYourTurn ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isEnemy ? (byte) 1 : (byte) 0);
+    }
+
+    protected Player(Parcel in) {
+        this.name = in.readString();
+        this.avatarBase64 = in.readString();
+        this.battleField = in.readParcelable(BattleField.class.getClassLoader());
+        this.isDevice = in.readByte() != 0;
+        this.isYourTurn = in.readByte() != 0;
+        this.isEnemy = in.readByte() != 0;
+    }
+
+    public static final Creator<Player> CREATOR = new Creator<Player>() {
+        @Override
+        public Player createFromParcel(Parcel source) {
+            return new Player(source);
+        }
+
+        @Override
+        public Player[] newArray(int size) {
+            return new Player[size];
+        }
+    };
 }

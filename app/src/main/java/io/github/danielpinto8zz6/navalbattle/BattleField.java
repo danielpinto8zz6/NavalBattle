@@ -1,10 +1,12 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class BattleField implements Serializable {
+public class BattleField implements Parcelable {
     private int[][] field = new int[8][8];
     private ArrayList<Ship> ships = new ArrayList<>();
     private ArrayList<Coordinates> attackedPositions = new ArrayList<>();
@@ -471,4 +473,38 @@ public class BattleField implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeSerializable(this.field);
+        dest.writeTypedList(this.ships);
+        dest.writeTypedList(this.attackedPositions);
+        dest.writeByte(this.showShips ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.selectedShip, flags);
+    }
+
+    protected BattleField(Parcel in) {
+        this.field = (int[][]) in.readSerializable();
+        this.ships = in.createTypedArrayList(Ship.CREATOR);
+        this.attackedPositions = in.createTypedArrayList(Coordinates.CREATOR);
+        this.showShips = in.readByte() != 0;
+        this.selectedShip = in.readParcelable(Ship.class.getClassLoader());
+    }
+
+    public static final Creator<BattleField> CREATOR = new Creator<BattleField>() {
+        @Override
+        public BattleField createFromParcel(Parcel source) {
+            return new BattleField(source);
+        }
+
+        @Override
+        public BattleField[] newArray(int size) {
+            return new BattleField[size];
+        }
+    };
 }

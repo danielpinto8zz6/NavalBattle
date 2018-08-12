@@ -1,6 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -13,9 +14,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.Serializable;
-
-public class GameActivity extends AppCompatActivity implements Serializable {
+public class GameActivity extends AppCompatActivity {
     private BattleFieldAdapter playerBattleFieldAdapter;
     private BattleFieldAdapter opponentBattleFieldAdapter;
     private DeviceAI device;
@@ -29,11 +28,15 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         game = new Game(this);
 
         if (savedInstanceState != null) {
-            game = (Game)
-                    savedInstanceState.getSerializable("game_obj");
+            game.getPlayer().setBattleField((BattleField) getIntent().getParcelableExtra("battle_field_player"));
+            game.getOpponent().setBattleField((BattleField) getIntent().getParcelableExtra("battle_field_opponent"));
         } else {
-            game.getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
+            BattleField bf = (BattleField) getIntent().getParcelableExtra("battle_field");
+            if (bf != null)
+                game.getPlayer().setBattleField(bf);
             game.getOpponent().setDevice(true);
+            game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.computer)));
+            game.getOpponent().setName(getResources().getString(R.string.computer));
         }
 
         setupToolbar();
@@ -53,7 +56,8 @@ public class GameActivity extends AppCompatActivity implements Serializable {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("game_obj", game);
+        outState.putParcelable("battle_field_player", game.getPlayer().getBattleField());
+        outState.putParcelable("battle_field_opponent", game.getOpponent().getBattleField());
     }
 
     public void setupGrids() {

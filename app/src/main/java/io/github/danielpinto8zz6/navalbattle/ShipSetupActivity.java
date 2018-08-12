@@ -15,9 +15,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import java.io.Serializable;
-
-public class ShipSetupActivity extends AppCompatActivity implements Serializable {
+public class ShipSetupActivity extends AppCompatActivity {
     BattleField battleField;
     BattleFieldAdapter adapter;
     AdapterView.OnItemClickListener onItemClickListener;
@@ -42,7 +40,7 @@ public class ShipSetupActivity extends AppCompatActivity implements Serializable
         });
 
         if (savedInstanceState != null)
-            battleField = (BattleField) savedInstanceState.getSerializable("battlefield");
+            battleField = (BattleField) savedInstanceState.getParcelable("battlefield");
         else battleField = new BattleField();
 
         final GridView gridView = (GridView) findViewById(R.id.player_game_board);
@@ -166,6 +164,6 @@ public class ShipSetupActivity extends AppCompatActivity implements Serializable
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable("battlefield", battleField);
+        outState.putParcelable("battlefield", battleField);
     }
 }
