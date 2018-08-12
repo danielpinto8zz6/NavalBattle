@@ -8,16 +8,13 @@ public class Opponent {
     private Drawable avatar;
     private BattleField battleField;
 
-    public Opponent(Context context, Constants.OpponentType type) {
+    public Opponent(Context context) {
         battleField = new BattleField();
         battleField.setShowShips(false);
 
-        if (type == Constants.OpponentType.Computer) {
-            name = context.getResources().getString(R.string.computer);
-            avatar = context.getResources().getDrawable(R.drawable.computer);
-        } else {
+        name = context.getResources().getString(R.string.computer);
+        avatar = context.getResources().getDrawable(R.drawable.computer);
 
-        }
     }
 
     public String getName() {

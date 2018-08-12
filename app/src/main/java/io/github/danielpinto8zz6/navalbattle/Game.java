@@ -2,48 +2,52 @@ package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.Context;
 
-public class Game {
-    private Player player;
-    private Opponent opponent;
+import java.io.Serializable;
 
-    public Game(Context context, Constants.GameMode mode) {
-        if (mode == Constants.GameMode.Network) {
-            opponent = new Opponent(context, Constants.OpponentType.Player);
-        } else {
-            opponent = new Opponent(context, Constants.OpponentType.Computer);
-        }
+import io.github.danielpinto8zz6.navalbattle.Constants.GameMode;
+
+public class Game implements Serializable {
+    private Context context;
+    private Player player;
+    private Player opponent;
+    private GameMode mode;
+
+    public Game(Context context) {
+        this.context = context;
+
         player = new Player(context);
+        opponent = new Player(context, false, true);
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public Game(Context context, GameMode mode) {
+        this.context = context;
+        this.mode = mode;
+
+        player = new Player(context);
+        opponent = new Player(context, false, true);
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public Opponent getOpponent() {
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getOpponent() {
         return opponent;
     }
 
-    public BattleField getOpponentBattleField() {
-        return opponent.getBattleField();
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
     }
 
-    public void setOpponentBattleField(BattleField battleField) {
-        opponent.setBattleField(battleField);
+    public GameMode getMode() {
+        return mode;
     }
 
-    public BattleField getPlayerBattleField() {
-        return player.getBattleField();
-    }
-
-    public void setPlayerBattleField(BattleField battleField) {
-        player.setBattleField(battleField);
-    }
-
-    public void run() {
-
+    public void setMode(GameMode mode) {
+        this.mode = mode;
     }
 }

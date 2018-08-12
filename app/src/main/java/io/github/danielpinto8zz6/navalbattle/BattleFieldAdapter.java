@@ -8,10 +8,6 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -34,7 +30,7 @@ public class BattleFieldAdapter extends BaseAdapter {
         int x = position % 8;
         int y = (int) Math.ceil(position / 8);
 
-        return battleField.get(x, y);
+        return battleField.get(x,y);
     }
 
     public long getItemId(int position) {

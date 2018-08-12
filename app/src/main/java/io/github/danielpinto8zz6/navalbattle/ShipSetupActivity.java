@@ -1,23 +1,21 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.DragEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class ShipSetupActivity extends AppCompatActivity implements Serializable {
     BattleField battleField;
@@ -43,7 +41,9 @@ public class ShipSetupActivity extends AppCompatActivity implements Serializable
             }
         });
 
-        battleField = new BattleField();
+        if (savedInstanceState != null)
+            battleField = (BattleField) savedInstanceState.getSerializable("battlefield");
+        else battleField = new BattleField();
 
         final GridView gridView = (GridView) findViewById(R.id.player_game_board);
         gridView.setAdapter(adapter = new BattleFieldAdapter(this, battleField));
@@ -148,4 +148,24 @@ public class ShipSetupActivity extends AppCompatActivity implements Serializable
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.sure_want_to_exit)
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ShipSetupActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable("battlefield", battleField);
+    }
 }

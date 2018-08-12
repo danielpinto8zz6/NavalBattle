@@ -1,7 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +27,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.Serializable;
+
+import static io.github.danielpinto8zz6.navalbattle.Constants.MY_PERMISSIONS_REQUEST_CAMERA;
+import static io.github.danielpinto8zz6.navalbattle.Constants.REQUEST_IMAGE_CAPTURE;
+import static io.github.danielpinto8zz6.navalbattle.Constants.REQUEST_PICK_AVATAR;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements Serializable {
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -148,15 +151,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                                 Snackbar.make(getView(), "You need to accept permission in order to take photo.", Snackbar.LENGTH_LONG).show();
 
                                 requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                        Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                                        MY_PERMISSIONS_REQUEST_CAMERA);
                             } else {
                                 requestPermissions(new String[]{Manifest.permission.CAMERA},
-                                        Constants.MY_PERMISSIONS_REQUEST_CAMERA);
+                                        MY_PERMISSIONS_REQUEST_CAMERA);
                             }
                         } else {
                             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                                startActivityForResult(intent, Constants.REQUEST_IMAGE_CAPTURE);
+                                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
                             }
                             return true;
                         }
@@ -195,15 +198,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                             Snackbar.make(getView(), "You need to accept permission in order to load an avatar.", Snackbar.LENGTH_LONG).show();
 
                             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    Constants.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                         } else {
                             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    Constants.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                         }
                     } else {
                         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                        startActivityForResult(intent, Constants.REQUEST_PICK_AVATAR);
+                        startActivityForResult(intent, REQUEST_PICK_AVATAR);
                         return true;
                     }
 
@@ -216,7 +219,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
             super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == Constants.REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
 
@@ -225,7 +228,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
                 saveImageIntoPreferences(imageBitmap);
 
-            } else if (requestCode == Constants.REQUEST_PICK_AVATAR && resultCode == RESULT_OK) {
+            } else if (requestCode == REQUEST_PICK_AVATAR && resultCode == RESULT_OK) {
 
                 Uri selectedImage = data.getData();
 
@@ -296,17 +299,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
         @Override
         public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            if (requestCode == Constants.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                    startActivityForResult(intent, Constants.REQUEST_PICK_AVATAR);
+                    startActivityForResult(intent, REQUEST_PICK_AVATAR);
                 }
-            } else if (requestCode == Constants.MY_PERMISSIONS_REQUEST_CAMERA) {
+            } else if (requestCode == MY_PERMISSIONS_REQUEST_CAMERA) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                        startActivityForResult(intent, Constants.REQUEST_IMAGE_CAPTURE);
+                        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
                     }
                 }
             }

@@ -1,28 +1,43 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
+import android.text.method.DigitsKeyListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import static io.github.danielpinto8zz6.navalbattle.Constants.PORT;
 
 public class MainActivity extends AppCompatActivity implements Serializable, NavigationView.OnNavigationItemSelectedListener {
     private Animation fabOpenAnimation;
@@ -33,12 +48,20 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
     private LinearLayout layoutAgainstDevice;
     private FloatingActionButton fab;
 
+    private BufferedReader input;
+    private PrintWriter output;
+    private ServerSocket serverSocket = null;
+    private Socket socketGame = null;
+    private Handler procMsg = null;
+    private ProgressDialog pd = null;
+
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -112,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
         createServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showWaitConnectionDialog();
             }
         });
 
@@ -119,16 +143,15 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
         joinServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
-                startActivity(setup);
+                showInputIpDialog();
             }
         });
 
         againstComputerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent game = new Intent(getApplicationContext(), GameActivity.class);
-                startActivity(game);
+                Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
+                startActivity(setup);
             }
         });
 
@@ -174,8 +197,18 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
             drawer.closeDrawer(GravityCompat.START);
         } else if (isFabMenuOpen)
             collapseFabMenu();
-        else
-            super.onBackPressed();
+        else {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.sure_want_to_exit)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            MainActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+        }
     }
 
     @Override
@@ -221,4 +254,134 @@ public class MainActivity extends AppCompatActivity implements Serializable, Nav
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void showInputIpDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Text");
+
+// Set up the input
+        final EditText input = new EditText(this);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+        InputFilter[] filters = new InputFilter[1];
+        filters[0] = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       android.text.Spanned dest, int dstart, int dend) {
+                if (end > start) {
+                    String destTxt = dest.toString();
+                    String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                    if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
+                        return "";
+                    } else {
+                        String[] splits = resultingTxt.split("\\.");
+                        for (int i = 0; i < splits.length; i++) {
+                            if (Integer.valueOf(splits[i]) > 255) {
+                                return "";
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+
+        };
+        input.setFilters(filters);
+
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    public void showWaitConnectionDialog() {
+        String ip = Utils.getLocalIpAddress();
+        pd = new ProgressDialog(this);
+        pd.setMessage(getString(R.string.wait_connection) + "\n(" + ip
+                + ")");
+        pd.setTitle(R.string.serverdlg_title);
+        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                finish();
+                if (serverSocket != null) {
+                    try {
+                        serverSocket.close();
+                    } catch (IOException e) {
+                    }
+                    serverSocket = null;
+                }
+            }
+        });
+        pd.show();
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    serverSocket = new ServerSocket(PORT);
+                    socketGame = serverSocket.accept();
+                    serverSocket.close();
+                    serverSocket = null;
+                    commThread.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    socketGame = null;
+                }
+                procMsg.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        pd.dismiss();
+                        if (socketGame == null)
+                            finish();
+                    }
+                });
+            }
+        });
+        t.start();
+    }
+
+    Thread commThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                input = new BufferedReader(new InputStreamReader(
+                        socketGame.getInputStream()));
+                output = new PrintWriter(socketGame.getOutputStream());
+                while (!Thread.currentThread().isInterrupted()) {
+                    String read = input.readLine();
+                    final int move = Integer.parseInt(read);
+                    Log.d("Naval Battle", "Received: " + move);
+                    procMsg.post(new Runnable() {
+                        @Override
+                        public void run() {
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                procMsg.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                        Toast.makeText(getApplicationContext(),
+                                R.string.game_finished, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+            }
+        }
+    });
 }

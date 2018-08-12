@@ -1,7 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,16 +17,16 @@ public class BattleField implements Serializable {
                 field[x][y] = R.color.white;
             }
         }
-        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 1)))));
-        addShip(new Ship(0, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 3)))));
+        addShip(new Ship(0, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 1)))));
+        addShip(new Ship(0, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 3)))));
 
-        addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
-        addShip(new Ship(1, Constants.Orientation.Horizontal, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+        addShip(new Ship(1, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+        addShip(new Ship(1, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
 
-        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
-        addShip(new Ship(2, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+        addShip(new Ship(2, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+        addShip(new Ship(2, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
 
-        addShip(new Ship(3, Constants.Orientation.Vertical, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+        addShip(new Ship(3, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
     }
 
     public boolean attackPosition(Coordinates c) {
@@ -47,8 +46,10 @@ public class BattleField implements Serializable {
 
         for (Ship ship : ships) {
             if (ship.getPositions().contains(c)) {
-                ship.destroy(c);
-                break;
+                ship.destroy(c.y, c.y);
+                if (ship.isDestroyed()) {
+                    removeShip(ship);
+                }
             }
         }
 
@@ -67,6 +68,19 @@ public class BattleField implements Serializable {
         }
 
         ships.add(ship);
+
+        return true;
+
+    }
+
+    public boolean removeShip(Ship ship) {
+        if (ship == null) return false;
+
+        for (Coordinates pos : ship.getPositions()) {
+            field[pos.x][pos.y] = R.color.white;
+        }
+
+        ships.remove(ship);
 
         return true;
 
@@ -448,5 +462,13 @@ public class BattleField implements Serializable {
 
     public void setSelectedShip(Ship ship) {
         this.selectedShip = ship;
+    }
+
+    public boolean isShipsDestroyed() {
+        for (Ship ship : ships) {
+            if (ship.isDestroyed())
+                return false;
+        }
+        return true;
     }
 }

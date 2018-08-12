@@ -1,9 +1,10 @@
 package io.github.danielpinto8zz6.navalbattle;
 
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,15 +12,13 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.Serializable;
 
 public class GameActivity extends AppCompatActivity implements Serializable {
-    private BattleField playerBattleField;
-    private BattleField opponentBattleField;
     private BattleFieldAdapter playerBattleFieldAdapter;
     private BattleFieldAdapter opponentBattleFieldAdapter;
+    private DeviceAI device;
     private Game game;
 
     @Override
@@ -27,26 +26,24 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        game = new Game(this, Constants.GameMode.Local);
+        game = new Game(this);
 
-        playerBattleField = game.getPlayerBattleField();
-
-
-        Intent i = getIntent();
-        BattleField bf = (BattleField) i.getSerializableExtra("battle_field");
-        game.setPlayerBattleField(bf);
-        playerBattleField = bf;
-
-        opponentBattleField = game.getOpponentBattleField();
+        if (savedInstanceState != null) {
+            game = (Game)
+                    savedInstanceState.getSerializable("game_obj");
+        } else {
+            game.getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
+            game.getOpponent().setDevice(true);
+        }
 
         setupToolbar();
 
         setupGrids();
 
-        if (savedInstanceState != null) {
-//            playerBattleField.setField(savedInstanceState.getIntegerArrayList("player_grid"));
-//            opponentBattleField.setField(savedInstanceState.getIntegerArrayList("opponent_grid"));
-        }
+        device = new DeviceAI(game);
+        Thread thread = new Thread(device);
+        thread.start();
+
 
         playerBattleFieldAdapter.notifyDataSetChanged();
         opponentBattleFieldAdapter.notifyDataSetChanged();
@@ -56,13 +53,12 @@ public class GameActivity extends AppCompatActivity implements Serializable {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-//        outState.putIntegerArrayList("player_grid", playerBattleField.getField());
-//        outState.putIntegerArrayList("opponent_grid", opponentBattleField.getField());
+        outState.putSerializable("game_obj", game);
     }
 
     public void setupGrids() {
         GridView playerGridView = (GridView) findViewById(R.id.player_game_board);
-        playerGridView.setAdapter(playerBattleFieldAdapter = new BattleFieldAdapter(this, playerBattleField));
+        playerGridView.setAdapter(playerBattleFieldAdapter = new BattleFieldAdapter(this, game.getPlayer().getBattleField()));
 
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
@@ -82,7 +78,7 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         }
 
         final GridView opponentGridView = (GridView) findViewById(R.id.opponent_game_board);
-        opponentGridView.setAdapter(opponentBattleFieldAdapter = new BattleFieldAdapter(this, opponentBattleField));
+        opponentGridView.setAdapter(opponentBattleFieldAdapter = new BattleFieldAdapter(this, game.getOpponent().getBattleField()));
 
         opponentGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -91,7 +87,7 @@ public class GameActivity extends AppCompatActivity implements Serializable {
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                opponentBattleField.attackPosition(new Coordinates(x, y));
+                game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y));
 
                 opponentBattleFieldAdapter.notifyDataSetChanged();
             }
@@ -120,18 +116,24 @@ public class GameActivity extends AppCompatActivity implements Serializable {
         TextView playerName = (TextView) findViewById(R.id.player_name);
         TextView opponentName = (TextView) findViewById(R.id.opponent_name);
 
-        imageViewPlayer.setImageDrawable(getPlayer().getAvatar());
-        imageViewOpponent.setImageDrawable(getOpponent().getAvatar());
+        imageViewPlayer.setImageBitmap(game.getPlayer().getAvatar());
+        imageViewOpponent.setImageBitmap(game.getOpponent().getAvatar());
 
-        playerName.setText(getPlayer().getName());
-        opponentName.setText(getOpponent().getName());
+        playerName.setText(game.getPlayer().getName());
+        opponentName.setText(game.getOpponent().getName());
     }
 
-    public Player getPlayer() {
-        return game.getPlayer();
-    }
-
-    public Opponent getOpponent() {
-        return game.getOpponent();
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.sure_want_to_exit)
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        GameActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
 }

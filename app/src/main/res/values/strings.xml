@@ -38,4 +38,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="dismiss">Dismiss</string>
+    <string name="sure_want_to_exit">Are you sure you want to exit?</string>
+    <string name="wait_connection">Waiting for a client...</string>
+    <string name="serverdlg_title">Naval Battle Server</string>
+    <string name="game_finished">Game Finished</string>
 </resources>
