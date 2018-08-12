@@ -40,4 +40,11 @@
     <string name="wait_connection">Waiting for a client...</string>
     <string name="serverdlg_title">Naval Battle Server</string>
     <string name="game_finished">Game Finished</string>
+    <string name="action_help">Help</string>
+    <string name="title_activity_help">HelpActivity</string>
+    <string name="large_text">"<b>Game modes</b>\n\nAgainst Computer : \nPlay against computer AI\nAgainst a friend : \nPlay against a friend connected to the same network as you\n\n<b>Rules</b>\n\nThe game board is 8x8.\nAt the beginning of the game each player is his fleet in places that do not want to board
+can guide the boats in the way they want.\nBoats may not be placed on adjacent cells (vertically, horizontally or
+diagonal)\nThe first player to make shots on the opponent must be drawn at the beginning of
+game\nEach player gives 3 shots, selecting the desired cell\nOnly after indicating the 3 shots do you receive information about any hits you got\nIf a player manages to hit all 3 of his shots, he can move one of their boats a position. This shift can be done for homes that to be occupied by a vessel which, in the meantime, has been sunk. Displacement should respect the rule that no adjacent cells\nThe game ends when the fleet of one of the opponents is totally sunk\n"
+    </string>
 </resources>

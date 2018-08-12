@@ -38,6 +38,9 @@
             android:name=".ShipSetupActivity"
             android:label="@string/title_activity_ship_setup"
             android:theme="@style/Theme.AppCompat.Dark.NoActionBar.FullScreen" />
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"></activity>
     </application>
 
 </manifest>

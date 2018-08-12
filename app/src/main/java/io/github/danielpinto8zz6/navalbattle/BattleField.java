@@ -14,7 +14,7 @@ public class BattleField implements Serializable {
     public BattleField() {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                field[x][y] = R.color.white;
+                field[x][y] = R.color.water;
             }
         }
         addShip(new Ship(0, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 1)))));
@@ -77,7 +77,7 @@ public class BattleField implements Serializable {
         if (ship == null) return false;
 
         for (Coordinates pos : ship.getPositions()) {
-            field[pos.x][pos.y] = R.color.white;
+            field[pos.x][pos.y] = R.color.water;
         }
 
         ships.remove(ship);
@@ -87,7 +87,7 @@ public class BattleField implements Serializable {
     }
 
     private boolean isPositionEmpty(int x, int y) {
-        return (field[x][y] == R.color.white) ? true : false;
+        return (field[x][y] == R.color.water) ? true : false;
     }
 
     public int[][] getField() {
@@ -101,7 +101,7 @@ public class BattleField implements Serializable {
     public int get(int x, int y) {
         // don't show your ships to your opponent
         if (!showShips && field[x][y] == R.color.ship) {
-            return R.color.white;
+            return R.color.water;
         }
 
         if (selectedShip != null) {
@@ -127,49 +127,49 @@ public class BattleField implements Serializable {
                 return false;
 
             // Check if position is not occupied
-            if (field[c.x][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y)))
+            if (field[c.x][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y)))
                 return false;
 
             if (c.x > 0 && c.y > 0)
-                if (field[c.x - 1][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
+                if (field[c.x - 1][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)))
                         return false;
 
             if (c.x < 7 && c.y < 7)
-                if (field[c.x + 1][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
+                if (field[c.x + 1][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)))
                         return false;
 
             if (c.x < 7 && c.y > 0)
-                if (field[c.x + 1][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
+                if (field[c.x + 1][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)))
                         return false;
 
             if (c.x > 0 && c.y > 7)
-                if (field[c.x - 1][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
+                if (field[c.x - 1][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)))
                         return false;
 
             if (c.x > 0)
-                if (field[c.x - 1][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
+                if (field[c.x - 1][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
                     // If position is not part of the ship than it means position is not valid to be occupied
                     if (!pos.contains(new Coordinates(c.x - 1, c.y)))
                         return false;
 
 
             if (c.y > 0)
-                if (field[c.x][c.y - 1] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
+                if (field[c.x][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y - 1)))
                         return false;
 
 
             if (c.x < 7)
-                if (field[c.x + 1][c.y] != R.color.white && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
+                if (field[c.x + 1][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y)))
                         return false;
 
             if (c.y < 7)
-                if (field[c.x][c.y + 1] != R.color.white && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
+                if (field[c.x][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y + 1)))
                         return false;
         }
@@ -183,7 +183,7 @@ public class BattleField implements Serializable {
             return false;
 
         for (Coordinates c : ship.getPositions())
-            field[c.x][c.y] = R.color.white;
+            field[c.x][c.y] = R.color.water;
 
         ship.setPositions(newPositions);
 

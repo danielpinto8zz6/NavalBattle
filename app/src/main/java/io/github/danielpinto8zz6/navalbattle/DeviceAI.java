@@ -6,7 +6,7 @@ public class DeviceAI implements Runnable {
     private Game game;
     private boolean isGameRunning = true;
     private GameInterface gameInterface;
-    private int result = 0;
+    private int shots = 0;
 
     public DeviceAI(Game game, GameInterface gameInterface) {
         this.game = game;
@@ -18,7 +18,7 @@ public class DeviceAI implements Runnable {
         while (isGameRunning) {
             // Take 3 shoots
             if (game.getOpponent().isYourTurn()) {
-                while (result < 3) {
+                while (shots < 3) {
                     // 3 shots
                     try {
                         Thread.sleep(500);
@@ -28,13 +28,13 @@ public class DeviceAI implements Runnable {
 
                     ArrayList<Coordinates> validPositions = getBattleField().getValidPositions();
                     Coordinates pos = validPositions.get(Utils.generateRandomNumber(0, validPositions.size()));
-                    if (getBattleField().attackPosition(pos)) result++;
+                    if (getBattleField().attackPosition(pos)) shots++;
                     gameInterface.dataChanged();
                 }
 
                 game.getOpponent().setYourTurn(false);
                 game.getPlayer().setYourTurn(true);
-                result = 0;
+                shots = 0;
             }
         }
 

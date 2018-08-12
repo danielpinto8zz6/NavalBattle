@@ -100,11 +100,10 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y));
+                if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y)))
+                    shots++;
 
                 opponentBattleFieldAdapter.notifyDataSetChanged();
-
-                shots++;
 
                 if (shots >= 3) {
                     game.getPlayer().setYourTurn(false);
@@ -112,7 +111,6 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
                     shots = 0;
                     return;
                 }
-
             }
         });
 
@@ -165,7 +163,6 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
             @Override
             public void run() {
                 playerBattleFieldAdapter.notifyDataSetChanged();
-                opponentBattleFieldAdapter.notifyDataSetChanged();
             }
         });
     }

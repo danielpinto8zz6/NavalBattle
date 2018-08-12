@@ -30,7 +30,7 @@ public class BattleFieldAdapter extends BaseAdapter {
         int x = position % 8;
         int y = (int) Math.ceil(position / 8);
 
-        return battleField.get(x,y);
+        return battleField.get(x, y);
     }
 
     public long getItemId(int position) {
@@ -57,6 +57,7 @@ public class BattleFieldAdapter extends BaseAdapter {
             int width = displayMetrics.widthPixels - bordersSize;
 
             imageView = new ImageView(context);
+            imageView.setBackgroundColor(context.getResources().getColor(R.color.amber));
 
             if (width < height)
                 // we're in potrait mode

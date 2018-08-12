@@ -2,12 +2,16 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#171717</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#448AFF</color>
     <color name="black">#6D4C41</color>
     <color name="white">#FDD835</color>
+    <color name="amber">#FFC107</color>
+    <color name="purple">#E040FB</color>
+    <color name="green">#4CAF50</color>
 
     <color name="ship">#ffffff</color>
     <color name="ship_selected">#C62828</color>
     <color name="destroyed">#ffffff</color>
     <color name="attacked">#ffffff</color>
+    <color name="water">#448AFF</color>
 </resources>

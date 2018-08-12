@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,16 +26,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-
-import static io.github.danielpinto8zz6.navalbattle.Constants.PORT;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Animation fabOpenAnimation;
@@ -46,42 +35,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout layoutJoinServer;
     private LinearLayout layoutAgainstDevice;
     private FloatingActionButton fab;
-
-    private BufferedReader input;
-    private PrintWriter output;
-    private ServerSocket serverSocket = null;
-    private Socket socketGame = null;
-    private Handler procMsg = null;
-    Thread commThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                input = new BufferedReader(new InputStreamReader(
-                        socketGame.getInputStream()));
-                output = new PrintWriter(socketGame.getOutputStream());
-                while (!Thread.currentThread().isInterrupted()) {
-                    String read = input.readLine();
-                    final int move = Integer.parseInt(read);
-                    Log.d("Naval Battle", "Received: " + move);
-                    procMsg.post(new Runnable() {
-                        @Override
-                        public void run() {
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                procMsg.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                        Toast.makeText(getApplicationContext(),
-                                R.string.game_finished, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-            }
-        }
-    });
     private ProgressDialog pd = null;
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
@@ -94,11 +47,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_SETTLING && !drawer.isDrawerOpen(GravityCompat.START)) {
+                    if (isFabMenuOpen)
+                        collapseFabMenu();
+                }
+            }
+        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -264,22 +227,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    public boolean onNavigationItemSelected(final MenuItem item) {
+        // Delay a bit to avoid lag
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Handle navigation view item clicks here.
+                int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+                if (id == R.id.action_settings) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                } else if (id == R.id.action_help) {
+                    startActivity(new Intent(MainActivity.this, HelpActivity.class));
+                }
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        }
+            }
+        }, 300);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -341,44 +309,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pd.setMessage(getString(R.string.wait_connection) + "\n(" + ip
                 + ")");
         pd.setTitle(R.string.serverdlg_title);
-        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                finish();
-                if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                    } catch (IOException e) {
-                    }
-                    serverSocket = null;
-                }
-            }
-        });
         pd.show();
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    serverSocket = new ServerSocket(PORT);
-                    socketGame = serverSocket.accept();
-                    serverSocket.close();
-                    serverSocket = null;
-                    commThread.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    socketGame = null;
-                }
-                procMsg.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        pd.dismiss();
-                        if (socketGame == null)
-                            finish();
-                    }
-                });
-            }
-        });
-        t.start();
     }
 }
