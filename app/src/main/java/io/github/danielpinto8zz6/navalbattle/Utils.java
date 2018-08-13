@@ -1,5 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,7 +25,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Random;
 
-class Utils {
+public class Utils {
     public static String encodeTobase64(Bitmap image) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 85, baos);
@@ -94,8 +97,16 @@ class Utils {
         return null;
     }
 
-    static int generateRandomNumber(int low, int high) {
+    public static int generateRandomNumber(int low, int high) {
         Random r = new Random();
         return r.nextInt(high - low) + low;
+    }
+
+    public static boolean checkConnection(Context context) {
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            return false;
+        }
+        return true;
     }
 }

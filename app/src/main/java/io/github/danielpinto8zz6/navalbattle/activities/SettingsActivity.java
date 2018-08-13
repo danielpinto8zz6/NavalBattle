@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -28,9 +28,15 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 
+import io.github.danielpinto8zz6.navalbattle.R;
+
 import static io.github.danielpinto8zz6.navalbattle.Constants.MY_PERMISSIONS_REQUEST_CAMERA;
+import static io.github.danielpinto8zz6.navalbattle.Constants.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 import static io.github.danielpinto8zz6.navalbattle.Constants.REQUEST_IMAGE_CAPTURE;
 import static io.github.danielpinto8zz6.navalbattle.Constants.REQUEST_PICK_AVATAR;
+import static io.github.danielpinto8zz6.navalbattle.Utils.decodeBase64;
+import static io.github.danielpinto8zz6.navalbattle.Utils.encodeTobase64;
+import static io.github.danielpinto8zz6.navalbattle.Utils.getCircleBitmap;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements Serializable {
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -116,8 +122,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
     }
 
     public static class MainPreferenceFragment extends PreferenceFragment {
-        private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
-
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -178,7 +182,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             String base64 = settings.getString("avatar", "");
 
             if (base64.length() > 0) {
-                Bitmap bitmap = Utils.decodeBase64(base64);
+                Bitmap bitmap = decodeBase64(base64);
 
                 Drawable drawableAvatar = new BitmapDrawable(getResources(), bitmap);
 
@@ -255,7 +259,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
         private void saveImageIntoPreferences(String picturePath) {
             String encodedBase64;
 
-            Bitmap resizedBitmap = Utils.getCircleBitmap(Bitmap.createScaledBitmap(
+            Bitmap resizedBitmap = getCircleBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeFile(picturePath), 200, 200, false));
 
             Preference avatar = findPreference(getString(R.string.key_avatar));
@@ -263,10 +267,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = preferences.edit();
 
-            encodedBase64 = Utils.encodeTobase64(resizedBitmap);
+            encodedBase64 = encodeTobase64(resizedBitmap);
 
             editor.putString("avatar", encodedBase64);
-            avatar.setIcon(new BitmapDrawable(getResources(), Utils.decodeBase64(encodedBase64)));
+            avatar.setIcon(new BitmapDrawable(getResources(), decodeBase64(encodedBase64)));
 
             editor.commit();
 
@@ -279,17 +283,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
             String encodedBase64;
 
-            Bitmap resizedBitmap = Utils.getCircleBitmap(Bitmap.createScaledBitmap(picture, 200, 200, false));
+            Bitmap resizedBitmap = getCircleBitmap(Bitmap.createScaledBitmap(picture, 200, 200, false));
 
             Preference avatar = findPreference(getString(R.string.key_avatar));
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = preferences.edit();
 
-            encodedBase64 = Utils.encodeTobase64(resizedBitmap);
+            encodedBase64 = encodeTobase64(resizedBitmap);
 
             editor.putString("avatar", encodedBase64);
-            avatar.setIcon(new BitmapDrawable(getResources(), Utils.decodeBase64(encodedBase64)));
+            avatar.setIcon(new BitmapDrawable(getResources(), decodeBase64(encodedBase64)));
 
             editor.commit();
 

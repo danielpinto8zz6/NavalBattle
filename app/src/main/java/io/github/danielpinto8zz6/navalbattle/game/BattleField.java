@@ -1,8 +1,11 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import io.github.danielpinto8zz6.navalbattle.Coordinates;
+import io.github.danielpinto8zz6.navalbattle.R;
 
 public class BattleField implements Serializable {
     private int[][] field = new int[8][8];

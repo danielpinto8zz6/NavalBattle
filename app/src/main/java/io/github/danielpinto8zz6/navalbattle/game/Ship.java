@@ -1,7 +1,9 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import io.github.danielpinto8zz6.navalbattle.Coordinates;
 
 public class Ship implements Serializable {
     //  Destroyed flag, Position

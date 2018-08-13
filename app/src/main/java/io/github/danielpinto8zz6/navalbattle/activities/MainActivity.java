@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -26,6 +26,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import io.github.danielpinto8zz6.navalbattle.NavalBattle;
+import io.github.danielpinto8zz6.navalbattle.Network.Client;
+import io.github.danielpinto8zz6.navalbattle.Network.Server;
+import io.github.danielpinto8zz6.navalbattle.R;
+
+import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
+import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Network;
+import static io.github.danielpinto8zz6.navalbattle.Utils.checkConnection;
+import static io.github.danielpinto8zz6.navalbattle.Utils.decodeBase64;
+import static io.github.danielpinto8zz6.navalbattle.Utils.getLocalIpAddress;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Animation fabOpenAnimation;
@@ -38,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog pd = null;
     private View mShadowView;
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+    private Client client;
+    private Server server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 if (key.equals("avatar")) {
                     String avatarBase64 = prefs.getString("avatar", "");
-                    imageView.setImageBitmap(Utils.decodeBase64(avatarBase64));
+                    imageView.setImageBitmap(decodeBase64(avatarBase64));
                 }
             }
         };
@@ -98,10 +113,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             textViewUsername.setText(username);
 
         if (avatarBase64.length() > 0)
-            imageView.setImageBitmap(Utils.decodeBase64(avatarBase64));
+            imageView.setImageBitmap(decodeBase64(avatarBase64));
 
         final TextView textViewSummary = (TextView) header.findViewById(R.id.drawer_summary);
-        textViewSummary.setText(Utils.getLocalIpAddress());
+        textViewSummary.setText(getLocalIpAddress());
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         mShadowView = (View) findViewById(R.id.shadowView);
@@ -128,7 +143,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showWaitConnectionDialog();
+                if (!checkConnection(MainActivity.this)) {
+                    Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+                } else createServer();
             }
         });
 
@@ -136,7 +153,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         joinServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showInputIpDialog();
+                if (!checkConnection(MainActivity.this)) {
+                    Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+                } else showInputIpDialog();
             }
         });
 
@@ -144,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
+                setup.putExtra("game_mode", Local);
                 startActivity(setup);
             }
         });
@@ -292,7 +312,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                String ip = String.valueOf(input.getText());
+                connectToServer(ip);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -305,12 +326,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.show();
     }
 
+    public void createServer() {
+        showWaitConnectionDialog();
+
+        server = new Server(this);
+    }
+
+    private void connectToServer(final String strIP) {
+        client = new Client(this, strIP);
+    }
+
     public void showWaitConnectionDialog() {
-        String ip = Utils.getLocalIpAddress();
+        String ip = getLocalIpAddress();
         pd = new ProgressDialog(this);
         pd.setMessage(getString(R.string.wait_connection) + "\n(" + ip
                 + ")");
         pd.setTitle(R.string.serverdlg_title);
         pd.show();
+    }
+
+    public void Connected() {
+        Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
+        setup.putExtra("game_mode", Network);
+        startActivity(setup);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (server != null)
+            server.stop();
+
+        super.onDestroy();
+    }
+
+    public void ErrorConnecting() {
+        if (pd.isShowing())
+            pd.dismiss();
+
+        Toast.makeText(MainActivity.this, "Error connecting", Toast.LENGTH_SHORT);
+    }
+
+    public NavalBattle getNavalBattle() {
+        NavalBattle navalBattle = (NavalBattle) getApplicationContext();
+        return navalBattle;
     }
 }

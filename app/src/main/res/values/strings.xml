@@ -49,4 +49,6 @@ game\nEach player gives 3 shots, selecting the desired cell\nOnly after indicati
     <string name="exit">Exit</string>
     <string name="recent_games">Recent games</string>
     <string name="game_history">Game history</string>
+    <string name="no_connection">No network connection</string>
+    <string name="opponent_disconnected">Your opponent has disconnected! You\'ll be playing against device</string>
 </resources>

@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,15 +9,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import io.github.danielpinto8zz6.navalbattle.game.BattleField;
+import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
+import io.github.danielpinto8zz6.navalbattle.Coordinates;
+import io.github.danielpinto8zz6.navalbattle.R;
+import io.github.danielpinto8zz6.navalbattle.game.Ship;
+
+import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 
 public class ShipSetupActivity extends AppCompatActivity {
     BattleField battleField;
@@ -39,6 +43,7 @@ public class ShipSetupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ShipSetupActivity.this.finish();
                 Intent game = new Intent(getApplicationContext(), GameActivity.class);
+                game.putExtra("game_mode", getIntent().getSerializableExtra("game_mode"));
                 game.putExtra("battle_field", battleField);
                 startActivity(game);
             }
@@ -63,8 +68,8 @@ public class ShipSetupActivity extends AppCompatActivity {
     }
 
     private void setupGrid() {
-        int bordersSize = Utils.convertDpToPixel(32);
-        int actionbarSize = Utils.convertDpToPixel(56);
+        int bordersSize = convertDpToPixel(32);
+        int actionbarSize = convertDpToPixel(56);
 
         int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;

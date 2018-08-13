@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

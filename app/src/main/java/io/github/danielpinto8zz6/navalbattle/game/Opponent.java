@@ -1,7 +1,9 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import io.github.danielpinto8zz6.navalbattle.R;
 
 public class Opponent {
     private String name;

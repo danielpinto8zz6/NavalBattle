@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShipSetupActivity"
+    tools:context=".activities.ShipSetupActivity"
     android:id="@+id/activity_ship_setup_layout">
 
     <include layout="@layout/content_ship_setup" />

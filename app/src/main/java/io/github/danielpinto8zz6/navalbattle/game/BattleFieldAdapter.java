@@ -1,17 +1,14 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import static android.content.Context.WINDOW_SERVICE;
+import io.github.danielpinto8zz6.navalbattle.R;
 
 public class BattleFieldAdapter extends BaseAdapter {
     private Context context;

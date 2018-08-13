@@ -1,11 +1,9 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,32 +13,65 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import io.github.danielpinto8zz6.navalbattle.Constants;
+import io.github.danielpinto8zz6.navalbattle.NavalBattle;
+import io.github.danielpinto8zz6.navalbattle.Network.Communication;
+import io.github.danielpinto8zz6.navalbattle.Utils;
+import io.github.danielpinto8zz6.navalbattle.game.BattleField;
+import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
+import io.github.danielpinto8zz6.navalbattle.Coordinates;
+import io.github.danielpinto8zz6.navalbattle.game.DeviceAI;
+import io.github.danielpinto8zz6.navalbattle.game.Game;
+import io.github.danielpinto8zz6.navalbattle.game.GameInterface;
+import io.github.danielpinto8zz6.navalbattle.R;
+
+import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
+import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 
 public class GameActivity extends AppCompatActivity implements GameInterface {
     private DeviceAI device;
     private Game game;
     private int shots = 0;
-    private Handler mHandler;
     private int count = 8;
     private GridView gridViewPlayer;
     private GridView gridViewOpponent;
     private BattleFieldAdapter battleFieldAdapterPlayer;
     private BattleFieldAdapter battleFieldAdapterOpponent;
     private int imageDimension;
+    private Constants.GameMode mode;
+    private Communication communication;
+    private ImageView imageViewPlayer;
+    private ImageView imageViewOpponent;
+    private TextView playerName;
+    private TextView opponentName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        game = new Game(this);
+        mode = (Constants.GameMode) getIntent().getSerializableExtra("game_mode");
 
-        if (savedInstanceState != null) {
+        if (mode == Local) {
+            game = new Game(this);
+        } else {
+            game = new Game(this, mode);
+
+            NavalBattle navalBattle = (NavalBattle) getApplicationContext();
+            communication = new Communication(navalBattle.getSocket(), this);
+        }
+
+        if (savedInstanceState != null)
+
+        {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
-        } else {
+        } else
+
+        {
             BattleField bf = (BattleField) getIntent().getSerializableExtra("battle_field");
             if (bf != null)
                 game.getPlayer().setBattleField(bf);
@@ -50,14 +81,11 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
         setupGrids();
 
-        mHandler = new Handler(Looper.getMainLooper()) {
-        };
-
         device = new DeviceAI(game, this);
-        Thread thread = new Thread(device);
-        thread.start();
 
-        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+        gridViewOpponent.setBackground(
+
+                getDrawable(R.drawable.grid_border_green));
         gridViewPlayer.setBackgroundColor(0x00000000);
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
@@ -72,8 +100,8 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
     }
 
     public void setupGrids() {
-        int bordersSize = Utils.convertDpToPixel(36);
-        int actionbarSize = Utils.convertDpToPixel(56);
+        int bordersSize = convertDpToPixel(36);
+        int actionbarSize = convertDpToPixel(56);
 
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
@@ -126,15 +154,25 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
                 battleFieldAdapterOpponent.notifyDataSetChanged();
 
                 if (shots >= 3) {
-                    game.getPlayer().setYourTurn(false);
-                    game.getOpponent().setYourTurn(true);
                     shots = 0;
-                    gridViewOpponent.setBackgroundColor(0x00000000);
-                    gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
-                    return;
+                    opponentPlay();
                 }
             }
         });
+    }
+
+    private void opponentPlay() {
+        game.getPlayer().setYourTurn(false);
+        game.getOpponent().setYourTurn(true);
+        gridViewOpponent.setBackgroundColor(0x00000000);
+        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
+
+        if (mode == Local) {
+            device.play();
+        } else {
+
+        }
+
     }
 
     public void setupToolbar() {
@@ -145,11 +183,11 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
         // Set player & opponent avatar/username
 
-        ImageView imageViewPlayer = (ImageView) findViewById(R.id.player_avatar);
-        ImageView imageViewOpponent = (ImageView) findViewById(R.id.opponent_avatar);
+        imageViewPlayer = (ImageView) findViewById(R.id.player_avatar);
+        imageViewOpponent = (ImageView) findViewById(R.id.opponent_avatar);
 
-        TextView playerName = (TextView) findViewById(R.id.player_name);
-        TextView opponentName = (TextView) findViewById(R.id.opponent_name);
+        playerName = (TextView) findViewById(R.id.player_name);
+        opponentName = (TextView) findViewById(R.id.opponent_name);
 
         imageViewPlayer.setImageBitmap(game.getPlayer().getAvatar());
         imageViewOpponent.setImageBitmap(game.getOpponent().getAvatar());
@@ -173,6 +211,7 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
     }
 
     public void dataChanged() {
+        System.out.println("Something received");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -183,5 +222,25 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
                 }
             }
         });
+    }
+
+    public void errorReceiving() {
+        Toast.makeText(GameActivity.this, "Error", Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void disconnected() {
+        Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_SHORT);
+        game.setMode(Local);
+        game.getOpponent().setDevice(true);
+        game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
+        game.getOpponent().setName(getResources().getString(R.string.computer));
+        imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.computer));
+        opponentName.setText(getResources().getString(R.string.computer));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

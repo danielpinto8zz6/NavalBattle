@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,9 @@ import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
 import java.io.Serializable;
+
+import io.github.danielpinto8zz6.navalbattle.R;
+import io.github.danielpinto8zz6.navalbattle.Utils;
 
 public class Player implements Serializable {
     private String name;
