@@ -57,11 +57,8 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         Thread thread = new Thread(device);
         thread.start();
 
-        GameActivity.this.runOnUiThread(new Runnable() {
-            public void run() {
-                battleFieldAdapterPlayer.notifyDataSetChanged();
-            }
-        });
+        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+        gridViewPlayer.setBackgroundColor(0x00000000);
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();

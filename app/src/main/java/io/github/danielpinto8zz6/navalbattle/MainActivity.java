@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout layoutAgainstDevice;
     private FloatingActionButton fab;
     private ProgressDialog pd = null;
+    private View mShadowView;
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         textViewSummary.setText(Utils.getLocalIpAddress());
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        mShadowView = (View) findViewById(R.id.shadowView);
 
         layoutCreateServer = (LinearLayout) this.findViewById(R.id.create_server_layout);
         layoutJoinServer = (LinearLayout) this.findViewById(R.id.join_server_layout);
@@ -152,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void expandFabMenu() {
+        mShadowView.setVisibility(View.VISIBLE);
+
         layoutCreateServer.setVisibility(View.VISIBLE);
         layoutCreateServer.startAnimation(fabOpenAnimation);
 
@@ -168,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void collapseFabMenu() {
+        mShadowView.setVisibility(View.GONE);
+
         layoutCreateServer.setVisibility(View.INVISIBLE);
         layoutCreateServer.startAnimation(fabCloseAnimation);
 
@@ -219,6 +225,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+        if (id == R.id.action_exit) {
+            finishAndRemoveTask();
             return true;
         }
 
