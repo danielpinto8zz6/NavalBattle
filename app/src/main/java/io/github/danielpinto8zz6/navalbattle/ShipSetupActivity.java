@@ -32,9 +32,6 @@ public class ShipSetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ship_setup);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_setup_complete);
 
         fab.setOnClickListener(new View.OnClickListener() {

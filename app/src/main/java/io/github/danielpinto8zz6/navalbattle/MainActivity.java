@@ -195,16 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (isFabMenuOpen)
             collapseFabMenu();
         else {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.sure_want_to_exit)
-                    .setCancelable(false)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            MainActivity.this.finish();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null)
-                    .show();
+            super.onBackPressed();
         }
     }
 

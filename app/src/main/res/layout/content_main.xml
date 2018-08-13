@@ -1,53 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/wallpaper"
-        android:gravity="center"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="120dp"
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:elevation="2dp"
-            android:padding="2dp"
-            android:stateListAnimator="@null"
-            android:text="@string/recent_games"
-            android:translationZ="2dp"
-            app:backgroundTint="@color/colorAccent" />
+            android:layout_margin="@dimen/card_margin"
+            android:elevation="2dp">
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="120dp"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/background1" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#cc212121"
+                    android:padding="8dp"
+                    android:text="@string/game_history"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:elevation="2dp"
-            android:padding="2dp"
-            android:stateListAnimator="@null"
-            android:text="@string/action_settings"
-            android:translationZ="2dp"
-            app:backgroundTint="@color/green" />
+            android:layout_margin="@dimen/card_margin"
+            android:elevation="2dp">
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="120dp"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/background2" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#cc212121"
+                    android:padding="8dp"
+                    android:text="@string/against_device"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:elevation="2dp"
-            android:padding="2dp"
-            android:stateListAnimator="@null"
-            android:text="@string/action_help"
-            android:translationZ="2dp"
-            app:backgroundTint="@color/amber" />
+            android:layout_margin="@dimen/card_margin"
+            android:elevation="2dp">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/background3" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#cc212121"
+                    android:padding="8dp"
+                    android:text="@string/create_server"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_margin"
+            android:elevation="2dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/background4" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#cc212121"
+                    android:padding="8dp"
+                    android:text="@string/join_server"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.NestedScrollView>

@@ -12,7 +12,6 @@
     tools:showIn="@layout/activity_game">
 
     <LinearLayout
-        android:id="@+id/gridview_opponent_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
