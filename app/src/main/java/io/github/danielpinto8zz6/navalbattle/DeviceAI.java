@@ -19,22 +19,22 @@ public class DeviceAI implements Runnable {
             // Take 3 shoots
             if (game.getOpponent().isYourTurn()) {
                 while (shots < 3) {
-                    // 3 shots
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
                     ArrayList<Coordinates> validPositions = getBattleField().getValidPositions();
                     Coordinates pos = validPositions.get(Utils.generateRandomNumber(0, validPositions.size()));
                     if (getBattleField().attackPosition(pos)) shots++;
-                    gameInterface.dataChanged();
+                }
+
+                // Wait a bit
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
                 game.getOpponent().setYourTurn(false);
                 game.getPlayer().setYourTurn(true);
                 shots = 0;
+                gameInterface.dataChanged();
             }
         }
 

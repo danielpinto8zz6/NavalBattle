@@ -1,6 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity implements GameInterface {
@@ -76,7 +78,6 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         int bordersSize = Utils.convertDpToPixel(36);
         int actionbarSize = Utils.convertDpToPixel(56);
 
-        int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
         gridViewPlayer = findViewById(R.id.gridview_player);
@@ -131,6 +132,8 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
                     game.getPlayer().setYourTurn(false);
                     game.getOpponent().setYourTurn(true);
                     shots = 0;
+                    gridViewOpponent.setBackgroundColor(0x00000000);
+                    gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
                     return;
                 }
             }
@@ -177,6 +180,10 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
             @Override
             public void run() {
                 battleFieldAdapterPlayer.notifyDataSetChanged();
+                if (game.getPlayer().isYourTurn()) {
+                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+                    gridViewPlayer.setBackgroundColor(0x00000000);
+                }
             }
         });
     }
