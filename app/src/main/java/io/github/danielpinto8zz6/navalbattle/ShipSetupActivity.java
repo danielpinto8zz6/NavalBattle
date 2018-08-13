@@ -11,14 +11,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class ShipSetupActivity extends AppCompatActivity {
     BattleField battleField;
-    BattleFieldAdapter adapter;
+    private BattleFieldAdapter adapter;
     AdapterView.OnItemClickListener onItemClickListener;
+    private int imageDimension;
+    private int count = 8;
+    private GridView gridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,25 +51,46 @@ public class ShipSetupActivity extends AppCompatActivity {
             battleField = (BattleField) savedInstanceState.getSerializable("battlefield");
         else battleField = new BattleField();
 
-        final GridView gridView = (GridView) findViewById(R.id.player_game_board);
-        gridView.setAdapter(adapter = new BattleFieldAdapter(this, battleField));
+        setupGrid();
 
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_ship_setup_layout), "Click on ship to rotate!\nLong press to move!", Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        });
+        snackbar.show();
+
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setupGrid() {
         int bordersSize = Utils.convertDpToPixel(32);
         int actionbarSize = Utils.convertDpToPixel(56);
 
         int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
-        if (width < height) {
-            // Center gridview
-            gridView.setPadding(width - (height / 2) - Utils.convertDpToPixel(32), 0, 0, 0);
+        gridView = findViewById(R.id.gridview_ship_setup);
+        gridView.setNumColumns(count);
 
-            gridView.setColumnWidth((height / 2) / 8);
+        if (getResources().getConfiguration().orientation == 1) {
+            imageDimension = (int) (width / count);
+            ViewGroup.LayoutParams layoutParams = gridView.getLayoutParams();
+            layoutParams.width = width;
+            layoutParams.height = width;
+            gridView.setLayoutParams(layoutParams);
         } else {
-            gridView.setPadding((width / 2) - height, 0, 0, 0);
-
-            gridView.setColumnWidth(height / 8);
+            imageDimension = (int) (height / count);
+            ViewGroup.LayoutParams layoutParams = gridView.getLayoutParams();
+            layoutParams.width = height;
+            layoutParams.height = height;
+            gridView.setLayoutParams(layoutParams);
         }
+
+        adapter = new BattleFieldAdapter(this, battleField, imageDimension);
+        gridView.setAdapter(adapter);
 
         gridView.setOnItemClickListener(onItemClickListener = new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -134,17 +162,6 @@ public class ShipSetupActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_ship_setup_layout), "Click on ship to rotate!\nLong press to move!", Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.show();
-
-        adapter.notifyDataSetChanged();
     }
 
     @Override

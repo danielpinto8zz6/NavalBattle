@@ -2,22 +2,26 @@ package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import static android.content.Context.WINDOW_SERVICE;
 
 public class BattleFieldAdapter extends BaseAdapter {
     private Context context;
     private BattleField battleField;
+    private int imageDimension;
 
-    public BattleFieldAdapter(Context c, BattleField battleField) {
+    public BattleFieldAdapter(Context c, BattleField battleField, int imageDimension) {
         context = c;
         this.battleField = battleField;
+        this.imageDimension = imageDimension;
     }
 
     //---returns the number of images---
@@ -42,38 +46,29 @@ public class BattleFieldAdapter extends BaseAdapter {
         int x = position % 8;
         int y = (int) Math.ceil(position / 8);
 
-        ImageView imageView;
-
+        ViewHolder viewHolder;
         if (convertView == null) {
-
-            WindowManager wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
-            final DisplayMetrics displayMetrics = new DisplayMetrics();
-            wm.getDefaultDisplay().getMetrics(displayMetrics);
-
-            int bordersSize = Utils.convertDpToPixel(32);
-            int actionbarSize = Utils.convertDpToPixel(56);
-
-            int height = displayMetrics.heightPixels - bordersSize - actionbarSize;
-            int width = displayMetrics.widthPixels - bordersSize;
-
-            imageView = new ImageView(context);
-            imageView.setBackgroundColor(context.getResources().getColor(R.color.amber));
-
-            if (width < height)
-                // we're in potrait mode
-                imageView.setLayoutParams(new GridView.LayoutParams((height / 2) / 8, (height / 2) / 8));
-            else
-                imageView.setLayoutParams(new GridView.LayoutParams(height / 8, height / 8));
-
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            imageView.setPadding(0, 0, 1, 1);
+            convertView = LayoutInflater.from(context).inflate(R.layout.gridview_item, null);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView = convertView.findViewById(R.id.imageView);
+            convertView.setTag(viewHolder);
         } else {
-            imageView = (ImageView) convertView;
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        imageView.setImageResource(battleField.get(x, y));
+        viewHolder.imageView.setLayoutParams(new LinearLayout.LayoutParams(imageDimension, imageDimension));
 
-        return imageView;
+
+        viewHolder.imageView.setImageResource(battleField.get(x, y));
+
+        return convertView;
+    }
+
+    public void setImageDimension(int imageDimension) {
+        this.imageDimension = imageDimension;
+    }
+
+    class ViewHolder {
+        ImageView imageView;
     }
 }

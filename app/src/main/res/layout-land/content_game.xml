@@ -10,23 +10,30 @@
     tools:context=".GameActivity"
     tools:showIn="@layout/activity_game">
 
-    <GridView
-        android:id="@+id/player_game_board"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:numColumns="8"
-        android:stretchMode="none"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <GridView
-        android:id="@+id/opponent_game_board"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numColumns="8"
-        android:stretchMode="none"
-        app:layout_constraintLeft_toRightOf="@id/player_game_board"
-        app:layout_constraintRight_toRightOf="parent" />
+        <GridView
+            android:id="@+id/gridview_player"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:numColumns="8"
+            android:stretchMode="columnWidth" />
+
+        <GridView
+            android:id="@+id/gridview_opponent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:numColumns="8"
+            android:paddingLeft="4dp"
+            android:stretchMode="columnWidth" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
