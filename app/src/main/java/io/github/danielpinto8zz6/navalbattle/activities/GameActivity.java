@@ -29,6 +29,7 @@ import io.github.danielpinto8zz6.navalbattle.game.GameInterface;
 import io.github.danielpinto8zz6.navalbattle.R;
 
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
+import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Network;
 import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 
 public class GameActivity extends AppCompatActivity implements GameInterface {
@@ -57,11 +58,16 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
         if (mode == Local) {
             game = new Game(this);
+            device = new DeviceAI(game, this);
+            game.getPlayer().setYourTurn(true);
         } else {
             game = new Game(this, mode);
 
             NavalBattle navalBattle = (NavalBattle) getApplicationContext();
             communication = new Communication(navalBattle.getSocket(), this);
+
+            if (getIntent().getExtras().getBoolean("is_server"))
+                game.getPlayer().setYourTurn(true);
         }
 
         if (savedInstanceState != null)
@@ -69,9 +75,7 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
-        } else
-
-        {
+        } else {
             BattleField bf = (BattleField) getIntent().getSerializableExtra("battle_field");
             if (bf != null)
                 game.getPlayer().setBattleField(bf);
@@ -81,12 +85,17 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
         setupGrids();
 
-        device = new DeviceAI(game, this);
+        if (game.getPlayer().isYourTurn()) {
+            gridViewOpponent.setBackground(
 
-        gridViewOpponent.setBackground(
+                    getDrawable(R.drawable.grid_border_green));
+            gridViewPlayer.setBackgroundColor(0x00000000);
+        } else {
+            gridViewPlayer.setBackground(
 
-                getDrawable(R.drawable.grid_border_green));
-        gridViewPlayer.setBackgroundColor(0x00000000);
+                    getDrawable(R.drawable.grid_border_red));
+            gridViewOpponent.setBackgroundColor(0x00000000);
+        }
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
@@ -211,7 +220,6 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
     }
 
     public void dataChanged() {
-        System.out.println("Something received");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -230,17 +238,24 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
     @Override
     public void disconnected() {
-        Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_SHORT);
+        Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
+        mode = Local;
         game.getOpponent().setDevice(true);
         game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
         game.getOpponent().setName(getResources().getString(R.string.computer));
         imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.computer));
         opponentName.setText(getResources().getString(R.string.computer));
+
+        device = new DeviceAI(game, this);
+        opponentPlay();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if (mode == Network)
+            communication.stop();
     }
 }

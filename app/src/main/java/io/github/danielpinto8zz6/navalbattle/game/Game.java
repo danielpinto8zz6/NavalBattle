@@ -14,7 +14,6 @@ public class Game implements Serializable {
     public Game(Context c) {
         player = new Player(c);
         opponent = new Player(c, true, true);
-        player.setYourTurn(true);
     }
 
     public Game(Context c, GameMode mode) {

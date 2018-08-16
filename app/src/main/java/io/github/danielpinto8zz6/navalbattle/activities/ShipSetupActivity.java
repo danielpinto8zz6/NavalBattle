@@ -45,6 +45,7 @@ public class ShipSetupActivity extends AppCompatActivity {
                 Intent game = new Intent(getApplicationContext(), GameActivity.class);
                 game.putExtra("game_mode", getIntent().getSerializableExtra("game_mode"));
                 game.putExtra("battle_field", battleField);
+                game.putExtra("is_server", getIntent().getExtras().getBoolean("is_server"));
                 startActivity(game);
             }
         });
@@ -103,7 +104,7 @@ public class ShipSetupActivity extends AppCompatActivity {
 
                 int field[][] = battleField.getField();
 
-                if (field[x][y] != R.color.ship) return;
+                if (field[x][y] != R.drawable.ship) return;
 
                 Ship ship = battleField.getShipAtPosition(new Coordinates(x, y));
 
@@ -126,7 +127,7 @@ public class ShipSetupActivity extends AppCompatActivity {
 
                 final int field[][] = battleField.getField();
 
-                if (field[x][y] != R.color.ship) return true;
+                if (field[x][y] != R.drawable.ship) return true;
 
                 final Ship ship = battleField.getShipAtPosition(new Coordinates(x, y));
 

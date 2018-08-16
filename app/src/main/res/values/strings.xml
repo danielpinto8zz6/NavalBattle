@@ -51,4 +51,6 @@ game\nEach player gives 3 shots, selecting the desired cell\nOnly after indicati
     <string name="game_history">Game history</string>
     <string name="no_connection">No network connection</string>
     <string name="opponent_disconnected">Your opponent has disconnected! You\'ll be playing against device</string>
+    <string name="player">Player</string>
+    <string name="opponent">Opponent</string>
 </resources>

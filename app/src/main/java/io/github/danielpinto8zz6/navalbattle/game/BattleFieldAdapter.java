@@ -1,6 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,6 @@ public class BattleFieldAdapter extends BaseAdapter {
         }
 
         viewHolder.imageView.setLayoutParams(new LinearLayout.LayoutParams(imageDimension, imageDimension));
-
 
         viewHolder.imageView.setImageResource(battleField.get(x, y));
 

@@ -31,7 +31,7 @@ public class Client {
                             activity.ErrorConnecting();
                         else {
                             activity.getNavalBattle().setSocket(socket);
-                            activity.Connected();
+                            activity.Connected(false);
                         }
                     }
                 });

@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -32,10 +33,18 @@ public class Communication {
                     while (!Thread.currentThread().isInterrupted()) {
                         String read = input.readLine();
                         if (read == null) {
-//                            disconnected
-                            activity.disconnected();
+                            Log.d("Naval Battle", "Opponent disconnected");
+
+                            stop();
+
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activity.disconnected();
+                                }
+                            });
                         }
-                        Log.d("Naval Battle", "Message received");
+                        Log.d("Naval Battle", "Message received : " + read);
                     }
                 } catch (Exception e) {
                     Log.d("Naval Battle", e.getMessage());
@@ -47,6 +56,13 @@ public class Communication {
 
     public void stop() {
         thread.interrupt();
+        try {
+            output.close();
+            input.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(final String message) {

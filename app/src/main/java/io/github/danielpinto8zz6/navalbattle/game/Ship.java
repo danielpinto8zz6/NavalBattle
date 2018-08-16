@@ -17,32 +17,6 @@ public class Ship implements Serializable {
         this.rotation = rotation;
     }
 
-    public boolean isPositionDestroyed(int x, int y) {
-        for (Coordinates position : positions) {
-            if (position.getX() == x && position.getX() == y && position.isAttacked()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isDestroyed() {
-        for (Coordinates position : positions) {
-            if (!position.isAttacked()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void destroy(int x, int y) {
-        for (Coordinates position : positions) {
-            if (position.getX() == x && position.getX() == y) {
-                position.setAttacked(true);
-            }
-        }
-    }
-
     public int getSize() {
         return positions.size();
     }

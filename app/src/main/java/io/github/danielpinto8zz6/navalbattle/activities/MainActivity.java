@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showInputIpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Text");
+        builder.setTitle("Enter IP address");
 
 // Set up the input
         final EditText input = new EditText(this);
@@ -345,9 +345,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pd.show();
     }
 
-    public void Connected() {
+    public void Connected(boolean isServer) {
         Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
         setup.putExtra("game_mode", Network);
+        setup.putExtra("is_server", isServer);
         startActivity(setup);
     }
 

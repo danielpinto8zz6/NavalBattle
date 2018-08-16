@@ -10,7 +10,6 @@ import io.github.danielpinto8zz6.navalbattle.R;
 public class BattleField implements Serializable {
     private int[][] field = new int[8][8];
     private ArrayList<Ship> ships = new ArrayList<>();
-    private ArrayList<Coordinates> attackedPositions = new ArrayList<>();
     private boolean showShips = true;
     private Ship selectedShip = null;
 
@@ -38,24 +37,38 @@ public class BattleField implements Serializable {
             return false;
         }
 
-        // if position is already attacked
-        if (attackedPositions.contains(c)) {
+        if (field[c.x][c.y] == R.color.attacked || field[c.x][c.y] == R.drawable.ship_destroyed) {
             return false;
         }
 
-        attackedPositions.add(c);
+        if (field[c.x][c.y] == R.drawable.ship) {
+            field[c.x][c.y] = R.drawable.ship_destroyed;
 
-        field[c.x][c.y] = R.color.black;
+            Ship ship = getShipAtPosition(c);
 
-//        for (Ship ship : ships) {
-//            if (ship.getPositions().contains(c)) {
-//                ship.destroy(c.y, c.y);
-//                if (ship.isDestroyed()) {
-//                    removeShip(ship);
-//                }
-//            }
-//        }
+            if (isShipDestroyed(ship)) {
+                for (Coordinates coord :
+                        ship.getPositions()) {
+                    field[coord.x][coord.y] = R.color.water;
+                }
+                ships.remove(ship);
+            }
 
+            return true;
+        }
+
+        field[c.x][c.y] = R.color.attacked;
+
+        return true;
+    }
+
+    private boolean isShipDestroyed(Ship sh) {
+        if (sh == null) return false;
+
+        for (Coordinates c : sh.getPositions()) {
+            if (field[c.x][c.y] != R.drawable.ship_destroyed)
+                return false;
+        }
         return true;
     }
 
@@ -67,7 +80,7 @@ public class BattleField implements Serializable {
         }
 
         for (Coordinates pos : ship.getPositions()) {
-            field[pos.x][pos.y] = R.color.ship;
+            field[pos.x][pos.y] = R.drawable.ship;
         }
 
         ships.add(ship);
@@ -103,7 +116,7 @@ public class BattleField implements Serializable {
 
     public int get(int x, int y) {
         // don't show your ships to your opponent
-        if (!showShips && field[x][y] == R.color.ship) {
+        if (!showShips && field[x][y] == R.drawable.ship) {
             return R.color.water;
         }
 
@@ -148,7 +161,7 @@ public class BattleField implements Serializable {
                     if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)))
                         return false;
 
-            if (c.x > 0 && c.y > 7)
+            if (c.x > 0 && c.y < 7)
                 if (field[c.x - 1][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)))
                         return false;
@@ -191,7 +204,7 @@ public class BattleField implements Serializable {
         ship.setPositions(newPositions);
 
         for (Coordinates c : newPositions)
-            field[c.x][c.y] = R.color.ship;
+            field[c.x][c.y] = R.drawable.ship;
         return true;
     }
 
@@ -469,7 +482,7 @@ public class BattleField implements Serializable {
 
     public boolean isShipsDestroyed() {
         for (Ship ship : ships) {
-            if (ship.isDestroyed())
+            if (!isShipDestroyed(ship))
                 return false;
         }
         return true;

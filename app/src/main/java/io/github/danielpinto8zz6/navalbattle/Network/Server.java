@@ -36,7 +36,7 @@ public class Server {
                             activity.ErrorConnecting();
                         else {
                             activity.getNavalBattle().setSocket(socket);
-                            activity.Connected();
+                            activity.Connected(true);
                         }
                     }
                 });

@@ -17,7 +17,7 @@ public class Player implements Serializable {
     private BattleField battleField;
     private boolean isDevice;
     private boolean isYourTurn = false;
-    private boolean isEnemy;
+    private boolean isEnemy = false;
 
     public Player(Context c) {
         battleField = new BattleField();
@@ -40,8 +40,11 @@ public class Player implements Serializable {
         } else
             setupProfile(c);
 
-        if (isEnemy)
+        if (isEnemy) {
             battleField.setShowShips(false);
+            name = c.getResources().getString(R.string.opponent);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
+        }
 
     }
 
@@ -72,22 +75,29 @@ public class Player implements Serializable {
     }
 
     private void setupProfile(Context c) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
+        if (!isEnemy) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
 
-        String playerAvatarBase64 = prefs.getString("avatar", "");
+            String playerAvatarBase64 = prefs.getString("avatar", "");
 
-        String playerUsername = prefs.getString("key_username", "");
+            String playerUsername = prefs.getString("key_username", "");
 
-        if (playerAvatarBase64.length() > 0) {
-            avatarBase64 = playerAvatarBase64;
+            if (playerAvatarBase64.length() > 0) {
+                avatarBase64 = playerAvatarBase64;
+            } else {
+                avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
+            }
+
+            if (playerUsername.length() > 0) {
+                name = playerUsername;
+            } else {
+                name = c.getResources().getString(R.string.player);
+            }
         } else {
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
-        }
-
-        if (playerUsername.length() > 0) {
-            name = playerUsername;
-        } else {
-            name = "Player";
+            if (!isEnemy) {
+                avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
+                name = c.getResources().getString(R.string.opponent);
+            }
         }
     }
 
