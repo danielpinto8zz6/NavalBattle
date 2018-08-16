@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class Coordinates implements Serializable {
     public int x;
     public int y;
-    private boolean isAttacked = false;
 
     public Coordinates(int x, int y) {
         this.x = x;
@@ -26,14 +25,6 @@ public class Coordinates implements Serializable {
 
     public void setY(int y) {
         this.y = y;
-    }
-
-    public boolean isAttacked() {
-        return isAttacked;
-    }
-
-    public void setAttacked(boolean attacked) {
-        isAttacked = attacked;
     }
 
     @Override

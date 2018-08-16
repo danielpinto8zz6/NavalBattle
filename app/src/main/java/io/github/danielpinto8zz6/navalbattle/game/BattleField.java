@@ -47,10 +47,6 @@ public class BattleField implements Serializable {
             Ship ship = getShipAtPosition(c);
 
             if (isShipDestroyed(ship)) {
-                for (Coordinates coord :
-                        ship.getPositions()) {
-                    field[coord.x][coord.y] = R.color.water;
-                }
                 ships.remove(ship);
             }
 
@@ -481,11 +477,7 @@ public class BattleField implements Serializable {
     }
 
     public boolean isShipsDestroyed() {
-        for (Ship ship : ships) {
-            if (!isShipDestroyed(ship))
-                return false;
-        }
-        return true;
+        return ships.size() > 0 ? false : true;
     }
 
     public ArrayList<Coordinates> getValidPositions() {

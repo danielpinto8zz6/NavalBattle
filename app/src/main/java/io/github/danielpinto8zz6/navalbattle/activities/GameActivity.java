@@ -1,7 +1,10 @@
 package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -25,14 +28,13 @@ import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
 import io.github.danielpinto8zz6.navalbattle.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.game.DeviceAI;
 import io.github.danielpinto8zz6.navalbattle.game.Game;
-import io.github.danielpinto8zz6.navalbattle.game.GameInterface;
 import io.github.danielpinto8zz6.navalbattle.R;
 
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Network;
 import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 
-public class GameActivity extends AppCompatActivity implements GameInterface {
+public class GameActivity extends AppCompatActivity {
     private DeviceAI device;
     private Game game;
     private int shots = 0;
@@ -42,8 +44,6 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
     private BattleFieldAdapter battleFieldAdapterPlayer;
     private BattleFieldAdapter battleFieldAdapterOpponent;
     private int imageDimension;
-    private Constants.GameMode mode;
-    private Communication communication;
     private ImageView imageViewPlayer;
     private ImageView imageViewOpponent;
     private TextView playerName;
@@ -54,7 +54,7 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        mode = (Constants.GameMode) getIntent().getSerializableExtra("game_mode");
+        Constants.GameMode mode = (Constants.GameMode) getIntent().getSerializableExtra("game_mode");
 
         if (mode == Local) {
             game = new Game(this);
@@ -63,8 +63,10 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         } else {
             game = new Game(this, mode);
 
-            NavalBattle navalBattle = (NavalBattle) getApplicationContext();
-            communication = new Communication(navalBattle.getSocket(), this);
+            if (savedInstanceState == null) {
+                Communication communication = new Communication(getNavalBattle().getSocket(), this);
+                getNavalBattle().setCommunication(communication);
+            }
 
             if (getIntent().getExtras().getBoolean("is_server"))
                 game.getPlayer().setYourTurn(true);
@@ -152,6 +154,7 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
+                getCommunication().sendMessage("Test");
                 if (!game.getPlayer().isYourTurn()) return;
 
                 int x = position % 8;
@@ -159,6 +162,10 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
 
                 if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y)))
                     shots++;
+
+                if (game.isGameOver()) {
+                    gameOver();
+                }
 
                 battleFieldAdapterOpponent.notifyDataSetChanged();
 
@@ -170,13 +177,44 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         });
     }
 
+    private void gameOver() {
+        battleFieldAdapterOpponent.notifyDataSetChanged();
+        battleFieldAdapterPlayer.notifyDataSetChanged();
+        gridViewPlayer.setBackgroundColor(0x00000000);
+        gridViewOpponent.setBackgroundColor(0x00000000);
+
+        saveGameToHistory();
+
+        Drawable drawable = new BitmapDrawable(getResources(), game.getWinner().getAvatar());
+
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(GameActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(GameActivity.this);
+        }
+        builder.setCancelable(false);
+        builder.setTitle(getResources().getString(R.string.game_over))
+                .setMessage(game.getWinner().getName() + getResources().getString(R.string.has_won))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setIcon(drawable)
+                .show();
+    }
+
+    private void saveGameToHistory() {
+    }
+
     private void opponentPlay() {
         game.getPlayer().setYourTurn(false);
         game.getOpponent().setYourTurn(true);
         gridViewOpponent.setBackgroundColor(0x00000000);
         gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
 
-        if (mode == Local) {
+        if (game.getMode() == Local) {
             device.play();
         } else {
 
@@ -232,21 +270,16 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
         });
     }
 
-    public void errorReceiving() {
-        Toast.makeText(GameActivity.this, "Error", Toast.LENGTH_SHORT);
-    }
-
-    @Override
     public void disconnected() {
         Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
-        mode = Local;
         game.getOpponent().setDevice(true);
         game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
         game.getOpponent().setName(getResources().getString(R.string.computer));
         imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.computer));
         opponentName.setText(getResources().getString(R.string.computer));
-
+        getCommunication().stop();
+        getNavalBattle().setCommunication(null);
         device = new DeviceAI(game, this);
         opponentPlay();
     }
@@ -255,7 +288,17 @@ public class GameActivity extends AppCompatActivity implements GameInterface {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mode == Network)
-            communication.stop();
+        if (isFinishing())
+            if (game.getMode() == Network)
+                if (getCommunication() != null)
+                    getCommunication().stop();
+    }
+
+    public NavalBattle getNavalBattle() {
+        return ((NavalBattle) getApplication());
+    }
+
+    public Communication getCommunication() {
+        return getNavalBattle().getCommunication();
     }
 }

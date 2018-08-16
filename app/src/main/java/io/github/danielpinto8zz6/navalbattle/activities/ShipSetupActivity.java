@@ -15,6 +15,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
+import io.github.danielpinto8zz6.navalbattle.NavalBattle;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
 import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
 import io.github.danielpinto8zz6.navalbattle.Coordinates;
@@ -174,6 +177,13 @@ public class ShipSetupActivity extends AppCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        NavalBattle navalBattle = (NavalBattle) getApplicationContext();
+                        try {
+                            navalBattle.getSocket().close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         ShipSetupActivity.this.finish();
                     }
                 })

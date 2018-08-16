@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isFabMenuOpen) collapseFabMenu();
                 if (!checkConnection(MainActivity.this)) {
                     Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
                 } else createServer();
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         joinServerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isFabMenuOpen) collapseFabMenu();
                 if (!checkConnection(MainActivity.this)) {
                     Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
                 } else showInputIpDialog();
@@ -162,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         againstComputerFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isFabMenuOpen) collapseFabMenu();
                 Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
                 setup.putExtra("game_mode", Local);
                 startActivity(setup);
@@ -235,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if (isFabMenuOpen) collapseFabMenu();
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
@@ -339,6 +343,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showWaitConnectionDialog() {
         String ip = getLocalIpAddress();
         pd = new ProgressDialog(this);
+        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                server.stop();
+            }
+        });
+
         pd.setMessage(getString(R.string.wait_connection) + "\n(" + ip
                 + ")");
         pd.setTitle(R.string.serverdlg_title);
@@ -346,6 +357,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void Connected(boolean isServer) {
+        if (pd != null && pd.isShowing()) pd.dismiss();
+
         Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
         setup.putExtra("game_mode", Network);
         setup.putExtra("is_server", isServer);
@@ -361,14 +374,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void ErrorConnecting() {
-        if (pd.isShowing())
-            pd.dismiss();
+//        if (pd != null && pd.isShowing()) pd.dismiss();
 
         Toast.makeText(MainActivity.this, "Error connecting", Toast.LENGTH_SHORT);
     }
 
     public NavalBattle getNavalBattle() {
-        NavalBattle navalBattle = (NavalBattle) getApplicationContext();
-        return navalBattle;
+        return ((NavalBattle)getApplication());
     }
 }

@@ -10,10 +10,13 @@ public class Game implements Serializable {
     private Player player;
     private Player opponent;
     private GameMode mode;
+    private Player winner;
 
     public Game(Context c) {
         player = new Player(c);
         opponent = new Player(c, true, true);
+
+        mode = GameMode.Network.Local;
     }
 
     public Game(Context c, GameMode mode) {
@@ -45,5 +48,20 @@ public class Game implements Serializable {
 
     public void setMode(GameMode mode) {
         this.mode = mode;
+    }
+
+    public boolean isGameOver() {
+        if (getPlayer().getBattleField().isShipsDestroyed()) {
+            winner = opponent;
+            return true;
+        } else if (getOpponent().getBattleField().isShipsDestroyed()) {
+            winner = player;
+            return true;
+        }
+        return false;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 }

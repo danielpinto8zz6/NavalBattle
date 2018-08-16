@@ -57,9 +57,12 @@ public class Communication {
     public void stop() {
         thread.interrupt();
         try {
-            output.close();
-            input.close();
-            socket.close();
+            if (output != null)
+                output.close();
+            if (input != null)
+                input.close();
+            if (socket != null)
+                socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,5 +83,9 @@ public class Communication {
             }
         });
         t.start();
+    }
+
+    public void setActivity(GameActivity activity) {
+        this.activity = activity;
     }
 }

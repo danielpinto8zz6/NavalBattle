@@ -53,4 +53,7 @@ game\nEach player gives 3 shots, selecting the desired cell\nOnly after indicati
     <string name="opponent_disconnected">Your opponent has disconnected! You\'ll be playing against device</string>
     <string name="player">Player</string>
     <string name="opponent">Opponent</string>
+    <string name="game_over">Game over</string>
+    <string name="winner">Winner</string>
+    <string name="has_won">has won!</string>
 </resources>
