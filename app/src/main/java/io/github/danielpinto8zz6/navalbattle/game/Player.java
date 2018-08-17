@@ -18,6 +18,7 @@ public class Player implements Serializable {
     private boolean isDevice;
     private boolean isYourTurn = false;
     private boolean isEnemy = false;
+    private boolean canMoveShip = false;
 
     public Player(Context c) {
         battleField = new BattleField();
@@ -40,12 +41,12 @@ public class Player implements Serializable {
         } else
             setupProfile(c);
 
-        if (isEnemy) {
+        if (isEnemy)
             battleField.setShowShips(false);
-            name = c.getResources().getString(R.string.opponent);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
-        }
 
+        if (isEnemy && !isDevice)
+            name = c.getResources().getString(R.string.opponent);
+        avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
     }
 
     public Player(String name, String avatarBase64) {
@@ -135,5 +136,13 @@ public class Player implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean getCanMoveShip() {
+        return canMoveShip;
+    }
+
+    public void setCanMoveShip(boolean canMoveShip) {
+        this.canMoveShip = canMoveShip;
     }
 }

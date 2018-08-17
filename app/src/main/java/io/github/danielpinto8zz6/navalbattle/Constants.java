@@ -11,4 +11,9 @@ public class Constants {
         Local,
         Network
     }
+
+    public enum Command {
+        PROFILE_INFO,
+        BATTLEFIELD_UPDATE
+    }
 }

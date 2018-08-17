@@ -14,10 +14,15 @@ import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
+import android.util.Base64InputStream;
+import android.util.Base64OutputStream;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -108,5 +113,55 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static String convertTwoDimensionalIntArrayToString(int[][] i){
+        ByteArrayOutputStream bo = null;
+        ObjectOutputStream so = null;
+        Base64OutputStream b64 = null;
+        try {
+            bo = new ByteArrayOutputStream();
+            b64 = new Base64OutputStream(bo, Base64.DEFAULT);
+            so = new ObjectOutputStream(b64);
+            so.writeObject(i);
+            return bo.toString("UTF-8");
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (bo != null) { bo.close(); }
+                if (b64 != null) { b64.close(); }
+                if (so != null) { so.close(); }
+            }catch (Exception ee){
+                ee.printStackTrace();
+            }
+
+        }
+        return null;
+    }
+
+    public int[][] convertStringToTwoDimensionalIntArray(String s) {
+        ByteArrayInputStream bi = null;
+        ObjectInputStream si = null;
+        Base64InputStream b64 = null;
+        try {
+            byte b[] = s.getBytes("UTF-8");
+            bi = new ByteArrayInputStream(b);
+            b64 = new Base64InputStream(bi, Base64.DEFAULT);
+            si = new ObjectInputStream(b64);
+            return (int[][]) si.readObject();
+        }catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            try{
+                if (bi != null) { bi.close(); }
+                if (b64 != null) { b64.close(); }
+                if (si != null) { si.close(); }
+            }catch (Exception ee){
+                ee.printStackTrace();
+            }
+
+        }
+        return null;
     }
 }

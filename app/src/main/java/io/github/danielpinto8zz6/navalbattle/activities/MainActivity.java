@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View mShadowView;
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    private Client client;
     private Server server;
 
     @Override
@@ -133,41 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     expandFabMenu();
                 }
-            }
-        });
-
-        FloatingActionButton createServerFab = findViewById(R.id.create_server);
-        FloatingActionButton joinServerFab = findViewById(R.id.join_server);
-        FloatingActionButton againstComputerFab = findViewById(R.id.against_device);
-
-        createServerFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isFabMenuOpen) collapseFabMenu();
-                if (!checkConnection(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
-                } else createServer();
-            }
-        });
-
-
-        joinServerFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isFabMenuOpen) collapseFabMenu();
-                if (!checkConnection(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
-                } else showInputIpDialog();
-            }
-        });
-
-        againstComputerFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isFabMenuOpen) collapseFabMenu();
-                Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
-                setup.putExtra("game_mode", Local);
-                startActivity(setup);
             }
         });
 
@@ -317,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String ip = String.valueOf(input.getText());
-                connectToServer(ip);
+                Client client = new Client(MainActivity.this, ip);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -330,19 +294,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.show();
     }
 
-    public void createServer() {
-        showWaitConnectionDialog();
-
-        server = new Server(this);
-    }
-
-    private void connectToServer(final String strIP) {
-        client = new Client(this, strIP);
-    }
-
     public void showWaitConnectionDialog() {
         String ip = getLocalIpAddress();
         pd = new ProgressDialog(this);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -380,6 +335,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public NavalBattle getNavalBattle() {
-        return ((NavalBattle)getApplication());
+        return ((NavalBattle) getApplication());
+    }
+
+    public void gameHistory(View v) {
+        Intent history = new Intent(getApplicationContext(), HistoryActivity.class);
+        startActivity(history);
+    }
+
+    public void joinServer(View v) {
+        if (!checkConnection(MainActivity.this)) {
+            Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        showInputIpDialog();
+    }
+
+    public void againstDevice(View v) {
+        Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
+        setup.putExtra("game_mode", Local);
+        startActivity(setup);
+    }
+
+    public void createServer(View v) {
+        if (!checkConnection(MainActivity.this)) {
+            Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+            return;
+        }
+        showWaitConnectionDialog();
+
+        server = new Server(this);
     }
 }

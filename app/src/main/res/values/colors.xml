@@ -3,17 +3,14 @@
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#171717</color>
     <color name="colorAccent">#448AFF</color>
-    <color name="black">#6D4C41</color>
     <color name="amber">#FFC107</color>
     <color name="purple">#E040FB</color>
     <color name="green">#4CAF50</color>
     <color name="redDark">#801313</color>
     <color name="greenDark">#1b5e20</color>
 
-    <color name="ship">#ffffff</color>
     <color name="ship_selected">#C62828</color>
-    <color name="destroyed">#ffffff</color>
-    <color name="attacked">#ffffff</color>
+    <color name="destroyed">#1976D2</color>
+    <color name="attacked">#1e4387</color>
     <color name="water">#093170</color>
-    <color name="waterDark">#1976D2</color>
 </resources>

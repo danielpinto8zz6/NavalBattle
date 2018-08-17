@@ -1,16 +1,19 @@
 package io.github.danielpinto8zz6.navalbattle.activities;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,6 +21,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
 
 import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
@@ -29,6 +34,7 @@ import io.github.danielpinto8zz6.navalbattle.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.game.DeviceAI;
 import io.github.danielpinto8zz6.navalbattle.game.Game;
 import io.github.danielpinto8zz6.navalbattle.R;
+import io.github.danielpinto8zz6.navalbattle.game.Ship;
 
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Network;
@@ -48,6 +54,8 @@ public class GameActivity extends AppCompatActivity {
     private ImageView imageViewOpponent;
     private TextView playerName;
     private TextView opponentName;
+    private AdapterView.OnItemClickListener onItemClickListener;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +74,12 @@ public class GameActivity extends AppCompatActivity {
             if (savedInstanceState == null) {
                 Communication communication = new Communication(getNavalBattle().getSocket(), this);
                 getNavalBattle().setCommunication(communication);
+                communication.sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
             }
 
-            if (getIntent().getExtras().getBoolean("is_server"))
+            if (getIntent().getExtras().getBoolean("is_server")) {
                 game.getPlayer().setYourTurn(true);
+            }
         }
 
         if (savedInstanceState != null)
@@ -78,9 +88,7 @@ public class GameActivity extends AppCompatActivity {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
         } else {
-            BattleField bf = (BattleField) getIntent().getSerializableExtra("battle_field");
-            if (bf != null)
-                game.getPlayer().setBattleField(bf);
+            game.getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
         }
 
         setupToolbar();
@@ -101,6 +109,15 @@ public class GameActivity extends AppCompatActivity {
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
+
+        getCommunication().sendMessage("");
+
+        dialog = new ProgressDialog(GameActivity.this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMessage(getResources().getString(R.string.waiting_for_opponent));
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     @Override
@@ -150,29 +167,79 @@ public class GameActivity extends AppCompatActivity {
 
         gridViewOpponent.setAdapter(battleFieldAdapterOpponent = new BattleFieldAdapter(this, game.getOpponent().getBattleField(), imageDimension));
 
-        gridViewOpponent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridViewOpponent.setOnItemClickListener(onItemClickListener = new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                getCommunication().sendMessage("Test");
                 if (!game.getPlayer().isYourTurn()) return;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y)))
+                if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y))) {
                     shots++;
+                }
 
                 if (game.isGameOver()) {
                     gameOver();
                 }
 
-                battleFieldAdapterOpponent.notifyDataSetChanged();
-
                 if (shots >= 3) {
                     shots = 0;
+                    battleFieldAdapterOpponent.notifyDataSetChanged();
                     opponentPlay();
                 }
+            }
+        });
+
+        gridViewPlayer.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
+
+                if (!game.getPlayer().getCanMoveShip()) return true;
+
+                int x = position % 8;
+                int y = (int) Math.ceil(position / 8);
+
+                final int field[][] = game.getPlayer().getBattleField().getField();
+
+                if (field[x][y] != R.drawable.ship) return true;
+
+                final Ship ship = game.getPlayer().getBattleField().getShipAtPosition(new Coordinates(x, y));
+
+                if (ship == null) return true;
+
+                game.getPlayer().getBattleField().setSelectedShip(ship);
+
+                battleFieldAdapterPlayer.notifyDataSetChanged();
+
+                Toast.makeText(GameActivity.this, "Click on cell to move the ship", Toast.LENGTH_SHORT).show();
+
+                gridViewPlayer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    public void onItemClick(AdapterView<?> parent, View v,
+                                            int position, long id) {
+
+                        int x = position % 8;
+                        int y = (int) Math.ceil(position / 8);
+
+                        if (!game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
+                            Toast.makeText(GameActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
+                        } else {
+                            game.getPlayer().setCanMoveShip(false);
+                        }
+
+                        game.getPlayer().getBattleField().setSelectedShip(null);
+
+                        battleFieldAdapterPlayer.notifyDataSetChanged();
+
+                        gridViewPlayer.setOnItemClickListener(null);
+
+                        return;
+                    }
+                });
+
+                return true;
             }
         });
     }
@@ -195,7 +262,7 @@ public class GameActivity extends AppCompatActivity {
         }
         builder.setCancelable(false);
         builder.setTitle(getResources().getString(R.string.game_over))
-                .setMessage(game.getWinner().getName() + getResources().getString(R.string.has_won))
+                .setMessage(game.getWinner().getName() + " " + getResources().getString(R.string.has_won))
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
@@ -203,23 +270,6 @@ public class GameActivity extends AppCompatActivity {
                 })
                 .setIcon(drawable)
                 .show();
-    }
-
-    private void saveGameToHistory() {
-    }
-
-    private void opponentPlay() {
-        game.getPlayer().setYourTurn(false);
-        game.getOpponent().setYourTurn(true);
-        gridViewOpponent.setBackgroundColor(0x00000000);
-        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
-
-        if (game.getMode() == Local) {
-            device.play();
-        } else {
-
-        }
-
     }
 
     public void setupToolbar() {
@@ -300,5 +350,64 @@ public class GameActivity extends AppCompatActivity {
 
     public Communication getCommunication() {
         return getNavalBattle().getCommunication();
+    }
+
+    private void saveGameToHistory() {
+        String gameSave = null;
+        try {
+            gameSave = game.getGameSave();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (gameSave != null) {
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+
+            editor.putString("saved_games", gameSave);
+            editor.apply();
+        }
+        Log.d("Naval battle", "Saving game...");
+    }
+
+    public void playerPlay(BattleField playerBattleField) {
+        game.getPlayer().setBattleField(playerBattleField);
+        game.getPlayer().setYourTurn(true);
+        game.getOpponent().setYourTurn(false);
+        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+        gridViewPlayer.setBackgroundColor(0x00000000);
+        battleFieldAdapterPlayer.notifyDataSetChanged();
+    }
+
+    private void opponentPlay() {
+        game.getPlayer().setYourTurn(false);
+        game.getOpponent().setYourTurn(true);
+        gridViewOpponent.setBackgroundColor(0x00000000);
+        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
+
+        if (game.getMode() == Local) {
+            device.play();
+        } else {
+            getCommunication().sendOpponentBattleField(game.getOpponent().getBattleField());
+        }
+    }
+
+    public void setOpponentProfile(String name, String avatar) {
+        imageViewOpponent.setImageBitmap(Utils.decodeBase64(avatar));
+        opponentName.setText(name);
+        game.getOpponent().setName(name);
+        game.getOpponent().setAvatarBase64(avatar);
+    }
+
+    public void setOpponentBattleField(int[][] field) {
+        game.getOpponent().getBattleField().setField(field);
+        battleFieldAdapterOpponent.notifyDataSetChanged();
+
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+    }
+
+    public void connect() {
+        getCommunication().sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
+        getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField().getField());
     }
 }

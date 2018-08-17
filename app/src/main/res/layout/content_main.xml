@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/card_margin"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:onClick="gameHistory">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -42,7 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/card_margin"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:onClick="againstDevice">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -69,7 +71,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/card_margin"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:onClick="createServer">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -97,7 +100,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/card_margin"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:onClick="joinServer">
 
             <RelativeLayout
                 android:layout_width="match_parent"

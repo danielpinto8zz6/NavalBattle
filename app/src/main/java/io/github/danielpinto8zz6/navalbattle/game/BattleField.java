@@ -118,7 +118,7 @@ public class BattleField implements Serializable {
 
         if (selectedShip != null) {
             if (selectedShip.getPositions().contains(new Coordinates(x, y)))
-                return R.color.ship_selected;
+                return R.drawable.ship_selected;
         }
 
         return field[x][y];
@@ -355,6 +355,12 @@ public class BattleField implements Serializable {
 
     public boolean move(Ship ship, Coordinates base) {
         ArrayList<Coordinates> newPositions = new ArrayList<>();
+
+        // make sure pieces not destroyed
+        for (Coordinates c : ship.getPositions()){
+            if (field[c.x][c.y] == R.drawable.ship_destroyed)
+                return false;
+        }
 
         switch (ship.getRotation()) {
             case 0:

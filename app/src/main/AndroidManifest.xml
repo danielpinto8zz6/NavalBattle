@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="NavalBattle"
+        android:name=".NavalBattle"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,14 +34,18 @@
         <activity
             android:name=".activities.GameActivity"
             android:label="@string/title_activity_game"
-            android:theme="@style/Theme.AppCompat.Dark.NoActionBar.FullScreen" />
+            android:theme="@style/Theme.AppCompat.NoActionBar.FullScreen" />
         <activity
             android:name=".activities.ShipSetupActivity"
             android:label="@string/title_activity_ship_setup"
-            android:theme="@style/Theme.AppCompat.Dark.NoActionBar.FullScreen" />
+            android:theme="@style/Theme.AppCompat.NoActionBar.FullScreen" />
         <activity
             android:name=".activities.HelpActivity"
-            android:label="@string/title_activity_help"></activity>
+            android:label="@string/title_activity_help"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.HistoryActivity"
+            android:label="@string/title_activity_history"></activity>
     </application>
 
 </manifest>

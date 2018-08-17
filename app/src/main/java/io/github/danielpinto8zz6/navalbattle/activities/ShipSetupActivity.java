@@ -27,9 +27,9 @@ import io.github.danielpinto8zz6.navalbattle.game.Ship;
 import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 
 public class ShipSetupActivity extends AppCompatActivity {
-    BattleField battleField;
+    private BattleField battleField;
     private BattleFieldAdapter adapter;
-    AdapterView.OnItemClickListener onItemClickListener;
+    private AdapterView.OnItemClickListener onItemClickListener;
     private int imageDimension;
     private int count = 8;
     private GridView gridView;
@@ -179,7 +179,8 @@ public class ShipSetupActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         NavalBattle navalBattle = (NavalBattle) getApplicationContext();
                         try {
-                            navalBattle.getSocket().close();
+                            if (navalBattle.getSocket() != null)
+                                navalBattle.getSocket().close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

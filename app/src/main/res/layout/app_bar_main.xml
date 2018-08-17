@@ -58,10 +58,10 @@
                 android:text="@string/create_server" />
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/create_server"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/green"
+                android:onClick="createServer"
                 app:borderWidth="0dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_group_add" />
@@ -92,10 +92,10 @@
                 android:text="@string/join_server" />
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/join_server"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/purple"
+                android:onClick="joinServer"
                 app:borderWidth="0dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_group" />
@@ -126,10 +126,10 @@
                 android:text="@string/against_device" />
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/against_device"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/amber"
+                android:onClick="againstDevice"
                 app:borderWidth="0dp"
                 app:fabSize="mini"
                 app:srcCompat="@drawable/ic_phone" />
