@@ -9,8 +9,8 @@
     <color name="redDark">#801313</color>
     <color name="greenDark">#1b5e20</color>
 
-    <color name="ship_selected">#C62828</color>
     <color name="destroyed">#1976D2</color>
     <color name="attacked">#1e4387</color>
     <color name="water">#093170</color>
+    <color name="textview_background">#cc212121</color>
 </resources>

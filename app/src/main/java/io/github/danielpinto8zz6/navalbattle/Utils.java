@@ -1,6 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,20 +14,26 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Base64InputStream;
 import android.util.Base64OutputStream;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Random;
 
@@ -108,14 +115,15 @@ public class Utils {
     }
 
     public static boolean checkConnection(Context context) {
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo == null || !networkInfo.isConnected()) {
             return false;
         }
         return true;
     }
 
-    public static String convertTwoDimensionalIntArrayToString(int[][] i){
+    public static String convertTwoDimensionalIntArrayToString(int[][] i) {
         ByteArrayOutputStream bo = null;
         ObjectOutputStream so = null;
         Base64OutputStream b64 = null;
@@ -125,14 +133,20 @@ public class Utils {
             so = new ObjectOutputStream(b64);
             so.writeObject(i);
             return bo.toString("UTF-8");
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            try{
-                if (bo != null) { bo.close(); }
-                if (b64 != null) { b64.close(); }
-                if (so != null) { so.close(); }
-            }catch (Exception ee){
+        } finally {
+            try {
+                if (bo != null) {
+                    bo.close();
+                }
+                if (b64 != null) {
+                    b64.close();
+                }
+                if (so != null) {
+                    so.close();
+                }
+            } catch (Exception ee) {
                 ee.printStackTrace();
             }
 
@@ -150,18 +164,42 @@ public class Utils {
             b64 = new Base64InputStream(bi, Base64.DEFAULT);
             si = new ObjectInputStream(b64);
             return (int[][]) si.readObject();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try{
-                if (bi != null) { bi.close(); }
-                if (b64 != null) { b64.close(); }
-                if (si != null) { si.close(); }
-            }catch (Exception ee){
+            try {
+                if (bi != null) {
+                    bi.close();
+                }
+                if (b64 != null) {
+                    b64.close();
+                }
+                if (si != null) {
+                    si.close();
+                }
+            } catch (Exception ee) {
                 ee.printStackTrace();
             }
 
         }
         return null;
+    }
+
+    public static void saveArrayList(Context context, ArrayList<String> list, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editor.putString(key, json);
+        editor.apply();     // This line is IMPORTANT !!!
+    }
+
+    public static ArrayList<String> getArrayList(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+        Type type = new TypeToken<ArrayList<String>>() {
+        }.getType();
+        return gson.fromJson(json, type);
     }
 }

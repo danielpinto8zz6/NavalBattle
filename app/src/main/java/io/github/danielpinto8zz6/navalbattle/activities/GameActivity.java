@@ -22,7 +22,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
@@ -39,6 +45,8 @@ import io.github.danielpinto8zz6.navalbattle.game.Ship;
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Network;
 import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
+import static io.github.danielpinto8zz6.navalbattle.Utils.getArrayList;
+import static io.github.danielpinto8zz6.navalbattle.Utils.saveArrayList;
 
 public class GameActivity extends AppCompatActivity {
     private DeviceAI device;
@@ -110,14 +118,15 @@ public class GameActivity extends AppCompatActivity {
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
 
-        getCommunication().sendMessage("");
-
-        dialog = new ProgressDialog(GameActivity.this);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage(getResources().getString(R.string.waiting_for_opponent));
-        dialog.setIndeterminate(true);
-        dialog.setCancelable(false);
-        dialog.show();
+        if (mode == Network) {
+            getCommunication().sendMessage("");
+            dialog = new ProgressDialog(GameActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setMessage(getResources().getString(R.string.waiting_for_opponent));
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
     }
 
     @Override
@@ -250,8 +259,6 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setBackgroundColor(0x00000000);
         gridViewOpponent.setBackgroundColor(0x00000000);
 
-        saveGameToHistory();
-
         Drawable drawable = new BitmapDrawable(getResources(), game.getWinner().getAvatar());
 
         AlertDialog.Builder builder;
@@ -270,6 +277,8 @@ public class GameActivity extends AppCompatActivity {
                 })
                 .setIcon(drawable)
                 .show();
+
+        saveGameToHistory();
     }
 
     public void setupToolbar() {
@@ -352,23 +361,6 @@ public class GameActivity extends AppCompatActivity {
         return getNavalBattle().getCommunication();
     }
 
-    private void saveGameToHistory() {
-        String gameSave = null;
-        try {
-            gameSave = game.getGameSave();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (gameSave != null) {
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-
-            editor.putString("saved_games", gameSave);
-            editor.apply();
-        }
-        Log.d("Naval battle", "Saving game...");
-    }
-
     public void playerPlay(BattleField playerBattleField) {
         game.getPlayer().setBattleField(playerBattleField);
         game.getPlayer().setYourTurn(true);
@@ -409,5 +401,23 @@ public class GameActivity extends AppCompatActivity {
     public void connect() {
         getCommunication().sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
         getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField().getField());
+    }
+
+    private void saveGameToHistory() {
+        String gameSave = null;
+        try {
+            gameSave = game.getGameSave();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<String> games = getArrayList(this, "game_history");
+        if (games == null) games = new ArrayList<>();
+
+        games.add(gameSave);
+
+        saveArrayList(this, games, "game_history");
+
+        Log.d("Naval battle", "Saving game...");
     }
 }

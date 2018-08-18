@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,7 +27,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
 import io.github.danielpinto8zz6.navalbattle.Network.Client;
@@ -330,8 +330,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void ErrorConnecting() {
 //        if (pd != null && pd.isShowing()) pd.dismiss();
-
-        Toast.makeText(MainActivity.this, "Error connecting", Toast.LENGTH_SHORT);
+        show_snackbar(R.string.error_connecting);
     }
 
     public NavalBattle getNavalBattle() {
@@ -345,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void joinServer(View v) {
         if (!checkConnection(MainActivity.this)) {
-            Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+            show_snackbar(R.string.no_connection);
             return;
         }
 
@@ -360,11 +359,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void createServer(View v) {
         if (!checkConnection(MainActivity.this)) {
-            Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_LONG).show();
+            show_snackbar(R.string.no_connection);
             return;
         }
         showWaitConnectionDialog();
 
         server = new Server(this);
+    }
+
+    public void show_snackbar(int str) {
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), str, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        });
+        snackbar.show();
     }
 }

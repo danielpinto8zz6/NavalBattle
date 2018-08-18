@@ -78,11 +78,8 @@ public class Game implements Serializable {
         JSONObject json = new JSONObject();
         json.put("player_name", getPlayer().getName());
         json.put("player_battlefield", gson.toJson(getPlayer().getBattleField().getField()));
-        json.put("player_avatar", getPlayer().getAvatarBase64());
         json.put("opponent_name", getOpponent().getName());
         json.put("opponent_battlefield", gson.toJson(getOpponent().getBattleField().getField()));
-        json.put("opponent_avatar", getOpponent().getAvatarBase64());
-        json.put("winner", getWinner());
 
         return json.toString();
     }

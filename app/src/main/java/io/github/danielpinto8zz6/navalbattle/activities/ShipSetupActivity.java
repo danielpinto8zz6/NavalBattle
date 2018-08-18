@@ -59,7 +59,7 @@ public class ShipSetupActivity extends AppCompatActivity {
 
         setupGrid();
 
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_ship_setup_layout), "Click on ship to rotate!\nLong press to move!", Snackbar.LENGTH_INDEFINITE);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_ship_setup_layout), getString(R.string.click_to_rotate) + "\n" + getString(R.string.long_press_to_move), Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
