@@ -12,9 +12,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,7 +26,7 @@ import io.github.danielpinto8zz6.navalbattle.game.BattleField;
 import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
-import static io.github.danielpinto8zz6.navalbattle.Utils.getArrayList;
+import static io.github.danielpinto8zz6.navalbattle.Utils.getFileContentFromInternalStorage;
 
 public class HistoryActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
@@ -36,10 +39,16 @@ public class HistoryActivity extends AppCompatActivity {
 
         linearLayout = findViewById(R.id.linearlayout);
 
-        ArrayList<String> history = getArrayList(this, "game_history");
+        String history =
+                getFileContentFromInternalStorage(this, "history");
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<String>>() {
+        }.getType();
 
-        if (history != null)
-            for (String game : history)
+        ArrayList<String> games = gson.fromJson(history, type);
+
+        if (games != null)
+            for (String game : games)
                 setupGrid(game);
     }
 
