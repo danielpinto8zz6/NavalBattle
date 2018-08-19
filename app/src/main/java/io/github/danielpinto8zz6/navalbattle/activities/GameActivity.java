@@ -335,9 +335,9 @@ public class GameActivity extends AppCompatActivity {
         Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
         game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
-        game.getOpponent().setName(getResources().getString(R.string.computer));
-        imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.computer));
-        opponentName.setText(getResources().getString(R.string.computer));
+        game.getOpponent().setName(getResources().getString(R.string.device));
+        imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.device));
+        opponentName.setText(getResources().getString(R.string.device));
         getCommunication().stop();
         getNavalBattle().setCommunication(null);
         device = new DeviceAI(game, this);

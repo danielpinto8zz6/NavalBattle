@@ -22,7 +22,7 @@
     <string name="key_take_photo">key_take_photo</string>
     <string name="summary_take_photo">Click to take a photo directly from camera</string>
     <string name="title_take_photo">Take photo</string>
-    <string name="computer">Computer</string>
+    <string name="device">Device</string>
     <string name="title_activity_ship_setup">Setup ships</string>
     <string name="create_server">Create server</string>
     <string name="join_server">Join server</string>

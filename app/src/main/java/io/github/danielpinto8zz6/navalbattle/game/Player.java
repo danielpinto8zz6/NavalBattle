@@ -28,8 +28,8 @@ public class Player implements Serializable {
         battleField = new BattleField();
 
         if (isDevice) {
-            name = c.getResources().getString(R.string.computer);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.computer));
+            name = c.getResources().getString(R.string.device);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.device));
         } else
             setupPlayerProfile(c);
 
