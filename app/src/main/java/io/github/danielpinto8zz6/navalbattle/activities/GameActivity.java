@@ -98,17 +98,17 @@ public class GameActivity extends AppCompatActivity {
 
         setupGrids();
 
-        if (game.getPlayer().isYourTurn()) {
-            gridViewOpponent.setBackground(
-
-                    getDrawable(R.drawable.grid_border_green));
-            gridViewPlayer.setBackgroundColor(0x00000000);
-        } else {
-            gridViewPlayer.setBackground(
-
-                    getDrawable(R.drawable.grid_border_red));
-            gridViewOpponent.setBackgroundColor(0x00000000);
-        }
+//        if (game.getPlayer().isYourTurn()) {
+//            gridViewOpponent.setBackground(
+//
+//                    getDrawable(R.drawable.grid_border_green));
+//            gridViewPlayer.setBackgroundColor(0x00000000);
+//        } else {
+//            gridViewPlayer.setBackground(
+//
+//                    getDrawable(R.drawable.grid_border_red));
+//            gridViewOpponent.setBackgroundColor(0x00000000);
+//        }
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
@@ -258,8 +258,8 @@ public class GameActivity extends AppCompatActivity {
     private void gameOver() {
         battleFieldAdapterOpponent.notifyDataSetChanged();
         battleFieldAdapterPlayer.notifyDataSetChanged();
-        gridViewPlayer.setBackgroundColor(0x00000000);
-        gridViewOpponent.setBackgroundColor(0x00000000);
+//        gridViewPlayer.setBackgroundColor(0x00000000);
+//        gridViewOpponent.setBackgroundColor(0x00000000);
 
         Drawable drawable = new BitmapDrawable(getResources(), game.getWinner().getAvatar());
 
@@ -323,10 +323,10 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void run() {
                 battleFieldAdapterPlayer.notifyDataSetChanged();
-                if (game.getPlayer().isYourTurn()) {
-                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
-                    gridViewPlayer.setBackgroundColor(0x00000000);
-                }
+//                if (game.getPlayer().isYourTurn()) {
+//                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+//                    gridViewPlayer.setBackgroundColor(0x00000000);
+//                }
             }
         });
     }
@@ -366,16 +366,16 @@ public class GameActivity extends AppCompatActivity {
         game.getPlayer().setBattleField(playerBattleField);
         game.getPlayer().setYourTurn(true);
         game.getOpponent().setYourTurn(false);
-        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
-        gridViewPlayer.setBackgroundColor(0x00000000);
+//        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+//        gridViewPlayer.setBackgroundColor(0x00000000);
         battleFieldAdapterPlayer.notifyDataSetChanged();
     }
 
     private void opponentPlay() {
         game.getPlayer().setYourTurn(false);
         game.getOpponent().setYourTurn(true);
-        gridViewOpponent.setBackgroundColor(0x00000000);
-        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
+//        gridViewOpponent.setBackgroundColor(0x00000000);
+//        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
 
         if (game.getMode() == Local) {
             device.play();
