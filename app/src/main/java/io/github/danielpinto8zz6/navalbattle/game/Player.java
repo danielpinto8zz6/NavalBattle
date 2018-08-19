@@ -15,21 +15,13 @@ public class Player implements Serializable {
     private String name;
     private String avatarBase64;
     private BattleField battleField;
-    private boolean isDevice;
     private boolean isYourTurn = false;
-    private boolean isEnemy = false;
     private boolean canMoveShip = false;
 
     public Player(Context c) {
         battleField = new BattleField();
 
-        setupProfile(c);
-    }
-
-    public Player(Context c, BattleField bf) {
-        battleField = bf;
-
-        setupProfile(c);
+        setupPlayerProfile(c);
     }
 
     public Player(Context c, boolean isDevice, boolean isEnemy) {
@@ -39,23 +31,15 @@ public class Player implements Serializable {
             name = c.getResources().getString(R.string.computer);
             avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.computer));
         } else
-            setupProfile(c);
+            setupPlayerProfile(c);
 
         if (isEnemy)
             battleField.setShowShips(false);
 
-        if (isEnemy && !isDevice)
+        if (isEnemy && !isDevice) {
             name = c.getResources().getString(R.string.opponent);
-        avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
-    }
-
-    public Player(String name, String avatarBase64) {
-        battleField = new BattleField();
-
-        this.isEnemy = true;
-        this.name = name;
-        this.avatarBase64 = avatarBase64;
-        battleField.setShowShips(false);
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
+        }
     }
 
 
@@ -75,39 +59,24 @@ public class Player implements Serializable {
         this.battleField = battleField;
     }
 
-    private void setupProfile(Context c) {
-        if (!isEnemy) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
+    private void setupPlayerProfile(Context c) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
 
-            String playerAvatarBase64 = prefs.getString("avatar", "");
+        String playerAvatarBase64 = prefs.getString("avatar", "");
 
-            String playerUsername = prefs.getString("key_username", "");
+        String playerUsername = prefs.getString("key_username", "");
 
-            if (playerAvatarBase64.length() > 0) {
-                avatarBase64 = playerAvatarBase64;
-            } else {
-                avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
-            }
-
-            if (playerUsername.length() > 0) {
-                name = playerUsername;
-            } else {
-                name = c.getResources().getString(R.string.player);
-            }
+        if (playerAvatarBase64.length() > 0) {
+            avatarBase64 = playerAvatarBase64;
         } else {
-            if (!isEnemy) {
-                avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
-                name = c.getResources().getString(R.string.opponent);
-            }
+            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
         }
-    }
 
-    public boolean isDevice() {
-        return isDevice;
-    }
-
-    public void setDevice(boolean device) {
-        isDevice = device;
+        if (playerUsername.length() > 0) {
+            name = playerUsername;
+        } else {
+            name = c.getResources().getString(R.string.player);
+        }
     }
 
     public boolean isYourTurn() {
@@ -116,14 +85,6 @@ public class Player implements Serializable {
 
     public void setYourTurn(boolean yourTurn) {
         isYourTurn = yourTurn;
-    }
-
-    public boolean isEnemy() {
-        return isEnemy;
-    }
-
-    public void setEnemy(boolean enemy) {
-        isEnemy = enemy;
     }
 
     public Bitmap getAvatar() {
@@ -139,7 +100,7 @@ public class Player implements Serializable {
     }
 
     public boolean getCanMoveShip() {
-        return canMoveShip;
+        return !canMoveShip;
     }
 
     public void setCanMoveShip(boolean canMoveShip) {

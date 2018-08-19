@@ -11,11 +11,10 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import io.github.danielpinto8zz6.navalbattle.Constants.GameMode;
-import io.github.danielpinto8zz6.navalbattle.Utils;
 
 public class Game implements Serializable {
-    private Player player;
-    private Player opponent;
+    private final Player player;
+    private final Player opponent;
     private GameMode mode;
     private Player winner;
 
@@ -23,7 +22,7 @@ public class Game implements Serializable {
         player = new Player(c);
         opponent = new Player(c, true, true);
 
-        mode = GameMode.Network.Local;
+        mode = GameMode.Local;
     }
 
     public Game(Context c, GameMode mode) {
@@ -37,16 +36,8 @@ public class Game implements Serializable {
         return player;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
     public Player getOpponent() {
         return opponent;
-    }
-
-    public void setOpponent(Player opponent) {
-        this.opponent = opponent;
     }
 
     public GameMode getMode() {

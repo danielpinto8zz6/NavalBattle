@@ -9,13 +9,11 @@ import io.github.danielpinto8zz6.navalbattle.activities.MainActivity;
 import static io.github.danielpinto8zz6.navalbattle.Constants.socketServerPORT;
 
 public class Server {
-    private MainActivity activity;
     private ServerSocket serverSocket;
     private Socket socket;
-    private Thread thread;
+    private final Thread thread;
 
     public Server(final MainActivity activity) {
-        this.activity = activity;
 
         thread = new Thread(new Runnable() {
             @Override

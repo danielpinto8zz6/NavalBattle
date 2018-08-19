@@ -3,13 +3,14 @@ package io.github.danielpinto8zz6.navalbattle.game;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import io.github.danielpinto8zz6.navalbattle.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.R;
 
 public class BattleField implements Serializable {
     private int[][] field = new int[8][8];
-    private ArrayList<Ship> ships = new ArrayList<>();
+    private final ArrayList<Ship> ships = new ArrayList<>();
     private boolean showShips = true;
     private Ship selectedShip = null;
 
@@ -19,16 +20,16 @@ public class BattleField implements Serializable {
                 field[x][y] = R.color.water;
             }
         }
-        addShip(new Ship(0, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 1)))));
-        addShip(new Ship(0, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 3)))));
+        addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
+        addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
 
-        addShip(new Ship(1, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
-        addShip(new Ship(1, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+        addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+        addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
 
-        addShip(new Ship(2, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
-        addShip(new Ship(2, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+        addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+        addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
 
-        addShip(new Ship(3, 0, new ArrayList<Coordinates>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+        addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
     }
 
     public boolean attackPosition(Coordinates c) {
@@ -68,10 +69,10 @@ public class BattleField implements Serializable {
         return true;
     }
 
-    public boolean addShip(Ship ship) {
+    private void addShip(Ship ship) {
         for (Coordinates pos : ship.getPositions()) {
             if (!isPositionEmpty(pos.x, pos.y)) {
-                return false;
+                return;
             }
         }
 
@@ -81,25 +82,10 @@ public class BattleField implements Serializable {
 
         ships.add(ship);
 
-        return true;
-
-    }
-
-    public boolean removeShip(Ship ship) {
-        if (ship == null) return false;
-
-        for (Coordinates pos : ship.getPositions()) {
-            field[pos.x][pos.y] = R.color.water;
-        }
-
-        ships.remove(ship);
-
-        return true;
-
     }
 
     private boolean isPositionEmpty(int x, int y) {
-        return (field[x][y] == R.color.water) ? true : false;
+        return field[x][y] == R.color.water;
     }
 
     public int[][] getField() {
@@ -124,15 +110,11 @@ public class BattleField implements Serializable {
         return field[x][y];
     }
 
-    public int getSize() {
-        return field.length;
-    }
-
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
     }
 
-    public boolean isMoveValid(ArrayList<Coordinates> pos, ArrayList<Coordinates> whiteList) {
+    private boolean isMoveValid(ArrayList<Coordinates> pos, ArrayList<Coordinates> whiteList) {
         // check first position
         for (Coordinates c : pos) {
             if (c.x < 0 || c.y < 0 || c.x > 7 || c.y > 7)
@@ -190,7 +172,7 @@ public class BattleField implements Serializable {
     }
 
 
-    public boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
+    private boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
         if (!isMoveValid(newPositions, ship.getPositions()))
             return false;
 
@@ -213,24 +195,24 @@ public class BattleField implements Serializable {
                 // Rotate to 90
                 switch (ship.getType()) {
                     case 0:
-                        return true;
+                        return false;
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y + 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(90);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(90);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
@@ -239,33 +221,33 @@ public class BattleField implements Serializable {
                         newPositions.add(new Coordinates(base.x + 1, base.y + 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(90);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                 }
                 break;
             case 90:
                 // Rotate to 180
                 switch (ship.getType()) {
                     case 0:
-                        return true;
+                        return false;
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(180);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y + 1));
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(180);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
@@ -274,33 +256,33 @@ public class BattleField implements Serializable {
                         newPositions.add(new Coordinates(base.x - 1, base.y + 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(180);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                 }
                 break;
             case 180:
                 // Rotate to 270
                 switch (ship.getType()) {
                     case 0:
-                        return true;
+                        return false;
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(270);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(270);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
@@ -309,33 +291,33 @@ public class BattleField implements Serializable {
                         newPositions.add(new Coordinates(base.x - 1, base.y + 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(270);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                 }
                 break;
             case 270:
                 // Rotate to 0
                 switch (ship.getType()) {
                     case 0:
-                        return true;
+                        return false;
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(0);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y + 1));
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(0);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
@@ -344,13 +326,13 @@ public class BattleField implements Serializable {
                         newPositions.add(new Coordinates(base.x + 1, base.y - 1));
                         if (moveShip(ship, newPositions)) {
                             ship.setRotation(0);
-                            return true;
+                            return false;
                         }
-                        return false;
+                        return true;
                 }
                 break;
         }
-        return true;
+        return false;
     }
 
     public boolean move(Ship ship, Coordinates base) {
@@ -359,7 +341,7 @@ public class BattleField implements Serializable {
         // make sure pieces not destroyed
         for (Coordinates c : ship.getPositions()){
             if (field[c.x][c.y] == R.drawable.ship_destroyed)
-                return false;
+                return true;
         }
 
         switch (ship.getRotation()) {
@@ -367,96 +349,96 @@ public class BattleField implements Serializable {
                 switch (ship.getType()) {
                     case 0:
                         newPositions.add(base);
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x + 1, base.y));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         newPositions.add(new Coordinates(base.x, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         newPositions.add(new Coordinates(base.x, base.y + 1));
                         newPositions.add(new Coordinates(base.x - 1, base.y - 1));
                         newPositions.add(new Coordinates(base.x + 1, base.y - 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                 }
                 break;
             case 90:
                 switch (ship.getType()) {
                     case 0:
                         newPositions.add(base);
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         newPositions.add(new Coordinates(base.x - 1, base.y));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         newPositions.add(new Coordinates(base.x + 1, base.y - 1));
                         newPositions.add(new Coordinates(base.x + 1, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                 }
                 break;
             case 180:
                 switch (ship.getType()) {
                     case 0:
                         newPositions.add(base);
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         newPositions.add(new Coordinates(base.x, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
                         newPositions.add(new Coordinates(base.x, base.y + 1));
                         newPositions.add(new Coordinates(base.x + 1, base.y + 1));
                         newPositions.add(new Coordinates(base.x - 1, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                 }
                 break;
             case 270:
                 switch (ship.getType()) {
                     case 0:
                         newPositions.add(base);
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 1:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x, base.y - 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 2:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         newPositions.add(new Coordinates(base.x + 1, base.y));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                     case 3:
                         newPositions.add(base);
                         newPositions.add(new Coordinates(base.x - 1, base.y));
                         newPositions.add(new Coordinates(base.x + 1, base.y));
                         newPositions.add(new Coordinates(base.x - 1, base.y - 1));
                         newPositions.add(new Coordinates(base.x - 1, base.y + 1));
-                        return moveShip(ship, newPositions);
+                        return !moveShip(ship, newPositions);
                 }
                 break;
         }
-        return true;
+        return false;
     }
 
     public Ship getShipAtPosition(Coordinates c) {
@@ -470,20 +452,12 @@ public class BattleField implements Serializable {
         return null;
     }
 
-    public ArrayList<Ship> getShips() {
-        return ships;
-    }
-
-    public void set(int x, int y, int res) {
-        field[x][y] = res;
-    }
-
     public void setSelectedShip(Ship ship) {
         this.selectedShip = ship;
     }
 
     public boolean isShipsDestroyed() {
-        return ships.size() > 0 ? false : true;
+        return ships.size() <= 0;
     }
 
     public ArrayList<Coordinates> getValidPositions() {

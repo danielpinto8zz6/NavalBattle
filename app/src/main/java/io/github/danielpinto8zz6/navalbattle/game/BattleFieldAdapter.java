@@ -1,7 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +12,9 @@ import android.widget.LinearLayout;
 import io.github.danielpinto8zz6.navalbattle.R;
 
 public class BattleFieldAdapter extends BaseAdapter {
-    private Context context;
-    private BattleField battleField;
-    private int imageDimension;
+    private final Context context;
+    private final BattleField battleField;
+    private final int imageDimension;
 
     public BattleFieldAdapter(Context c, BattleField battleField, int imageDimension) {
         context = c;
@@ -39,6 +39,7 @@ public class BattleFieldAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         int x = position % 8;
@@ -59,10 +60,6 @@ public class BattleFieldAdapter extends BaseAdapter {
         viewHolder.imageView.setImageResource(battleField.get(x, y));
 
         return convertView;
-    }
-
-    public void setImageDimension(int imageDimension) {
-        this.imageDimension = imageDimension;
     }
 
     class ViewHolder {

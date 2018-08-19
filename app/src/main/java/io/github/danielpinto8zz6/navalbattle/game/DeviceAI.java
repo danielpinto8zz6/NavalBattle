@@ -8,8 +8,8 @@ import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
 
 public class DeviceAI {
-    private Game game;
-    private GameActivity activity;
+    private final Game game;
+    private final GameActivity activity;
     private int shots = 0;
 
     public DeviceAI(Game game, GameActivity activity) {
@@ -51,7 +51,7 @@ public class DeviceAI {
         thread.start();
     }
 
-    public BattleField getBattleField() {
+    private BattleField getBattleField() {
         return game.getPlayer().getBattleField();
     }
 }

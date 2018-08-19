@@ -3,8 +3,8 @@ package io.github.danielpinto8zz6.navalbattle;
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
-    public int x;
-    public int y;
+    public final int x;
+    public final int y;
 
     public Coordinates(int x, int y) {
         this.x = x;
@@ -15,16 +15,8 @@ public class Coordinates implements Serializable {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     @Override
@@ -32,9 +24,7 @@ public class Coordinates implements Serializable {
 
         if (o instanceof Coordinates){
             Coordinates c = (Coordinates)o;
-            if (c.x == x && c.y == y) {
-                return true;
-            }
+            return c.x == x && c.y == y;
         }
 
         return false;

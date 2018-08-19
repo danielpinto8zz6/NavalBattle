@@ -1,11 +1,9 @@
 package io.github.danielpinto8zz6.navalbattle.Network;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,20 +13,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Objects;
 
-import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.R;
 import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
-import io.github.danielpinto8zz6.navalbattle.game.Opponent;
-import io.github.danielpinto8zz6.navalbattle.game.Player;
 
 public class Communication {
-    private Socket socket;
+    private final Socket socket;
     private PrintWriter output = null;
     private BufferedReader input = null;
-    private Thread thread;
-    private GameActivity activity;
+    private final Thread thread;
+    private final GameActivity activity;
     private boolean connected = false;
 
     public Communication(final Socket socket, final GameActivity activity) {
@@ -121,7 +117,7 @@ public class Communication {
         sendMessage(json.toString());
     }
 
-    public void decodeMessage(String message) {
+    private void decodeMessage(String message) {
         JSONObject json = null;
         try {
             json = new JSONObject(message);
@@ -185,7 +181,7 @@ public class Communication {
                 final String n = name;
                 final String a = avatarBase64;
 
-                if (name != "" && avatarBase64 != "") {
+                if (!Objects.equals(name, "") && !Objects.equals(avatarBase64, "")) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

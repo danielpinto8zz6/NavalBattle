@@ -8,8 +8,8 @@ import io.github.danielpinto8zz6.navalbattle.Coordinates;
 public class Ship implements Serializable {
     //  Destroyed flag, Position
     private ArrayList<Coordinates> positions;
-    private int type;
-    private int rotation = 0;
+    private final int type;
+    private int rotation;
 
     public Ship(int type, int rotation, ArrayList<Coordinates> positions) {
         this.type = type;
@@ -17,16 +17,8 @@ public class Ship implements Serializable {
         this.rotation = rotation;
     }
 
-    public int getSize() {
-        return positions.size();
-    }
-
     public int getType() {
         return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public ArrayList<Coordinates> getPositions() {

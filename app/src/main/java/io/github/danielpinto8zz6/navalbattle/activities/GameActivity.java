@@ -2,13 +2,11 @@ package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,13 +20,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
@@ -52,17 +47,12 @@ public class GameActivity extends AppCompatActivity {
     private DeviceAI device;
     private Game game;
     private int shots = 0;
-    private int count = 8;
     private GridView gridViewPlayer;
     private GridView gridViewOpponent;
     private BattleFieldAdapter battleFieldAdapterPlayer;
     private BattleFieldAdapter battleFieldAdapterOpponent;
-    private int imageDimension;
-    private ImageView imageViewPlayer;
     private ImageView imageViewOpponent;
-    private TextView playerName;
     private TextView opponentName;
-    private AdapterView.OnItemClickListener onItemClickListener;
     private ProgressDialog dialog;
 
     @Override
@@ -85,7 +75,7 @@ public class GameActivity extends AppCompatActivity {
                 communication.sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
             }
 
-            if (getIntent().getExtras().getBoolean("is_server")) {
+            if (Objects.requireNonNull(getIntent().getExtras()).getBoolean("is_server")) {
                 game.getPlayer().setYourTurn(true);
             }
         }
@@ -136,20 +126,23 @@ public class GameActivity extends AppCompatActivity {
         outState.putSerializable("game_obj", game);
     }
 
-    public void setupGrids() {
+    @SuppressWarnings({"SuspiciousNameCombination", "UnusedAssignment"})
+    private void setupGrids() {
         int bordersSize = convertDpToPixel(36);
         int actionbarSize = convertDpToPixel(56);
 
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
         gridViewPlayer = findViewById(R.id.gridview_player);
+        int count = 8;
         gridViewPlayer.setNumColumns(count);
 
         gridViewOpponent = findViewById(R.id.gridview_opponent);
         gridViewOpponent.setNumColumns(count);
 
+        int imageDimension;
         if (getResources().getConfiguration().orientation == 1) {
-            imageDimension = (int) ((height / 2) / count);
+            imageDimension = (height / 2) / count;
             ViewGroup.LayoutParams layoutParams = gridViewPlayer.getLayoutParams();
             layoutParams.width = (height / 2);
             layoutParams.height = (height / 2);
@@ -160,7 +153,7 @@ public class GameActivity extends AppCompatActivity {
             layoutParams.height = (height / 2);
             gridViewOpponent.setLayoutParams(layoutParams);
         } else {
-            imageDimension = (int) (height / count);
+            imageDimension = height / count;
             ViewGroup.LayoutParams layoutParams = gridViewPlayer.getLayoutParams();
             layoutParams.width = height;
             layoutParams.height = height;
@@ -176,6 +169,7 @@ public class GameActivity extends AppCompatActivity {
 
         gridViewOpponent.setAdapter(battleFieldAdapterOpponent = new BattleFieldAdapter(this, game.getOpponent().getBattleField(), imageDimension));
 
+        AdapterView.OnItemClickListener onItemClickListener;
         gridViewOpponent.setOnItemClickListener(onItemClickListener = new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
@@ -205,7 +199,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
 
-                if (!game.getPlayer().getCanMoveShip()) return true;
+                if (game.getPlayer().getCanMoveShip()) return true;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
@@ -232,7 +226,7 @@ public class GameActivity extends AppCompatActivity {
                         int x = position % 8;
                         int y = (int) Math.ceil(position / 8);
 
-                        if (!game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
+                        if (game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
                             Toast.makeText(GameActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
                         } else {
                             game.getPlayer().setCanMoveShip(false);
@@ -244,7 +238,6 @@ public class GameActivity extends AppCompatActivity {
 
                         gridViewPlayer.setOnItemClickListener(null);
 
-                        return;
                     }
                 });
 
@@ -281,19 +274,19 @@ public class GameActivity extends AppCompatActivity {
         saveGameToHistory();
     }
 
-    public void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
         // Set player & opponent avatar/username
 
-        imageViewPlayer = (ImageView) findViewById(R.id.player_avatar);
-        imageViewOpponent = (ImageView) findViewById(R.id.opponent_avatar);
+        ImageView imageViewPlayer = findViewById(R.id.player_avatar);
+        imageViewOpponent = findViewById(R.id.opponent_avatar);
 
-        playerName = (TextView) findViewById(R.id.player_name);
-        opponentName = (TextView) findViewById(R.id.opponent_name);
+        TextView playerName = findViewById(R.id.player_name);
+        opponentName = findViewById(R.id.opponent_name);
 
         imageViewPlayer.setImageBitmap(game.getPlayer().getAvatar());
         imageViewOpponent.setImageBitmap(game.getOpponent().getAvatar());
@@ -332,7 +325,6 @@ public class GameActivity extends AppCompatActivity {
     public void disconnected() {
         Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
-        game.getOpponent().setDevice(true);
         game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
         game.getOpponent().setName(getResources().getString(R.string.computer));
         imageViewOpponent.setImageDrawable(getResources().getDrawable(R.drawable.computer));
@@ -353,11 +345,11 @@ public class GameActivity extends AppCompatActivity {
                     getCommunication().stop();
     }
 
-    public NavalBattle getNavalBattle() {
+    private NavalBattle getNavalBattle() {
         return ((NavalBattle) getApplication());
     }
 
-    public Communication getCommunication() {
+    private Communication getCommunication() {
         return getNavalBattle().getCommunication();
     }
 

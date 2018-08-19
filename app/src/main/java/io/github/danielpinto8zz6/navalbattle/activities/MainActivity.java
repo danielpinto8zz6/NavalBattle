@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FloatingActionButton fab;
     private ProgressDialog pd = null;
     private View mShadowView;
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     private Server server;
 
@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -87,14 +87,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         View header = navigationView.getHeaderView(0);
 
-        final ImageView imageView = (ImageView) header.findViewById(R.id.drawer_avatar);
+        final ImageView imageView = header.findViewById(R.id.drawer_avatar);
 
         String avatarBase64 = prefs.getString("avatar", "");
 
-        final TextView textViewUsername = (TextView) header.findViewById(R.id.drawer_username);
+        final TextView textViewUsername = header.findViewById(R.id.drawer_username);
 
         //Setup a shared preference listener for hpwAddress and restart transport
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                 if (key.equals("username")) {
                     String username = prefs.getString("key_username", "");
@@ -114,15 +114,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (avatarBase64.length() > 0)
             imageView.setImageBitmap(decodeBase64(avatarBase64));
 
-        final TextView textViewSummary = (TextView) header.findViewById(R.id.drawer_summary);
+        final TextView textViewSummary = header.findViewById(R.id.drawer_summary);
         textViewSummary.setText(getLocalIpAddress());
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        mShadowView = (View) findViewById(R.id.shadowView);
+        fab = findViewById(R.id.fab);
+        mShadowView = findViewById(R.id.shadowView);
 
-        layoutCreateServer = (LinearLayout) this.findViewById(R.id.create_server_layout);
-        layoutJoinServer = (LinearLayout) this.findViewById(R.id.join_server_layout);
-        layoutAgainstDevice = (LinearLayout) this.findViewById(R.id.against_device_layout);
+        layoutCreateServer = this.findViewById(R.id.create_server_layout);
+        layoutJoinServer = this.findViewById(R.id.join_server_layout);
+        layoutAgainstDevice = this.findViewById(R.id.against_device_layout);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (isFabMenuOpen)
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(final MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         // Delay a bit to avoid lag
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }, 300);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
@@ -256,8 +256,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         return "";
                     } else {
                         String[] splits = resultingTxt.split("\\.");
-                        for (int i = 0; i < splits.length; i++) {
-                            if (Integer.valueOf(splits[i]) > 255) {
+                        for (String split : splits) {
+                            if (Integer.valueOf(split) > 255) {
                                 return "";
                             }
                         }
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.show();
     }
 
-    public void showWaitConnectionDialog() {
+    private void showWaitConnectionDialog() {
         String ip = getLocalIpAddress();
         pd = new ProgressDialog(this);
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void joinServer(View v) {
         if (isFabMenuOpen) collapseFabMenu();
-        if (!checkConnection(MainActivity.this)) {
+        if (checkConnection(MainActivity.this)) {
             show_snackbar(R.string.no_connection);
             return;
         }
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void createServer(View v) {
         if (isFabMenuOpen) collapseFabMenu();
-        if (!checkConnection(MainActivity.this)) {
+        if (checkConnection(MainActivity.this)) {
             show_snackbar(R.string.no_connection);
             return;
         }
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         showWaitConnectionDialog();
     }
 
-    public void show_snackbar(int str) {
+    private void show_snackbar(int str) {
         final Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_main), str, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
             @Override

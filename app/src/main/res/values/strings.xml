@@ -7,11 +7,6 @@
     <string name="app_version">3.5</string>
     <string name="summary_support">Got any queries? We are happy to help!</string>
     <string name="title_send_feedback">Send Feedback</string>
-    <string name="title_faq">FAQ</string>
-    <string name="summary_faq">View frequently asked questions</string>
-    <string name="url_faq">https://google.com</string>
-    <string name="title_terms">Terms &amp; Conditions</string>
-    <string name="url_terms">https://google.com</string>
     <string name="title_version">Version</string>
     <string name="choose_email_client">Choose email client</string>
     <string name="key_username">key_username</string>
@@ -36,7 +31,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="dismiss">Dismiss</string>
     <string name="sure_want_to_exit">Are you sure you want to exit?</string>
-    <string name="wait_connection">Waiting for a client...</string>
+    <string name="wait_connection">Waiting for a client…</string>
     <string name="serverdlg_title">Naval Battle Server</string>
     <string name="action_help">Help</string>
     <string name="title_activity_help">Help</string>

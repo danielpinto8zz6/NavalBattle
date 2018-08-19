@@ -20,6 +20,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import io.github.danielpinto8zz6.navalbattle.R;
 
@@ -38,13 +40,13 @@ import static io.github.danielpinto8zz6.navalbattle.Utils.decodeBase64;
 import static io.github.danielpinto8zz6.navalbattle.Utils.encodeTobase64;
 import static io.github.danielpinto8zz6.navalbattle.Utils.getCircleBitmap;
 
+@SuppressWarnings("deprecation")
 public class SettingsActivity extends AppCompatPreferenceActivity implements Serializable {
-    private static final String TAG = SettingsActivity.class.getSimpleName();
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             String stringValue = newValue.toString();
@@ -87,14 +89,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
      * Appends the necessary device information to email body
      * useful when providing support
      */
-    public static void sendFeedback(Context context) {
+    private static void sendFeedback(Context context) {
         String body = null;
         try {
             body = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
             body = "\n\n-----------------------------\nPlease don't remove this information\n Device OS: Android \n Device OS version: " +
                     Build.VERSION.RELEASE + "\n App Version: " + body + "\n Device Brand: " + Build.BRAND +
                     "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER;
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException ignored) {
         }
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
@@ -121,6 +123,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("deprecation")
     public static class MainPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
@@ -152,7 +155,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                             // Should we show an explanation?
                             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                                     Manifest.permission.CAMERA)) {
-                                Snackbar.make(getView(), "You need to accept permission in order to take photo.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(Objects.requireNonNull(getView()), "You need to accept permission in order to take photo.", Snackbar.LENGTH_LONG).show();
 
                                 requestPermissions(new String[]{Manifest.permission.CAMERA},
                                         MY_PERMISSIONS_REQUEST_CAMERA);
@@ -199,7 +202,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                         // Should we show an explanation?
                         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                            Snackbar.make(getView(), "You need to accept permission in order to load an avatar.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(Objects.requireNonNull(getView()), "You need to accept permission in order to load an avatar.", Snackbar.LENGTH_LONG).show();
 
                             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
@@ -225,7 +228,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(extras).get("data");
 
                 Preference avatar = findPreference(getString(R.string.key_avatar));
                 avatar.setIcon(new BitmapDrawable(getResources(), imageBitmap));
@@ -238,9 +241,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
                 String[] filePath = {MediaStore.Images.Media.DATA};
 
-                Cursor c = getActivity().getContentResolver().query(selectedImage, filePath, null, null, null);
+                Cursor c = getActivity().getContentResolver().query(Objects.requireNonNull(selectedImage), filePath, null, null, null);
 
-                c.moveToFirst();
+                Objects.requireNonNull(c).moveToFirst();
 
                 String picturePath = c.getString(c.getColumnIndex(filePath[0]));
 
@@ -272,7 +275,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             editor.putString("avatar", encodedBase64);
             avatar.setIcon(new BitmapDrawable(getResources(), decodeBase64(encodedBase64)));
 
-            editor.commit();
+            editor.apply();
 
             Toast.makeText(getActivity(), "Avatar Loaded", Toast.LENGTH_LONG).show();
         }
@@ -295,13 +298,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             editor.putString("avatar", encodedBase64);
             avatar.setIcon(new BitmapDrawable(getResources(), decodeBase64(encodedBase64)));
 
-            editor.commit();
+            editor.apply();
 
             Toast.makeText(getActivity(), "Avatar Loaded", Toast.LENGTH_LONG).show();
         }
 
         @Override
-        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {

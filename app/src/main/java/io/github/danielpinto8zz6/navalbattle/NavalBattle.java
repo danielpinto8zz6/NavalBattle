@@ -5,7 +5,6 @@ import android.app.Application;
 import java.net.Socket;
 
 import io.github.danielpinto8zz6.navalbattle.Network.Communication;
-import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 
 public class NavalBattle extends Application {
     private Socket socket;

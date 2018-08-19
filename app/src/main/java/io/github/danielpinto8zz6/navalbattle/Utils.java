@@ -16,18 +16,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Base64;
-import android.util.Base64InputStream;
-import android.util.Base64OutputStream;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -35,6 +30,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.Random;
 
 public class Utils {
@@ -77,12 +73,6 @@ public class Utils {
         return output;
     }
 
-    public static float convertPixelsToDp(float px) {
-        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return Math.round(dp);
-    }
-
     public static int convertDpToPixel(float dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
@@ -116,73 +106,8 @@ public class Utils {
 
     public static boolean checkConnection(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            return false;
-        }
-        return true;
-    }
-
-    public static String convertTwoDimensionalIntArrayToString(int[][] i) {
-        ByteArrayOutputStream bo = null;
-        ObjectOutputStream so = null;
-        Base64OutputStream b64 = null;
-        try {
-            bo = new ByteArrayOutputStream();
-            b64 = new Base64OutputStream(bo, Base64.DEFAULT);
-            so = new ObjectOutputStream(b64);
-            so.writeObject(i);
-            return bo.toString("UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bo != null) {
-                    bo.close();
-                }
-                if (b64 != null) {
-                    b64.close();
-                }
-                if (so != null) {
-                    so.close();
-                }
-            } catch (Exception ee) {
-                ee.printStackTrace();
-            }
-
-        }
-        return null;
-    }
-
-    public int[][] convertStringToTwoDimensionalIntArray(String s) {
-        ByteArrayInputStream bi = null;
-        ObjectInputStream si = null;
-        Base64InputStream b64 = null;
-        try {
-            byte b[] = s.getBytes("UTF-8");
-            bi = new ByteArrayInputStream(b);
-            b64 = new Base64InputStream(bi, Base64.DEFAULT);
-            si = new ObjectInputStream(b64);
-            return (int[][]) si.readObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bi != null) {
-                    bi.close();
-                }
-                if (b64 != null) {
-                    b64.close();
-                }
-                if (si != null) {
-                    si.close();
-                }
-            } catch (Exception ee) {
-                ee.printStackTrace();
-            }
-
-        }
-        return null;
+        NetworkInfo networkInfo = Objects.requireNonNull(connMgr).getActiveNetworkInfo();
+        return networkInfo == null || !networkInfo.isConnected();
     }
 
     public static void saveArrayList(Context context, ArrayList<String> list, String key) {

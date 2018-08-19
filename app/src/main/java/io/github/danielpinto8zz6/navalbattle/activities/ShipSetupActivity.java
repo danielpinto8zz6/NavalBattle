@@ -16,6 +16,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
@@ -30,8 +31,6 @@ public class ShipSetupActivity extends AppCompatActivity {
     private BattleField battleField;
     private BattleFieldAdapter adapter;
     private AdapterView.OnItemClickListener onItemClickListener;
-    private int imageDimension;
-    private int count = 8;
     private GridView gridView;
 
     @Override
@@ -39,7 +38,7 @@ public class ShipSetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ship_setup);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_setup_complete);
+        FloatingActionButton fab = findViewById(R.id.fab_setup_complete);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +47,7 @@ public class ShipSetupActivity extends AppCompatActivity {
                 Intent game = new Intent(getApplicationContext(), GameActivity.class);
                 game.putExtra("game_mode", getIntent().getSerializableExtra("game_mode"));
                 game.putExtra("battle_field", battleField);
-                game.putExtra("is_server", getIntent().getExtras().getBoolean("is_server"));
+                game.putExtra("is_server", Objects.requireNonNull(getIntent().getExtras()).getBoolean("is_server"));
                 startActivity(game);
             }
         });
@@ -71,6 +70,7 @@ public class ShipSetupActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void setupGrid() {
         int bordersSize = convertDpToPixel(32);
         int actionbarSize = convertDpToPixel(56);
@@ -79,16 +79,18 @@ public class ShipSetupActivity extends AppCompatActivity {
         int height = (getResources().getDisplayMetrics().heightPixels - bordersSize) - actionbarSize;
 
         gridView = findViewById(R.id.gridview_ship_setup);
+        int count = 8;
         gridView.setNumColumns(count);
 
+        int imageDimension;
         if (getResources().getConfiguration().orientation == 1) {
-            imageDimension = (int) (width / count);
+            imageDimension = width / count;
             ViewGroup.LayoutParams layoutParams = gridView.getLayoutParams();
             layoutParams.width = width;
             layoutParams.height = width;
             gridView.setLayoutParams(layoutParams);
         } else {
-            imageDimension = (int) (height / count);
+            imageDimension = height / count;
             ViewGroup.LayoutParams layoutParams = gridView.getLayoutParams();
             layoutParams.width = height;
             layoutParams.height = height;
@@ -113,7 +115,7 @@ public class ShipSetupActivity extends AppCompatActivity {
 
                 if (ship == null) return;
 
-                if (!battleField.rotateShip(ship)) {
+                if (battleField.rotateShip(ship)) {
                     Toast.makeText(ShipSetupActivity.this, "Can't rotate!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -150,7 +152,7 @@ public class ShipSetupActivity extends AppCompatActivity {
                         int x = position % 8;
                         int y = (int) Math.ceil(position / 8);
 
-                        if (!battleField.move(ship, new Coordinates(x, y))) {
+                        if (battleField.move(ship, new Coordinates(x, y))) {
                             Toast.makeText(ShipSetupActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
                         }
 
@@ -161,7 +163,6 @@ public class ShipSetupActivity extends AppCompatActivity {
                         // Re-enable clicklistener for rotate...
                         gridView.setOnItemClickListener(onItemClickListener);
 
-                        return;
                     }
                 });
 

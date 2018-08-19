@@ -1,5 +1,6 @@
 package io.github.danielpinto8zz6.navalbattle.activities;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -15,6 +16,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import io.github.danielpinto8zz6.navalbattle.R;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
@@ -24,7 +26,6 @@ import static io.github.danielpinto8zz6.navalbattle.Utils.convertDpToPixel;
 import static io.github.danielpinto8zz6.navalbattle.Utils.getArrayList;
 
 public class HistoryActivity extends AppCompatActivity {
-    private int imageDimension;
     private LinearLayout linearLayout;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -42,8 +43,9 @@ public class HistoryActivity extends AppCompatActivity {
                 setupGrid(game);
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void setupGrid(String game) {
+    private void setupGrid(String game) {
         Gson gson = new Gson();
         JSONObject json = null;
         try {
@@ -57,14 +59,14 @@ public class HistoryActivity extends AppCompatActivity {
 
         String battleFieldPlayerStr = "";
         try {
-            battleFieldPlayerStr = json.getString("player_battlefield");
+            battleFieldPlayerStr = Objects.requireNonNull(json).getString("player_battlefield");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         String battleFieldOpponentStr = "";
         try {
-            battleFieldOpponentStr = json.getString("opponent_battlefield");
+            battleFieldOpponentStr = Objects.requireNonNull(json).getString("opponent_battlefield");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -86,7 +88,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         int width = getResources().getDisplayMetrics().widthPixels - bordersSize;
 
-        imageDimension = ((width / 2) / 8);
+        int imageDimension = ((width / 2) / 8);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.width = (width / 2);
         layoutParams.height = (width / 2);
@@ -104,7 +106,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         TextView textView = new TextView(this);
         try {
-            textView.setText(json.getString("player_name") + " : " + json.getString("opponent_name"));
+            textView.setText(Objects.requireNonNull(json).getString("player_name") + " : " + json.getString("opponent_name"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
