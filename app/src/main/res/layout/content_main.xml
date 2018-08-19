@@ -15,35 +15,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/card_margin"
             android:elevation="2dp"
-            android:onClick="gameHistory">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/background1" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:background="#cc212121"
-                    android:padding="8dp"
-                    android:text="@string/game_history"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            </RelativeLayout>
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/card_margin"
-            android:elevation="2dp"
             android:onClick="againstDevice">
 
             <RelativeLayout
@@ -121,6 +92,35 @@
                     android:padding="8dp"
                     android:text="@string/join_server"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/card_margin"
+            android:elevation="2dp"
+            android:onClick="gameHistory">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/background1" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="#cc212121"
+                    android:padding="8dp"
+                    android:text="@string/game_history"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
             </RelativeLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>

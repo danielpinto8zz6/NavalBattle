@@ -200,13 +200,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            if (isFabMenuOpen) collapseFabMenu();
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            return true;
-        }
-
         if (id == R.id.action_exit) {
             finishAndRemoveTask();
             return true;
@@ -227,8 +220,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
 
                 if (id == R.id.action_settings) {
+                    if (isFabMenuOpen) collapseFabMenu();
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 } else if (id == R.id.action_help) {
+                    if (isFabMenuOpen) collapseFabMenu();
                     startActivity(new Intent(MainActivity.this, HelpActivity.class));
                 }
 
@@ -338,11 +333,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void gameHistory(View v) {
+        if (isFabMenuOpen) collapseFabMenu();
         Intent history = new Intent(getApplicationContext(), HistoryActivity.class);
         startActivity(history);
     }
 
     public void joinServer(View v) {
+        if (isFabMenuOpen) collapseFabMenu();
         if (!checkConnection(MainActivity.this)) {
             show_snackbar(R.string.no_connection);
             return;
@@ -352,19 +349,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void againstDevice(View v) {
+        if (isFabMenuOpen) collapseFabMenu();
         Intent setup = new Intent(getApplicationContext(), ShipSetupActivity.class);
         setup.putExtra("game_mode", Local);
         startActivity(setup);
     }
 
     public void createServer(View v) {
+        if (isFabMenuOpen) collapseFabMenu();
         if (!checkConnection(MainActivity.this)) {
             show_snackbar(R.string.no_connection);
             return;
         }
-        showWaitConnectionDialog();
 
         server = new Server(this);
+
+        showWaitConnectionDialog();
     }
 
     public void show_snackbar(int str) {
