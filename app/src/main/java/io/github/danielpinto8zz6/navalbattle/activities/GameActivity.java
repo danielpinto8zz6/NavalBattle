@@ -28,6 +28,7 @@ import org.json.JSONException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
@@ -184,6 +185,8 @@ public class GameActivity extends AppCompatActivity {
                 int y = (int) Math.ceil(position / 8);
 
                 if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y))) {
+                    game.getOpponent().getBattleField().addGivenShot(new Coordinates(x, y));
+                    battleFieldAdapterOpponent.notifyDataSetChanged();
                     shots++;
                 }
 
@@ -193,6 +196,8 @@ public class GameActivity extends AppCompatActivity {
 
                 if (shots >= 3) {
                     shots = 0;
+
+                    game.getOpponent().getBattleField().clearGivenShots();
                     battleFieldAdapterOpponent.notifyDataSetChanged();
                     opponentPlay();
                 }

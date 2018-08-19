@@ -1,5 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ public class BattleField implements Serializable {
     private final ArrayList<Ship> ships = new ArrayList<>();
     private boolean showShips = true;
     private Ship selectedShip = null;
+    private ArrayList<Coordinates> givenShots = new ArrayList<>();
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -50,7 +53,6 @@ public class BattleField implements Serializable {
             if (isShipDestroyed(ship)) {
                 ships.remove(ship);
             }
-
             return true;
         }
 
@@ -97,6 +99,11 @@ public class BattleField implements Serializable {
     }
 
     public int get(int x, int y) {
+        // Don't show anything while you're still shooting
+        if (givenShots.contains(new Coordinates(x, y))) {
+            return R.drawable.crosshair;
+        }
+
         // don't show your ships to your opponent
         if (!showShips && field[x][y] == R.drawable.ship) {
             return R.color.water;
@@ -339,7 +346,7 @@ public class BattleField implements Serializable {
         ArrayList<Coordinates> newPositions = new ArrayList<>();
 
         // make sure pieces not destroyed
-        for (Coordinates c : ship.getPositions()){
+        for (Coordinates c : ship.getPositions()) {
             if (field[c.x][c.y] == R.drawable.ship_destroyed)
                 return true;
         }
@@ -471,5 +478,17 @@ public class BattleField implements Serializable {
         }
 
         return validPositions;
+    }
+
+    public void clearGivenShots() {
+        givenShots.clear();
+    }
+
+    public ArrayList<Coordinates> getGivenShots() {
+        return givenShots;
+    }
+
+    public void addGivenShot(Coordinates c) {
+        givenShots.add(c);
     }
 }
