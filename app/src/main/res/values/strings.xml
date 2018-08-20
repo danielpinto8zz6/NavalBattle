@@ -54,4 +54,8 @@ game.\nEach player gives 3 shots, selecting the desired cell.\nOnly after indica
     <string name="click_to_rotate">Click on ship to rotate!</string>
     <string name="long_press_to_move">Long press to move!</string>
     <string name="error_connecting">Error connecting</string>
+    <string name="you_can_move_ship">Do you want to move one of your ships?</string>
+    <string name="tree_successful_shots">Three successful shots</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

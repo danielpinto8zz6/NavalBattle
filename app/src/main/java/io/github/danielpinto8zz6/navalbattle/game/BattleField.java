@@ -14,6 +14,7 @@ public class BattleField implements Serializable {
     private boolean showShips = true;
     private Ship selectedShip = null;
     private final ArrayList<Coordinates> givenShots = new ArrayList<>();
+    private int shipsHitten = 0;
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -51,6 +52,9 @@ public class BattleField implements Serializable {
             if (isShipDestroyed(ship)) {
                 ships.remove(ship);
             }
+
+            shipsHitten++;
+
             return true;
         }
 
@@ -484,5 +488,17 @@ public class BattleField implements Serializable {
 
     public void addGivenShot(Coordinates c) {
         givenShots.add(c);
+    }
+
+    public ArrayList<Coordinates> getGivenShots() {
+        return givenShots;
+    }
+
+    public int getShipsHitten() {
+        return shipsHitten;
+    }
+
+    public void setShipsHitten(int shipsHitten) {
+        this.shipsHitten = shipsHitten;
     }
 }

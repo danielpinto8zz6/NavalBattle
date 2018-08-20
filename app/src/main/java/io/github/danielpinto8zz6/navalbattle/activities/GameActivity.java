@@ -111,7 +111,7 @@ public class GameActivity extends AppCompatActivity {
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
 
-        if (mode == Network) {
+        if (mode == Network && savedInstanceState == null) {
             getCommunication().sendMessage("");
             dialog = new ProgressDialog(GameActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -197,6 +197,12 @@ public class GameActivity extends AppCompatActivity {
 
                     game.getOpponent().getBattleField().clearGivenShots();
                     battleFieldAdapterOpponent.notifyDataSetChanged();
+
+                    if (game.getOpponent().getBattleField().getShipsHitten() == 3) {
+                        if (movingShip()) return;
+                    }
+
+                    game.getOpponent().getBattleField().setShipsHitten(0);
                     opponentPlay();
                 }
             }
@@ -236,14 +242,18 @@ public class GameActivity extends AppCompatActivity {
                         if (game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
                             Toast.makeText(GameActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
                         } else {
-                            game.getPlayer().setCanMoveShip(false);
+                            if (game.getMode() == Network)
+                                getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField().getField());
                         }
 
                         game.getPlayer().getBattleField().setSelectedShip(null);
 
-                        battleFieldAdapterPlayer.notifyDataSetChanged();
-
                         gridViewPlayer.setOnItemClickListener(null);
+
+                        game.getPlayer().setCanMoveShip(false);
+
+                        battleFieldAdapterPlayer.notifyDataSetChanged();
+                        opponentPlay();
 
                     }
                 });
@@ -251,6 +261,32 @@ public class GameActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private boolean movingShip() {
+        final boolean[] ret = {false};
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        game.getPlayer().setCanMoveShip(true);
+                        ret[0] = true;
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        ret[0] = false;
+                        dialog.cancel();
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameActivity.this);
+        builder.setMessage(getString(R.string.you_can_move_ship)).setPositiveButton(getString(R.string.yes), dialogClickListener)
+                .setTitle(getString(R.string.tree_successful_shots))
+                .setNegativeButton(getString(R.string.no), dialogClickListener).show();
+        return ret[0];
     }
 
     private void gameOver() {
