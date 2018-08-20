@@ -28,7 +28,6 @@ import org.json.JSONException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import io.github.danielpinto8zz6.navalbattle.Constants;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
@@ -53,7 +52,6 @@ public class GameActivity extends AppCompatActivity {
     private Game game;
     private int shots = 0;
     private GridView gridViewPlayer;
-    private GridView gridViewOpponent;
     private BattleFieldAdapter battleFieldAdapterPlayer;
     private BattleFieldAdapter battleFieldAdapterOpponent;
     private ImageView imageViewOpponent;
@@ -142,7 +140,7 @@ public class GameActivity extends AppCompatActivity {
         int count = 8;
         gridViewPlayer.setNumColumns(count);
 
-        gridViewOpponent = findViewById(R.id.gridview_opponent);
+        GridView gridViewOpponent = findViewById(R.id.gridview_opponent);
         gridViewOpponent.setNumColumns(count);
 
         int imageDimension;
@@ -423,7 +421,7 @@ public class GameActivity extends AppCompatActivity {
         games.add(gameSave);
 
         String json = gson.toJson(games);
-        writeFileOnInternalStorage(this, "history", json.toString());
+        writeFileOnInternalStorage(this, "history", json);
 
         Log.d("Naval battle", "Saving game...");
     }

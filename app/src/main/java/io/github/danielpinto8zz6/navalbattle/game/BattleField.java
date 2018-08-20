@@ -1,7 +1,5 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
-import android.util.Log;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +13,7 @@ public class BattleField implements Serializable {
     private final ArrayList<Ship> ships = new ArrayList<>();
     private boolean showShips = true;
     private Ship selectedShip = null;
-    private ArrayList<Coordinates> givenShots = new ArrayList<>();
+    private final ArrayList<Coordinates> givenShots = new ArrayList<>();
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -482,10 +480,6 @@ public class BattleField implements Serializable {
 
     public void clearGivenShots() {
         givenShots.clear();
-    }
-
-    public ArrayList<Coordinates> getGivenShots() {
-        return givenShots;
     }
 
     public void addGivenShot(Coordinates c) {

@@ -135,8 +135,6 @@ public class Utils {
             return sb.toString();
         } catch (FileNotFoundException e) {
             return "";
-        } catch (UnsupportedEncodingException e) {
-            return "";
         } catch (IOException e) {
             return "";
         }
