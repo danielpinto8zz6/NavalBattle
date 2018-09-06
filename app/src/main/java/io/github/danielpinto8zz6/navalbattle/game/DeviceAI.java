@@ -2,7 +2,6 @@ package io.github.danielpinto8zz6.navalbattle.game;
 
 import java.util.ArrayList;
 
-import io.github.danielpinto8zz6.navalbattle.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;

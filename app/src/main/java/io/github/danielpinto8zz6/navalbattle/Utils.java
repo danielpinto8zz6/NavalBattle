@@ -20,11 +20,9 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -133,8 +131,6 @@ public class Utils {
                 sb.append(line).append("\n");
             }
             return sb.toString();
-        } catch (FileNotFoundException e) {
-            return "";
         } catch (IOException e) {
             return "";
         }

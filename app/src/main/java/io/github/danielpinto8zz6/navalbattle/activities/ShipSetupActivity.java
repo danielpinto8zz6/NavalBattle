@@ -21,7 +21,7 @@ import java.util.Objects;
 import io.github.danielpinto8zz6.navalbattle.NavalBattle;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
 import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
-import io.github.danielpinto8zz6.navalbattle.Coordinates;
+import io.github.danielpinto8zz6.navalbattle.game.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.R;
 import io.github.danielpinto8zz6.navalbattle.game.Ship;
 

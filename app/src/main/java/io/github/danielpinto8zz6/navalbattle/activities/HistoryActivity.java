@@ -45,11 +45,12 @@ public class HistoryActivity extends AppCompatActivity {
         Type type = new TypeToken<ArrayList<String>>() {
         }.getType();
 
+        if (Objects.equals(history, "")) return;
+
         ArrayList<String> games = gson.fromJson(history, type);
 
-        if (games != null)
-            for (String game : games)
-                setupGrid(game);
+        for (String game : games)
+            setupGrid(game);
     }
 
     @SuppressLint("SetTextI18n")
@@ -128,6 +129,18 @@ public class HistoryActivity extends AppCompatActivity {
         textView.setGravity(Gravity.CENTER);
         textView.setLayoutParams(layoutParams);
 
+        TextView textViewDate = new TextView(this);
+        try {
+            textViewDate.setText(Objects.requireNonNull(json).getString("date"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        textViewDate.setGravity(Gravity.END);
+        textViewDate.setPadding(8, 8, 8, 8);
+        layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        textViewDate.setLayoutParams(layoutParams);
+
         RelativeLayout relativeLayout = new RelativeLayout(this);
         layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         relativeLayout.setLayoutParams(layoutParams);
@@ -135,6 +148,7 @@ public class HistoryActivity extends AppCompatActivity {
         relativeLayout.addView(gridViewPlayer);
         relativeLayout.addView(gridViewOpponent);
         relativeLayout.addView(textView);
+        relativeLayout.addView(textViewDate);
 
         linearLayout.addView(relativeLayout);
     }

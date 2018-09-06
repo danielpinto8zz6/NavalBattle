@@ -16,7 +16,6 @@ public class Player implements Serializable {
     private String avatarBase64;
     private BattleField battleField;
     private boolean isYourTurn = false;
-    private boolean canMoveShip = false;
 
     public Player(Context c) {
         battleField = new BattleField();
@@ -97,13 +96,5 @@ public class Player implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean getCanMoveShip() {
-        return !canMoveShip;
-    }
-
-    public void setCanMoveShip(boolean canMoveShip) {
-        this.canMoveShip = canMoveShip;
     }
 }

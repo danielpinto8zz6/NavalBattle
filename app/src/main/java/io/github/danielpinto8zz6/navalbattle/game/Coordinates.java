@@ -1,4 +1,4 @@
-package io.github.danielpinto8zz6.navalbattle;
+package io.github.danielpinto8zz6.navalbattle.game;
 
 import java.io.Serializable;
 

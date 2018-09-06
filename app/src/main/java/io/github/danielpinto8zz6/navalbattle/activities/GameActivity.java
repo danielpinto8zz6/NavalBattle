@@ -35,7 +35,7 @@ import io.github.danielpinto8zz6.navalbattle.Network.Communication;
 import io.github.danielpinto8zz6.navalbattle.Utils;
 import io.github.danielpinto8zz6.navalbattle.game.BattleField;
 import io.github.danielpinto8zz6.navalbattle.game.BattleFieldAdapter;
-import io.github.danielpinto8zz6.navalbattle.Coordinates;
+import io.github.danielpinto8zz6.navalbattle.game.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.game.DeviceAI;
 import io.github.danielpinto8zz6.navalbattle.game.Game;
 import io.github.danielpinto8zz6.navalbattle.R;
@@ -52,11 +52,13 @@ public class GameActivity extends AppCompatActivity {
     private Game game;
     private int shots = 0;
     private GridView gridViewPlayer;
+    private GridView gridViewOpponent;
     private BattleFieldAdapter battleFieldAdapterPlayer;
     private BattleFieldAdapter battleFieldAdapterOpponent;
     private ImageView imageViewOpponent;
     private TextView opponentName;
     private ProgressDialog dialog;
+    private boolean movingShip = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,17 +98,17 @@ public class GameActivity extends AppCompatActivity {
 
         setupGrids();
 
-//        if (game.getPlayer().isYourTurn()) {
-//            gridViewOpponent.setBackground(
-//
-//                    getDrawable(R.drawable.grid_border_green));
-//            gridViewPlayer.setBackgroundColor(0x00000000);
-//        } else {
-//            gridViewPlayer.setBackground(
-//
-//                    getDrawable(R.drawable.grid_border_red));
-//            gridViewOpponent.setBackgroundColor(0x00000000);
-//        }
+        if (game.getPlayer().isYourTurn()) {
+            gridViewOpponent.setBackground(
+
+                    getDrawable(R.drawable.grid_border_green));
+            gridViewPlayer.setBackgroundColor(0x00000000);
+        } else {
+            gridViewPlayer.setBackground(
+
+                    getDrawable(R.drawable.grid_border_red));
+            gridViewOpponent.setBackgroundColor(0x00000000);
+        }
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
         battleFieldAdapterOpponent.notifyDataSetChanged();
@@ -140,7 +142,7 @@ public class GameActivity extends AppCompatActivity {
         int count = 8;
         gridViewPlayer.setNumColumns(count);
 
-        GridView gridViewOpponent = findViewById(R.id.gridview_opponent);
+        gridViewOpponent = findViewById(R.id.gridview_opponent);
         gridViewOpponent.setNumColumns(count);
 
         int imageDimension;
@@ -198,12 +200,14 @@ public class GameActivity extends AppCompatActivity {
                     game.getOpponent().getBattleField().clearGivenShots();
                     battleFieldAdapterOpponent.notifyDataSetChanged();
 
-                    if (game.getOpponent().getBattleField().getShipsHitten() == 3) {
-                        if (movingShip()) return;
+                    if (game.getOpponent().getBattleField().getShipsHitten() == 3 && !game.getOpponent().getBattleField().isShipsHitten()) {
+                        game.getPlayer().setYourTurn(false);
+                        gridViewOpponent.setBackgroundColor(0x00000000);
+                        wannaMoveShip();
+                    } else {
+                        game.getOpponent().getBattleField().setShipsHitten(0);
+                        opponentPlay();
                     }
-
-                    game.getOpponent().getBattleField().setShipsHitten(0);
-                    opponentPlay();
                 }
             }
         });
@@ -211,25 +215,30 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-
-                if (game.getPlayer().getCanMoveShip()) return true;
+                if (!movingShip) return true;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
                 final int field[][] = game.getPlayer().getBattleField().getField();
 
-                if (field[x][y] != R.drawable.ship) return true;
+                if (field[x][y] != R.drawable.ship && field[x][y] != R.drawable.ship_destroyed)
+                    return true;
 
                 final Ship ship = game.getPlayer().getBattleField().getShipAtPosition(new Coordinates(x, y));
 
                 if (ship == null) return true;
 
+                if (ship.isHitten()) {
+                    Toast.makeText(GameActivity.this, R.string.choose_healthy_ship, Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
                 game.getPlayer().getBattleField().setSelectedShip(ship);
 
                 battleFieldAdapterPlayer.notifyDataSetChanged();
 
-                Toast.makeText(GameActivity.this, "Click on cell to move the ship", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GameActivity.this, R.string.click_to_move, Toast.LENGTH_SHORT).show();
 
                 gridViewPlayer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -240,7 +249,7 @@ public class GameActivity extends AppCompatActivity {
                         int y = (int) Math.ceil(position / 8);
 
                         if (game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
-                            Toast.makeText(GameActivity.this, "Can't move to that position", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GameActivity.this, R.string.cant_move_ship, Toast.LENGTH_SHORT).show();
                         } else {
                             if (game.getMode() == Network)
                                 getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField().getField());
@@ -250,9 +259,10 @@ public class GameActivity extends AppCompatActivity {
 
                         gridViewPlayer.setOnItemClickListener(null);
 
-                        game.getPlayer().setCanMoveShip(false);
+                        movingShip = false;
 
                         battleFieldAdapterPlayer.notifyDataSetChanged();
+                        game.getOpponent().getBattleField().setShipsHitten(0);
                         opponentPlay();
 
                     }
@@ -263,19 +273,19 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private boolean movingShip() {
-        final boolean[] ret = {false};
+    private void wannaMoveShip() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which){
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        game.getPlayer().setCanMoveShip(true);
-                        ret[0] = true;
+                        movingShip = true;
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        ret[0] = false;
+                        movingShip = false;
+                        game.getOpponent().getBattleField().setShipsHitten(0);
+                        opponentPlay();
                         dialog.cancel();
                         break;
                 }
@@ -286,14 +296,13 @@ public class GameActivity extends AppCompatActivity {
         builder.setMessage(getString(R.string.you_can_move_ship)).setPositiveButton(getString(R.string.yes), dialogClickListener)
                 .setTitle(getString(R.string.tree_successful_shots))
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show();
-        return ret[0];
     }
 
     private void gameOver() {
         battleFieldAdapterOpponent.notifyDataSetChanged();
         battleFieldAdapterPlayer.notifyDataSetChanged();
-//        gridViewPlayer.setBackgroundColor(0x00000000);
-//        gridViewOpponent.setBackgroundColor(0x00000000);
+        gridViewPlayer.setBackgroundColor(0x00000000);
+        gridViewOpponent.setBackgroundColor(0x00000000);
 
         Drawable drawable = new BitmapDrawable(getResources(), game.getWinner().getAvatar());
 
@@ -357,10 +366,10 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void run() {
                 battleFieldAdapterPlayer.notifyDataSetChanged();
-//                if (game.getPlayer().isYourTurn()) {
-//                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
-//                    gridViewPlayer.setBackgroundColor(0x00000000);
-//                }
+                if (game.getPlayer().isYourTurn()) {
+                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+                    gridViewPlayer.setBackgroundColor(0x00000000);
+                }
             }
         });
     }
@@ -400,16 +409,16 @@ public class GameActivity extends AppCompatActivity {
         game.getPlayer().setBattleField(playerBattleField);
         game.getPlayer().setYourTurn(true);
         game.getOpponent().setYourTurn(false);
-//        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
-//        gridViewPlayer.setBackgroundColor(0x00000000);
+        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+        gridViewPlayer.setBackgroundColor(0x00000000);
         battleFieldAdapterPlayer.notifyDataSetChanged();
     }
 
     private void opponentPlay() {
         game.getPlayer().setYourTurn(false);
         game.getOpponent().setYourTurn(true);
-//        gridViewOpponent.setBackgroundColor(0x00000000);
-//        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
+        gridViewOpponent.setBackgroundColor(0x00000000);
+        gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
 
         if (game.getMode() == Local) {
             device.play();

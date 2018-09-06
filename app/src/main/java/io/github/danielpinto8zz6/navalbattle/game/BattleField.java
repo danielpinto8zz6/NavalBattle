@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import io.github.danielpinto8zz6.navalbattle.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.R;
+
+import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
 
 public class BattleField implements Serializable {
     private int[][] field = new int[8][8];
@@ -22,16 +23,62 @@ public class BattleField implements Serializable {
                 field[x][y] = R.color.water;
             }
         }
-        addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
-        addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
 
-        addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
-        addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+        // Setup ships from one random predefined setup
+        shipsSetup(2);
 
-        addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
-        addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+        // Rotate ships setup random
+        rotateShipsRandom();
+    }
 
-        addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+    private void shipsSetup(int setup) {
+        switch (setup) {
+            case 1:
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                break;
+            case 2:
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(0, 0)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(7, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 2), new Coordinates(4, 2)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 7), new Coordinates(7, 7)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(0, 6), new Coordinates(0, 5), new Coordinates(0, 7)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 6), new Coordinates(2, 6), new Coordinates(4, 6)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 4), new Coordinates(5, 4), new Coordinates(7, 4), new Coordinates(7, 3), new Coordinates(7, 5)))));
+                break;
+            case 3:
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                break;
+            case 4:
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                break;
+            case 5:
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                break;
+        }
     }
 
     public boolean attackPosition(Coordinates c) {
@@ -54,6 +101,8 @@ public class BattleField implements Serializable {
             }
 
             shipsHitten++;
+
+            ship.setHitten(true);
 
             return true;
         }
@@ -86,6 +135,14 @@ public class BattleField implements Serializable {
 
         ships.add(ship);
 
+    }
+
+    private void rotateShipsRandom() {
+        for (Ship ship : ships) {
+            for (int i = 0; i < generateRandomNumber(0, 3); i++) {
+                if (!rotateShip(ship)) break;
+            }
+        }
     }
 
     private boolean isPositionEmpty(int x, int y) {
@@ -474,7 +531,7 @@ public class BattleField implements Serializable {
 
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                if (field[x][y] != R.color.attacked || field[x][y] != R.color.destroyed)
+                if (field[x][y] != R.color.attacked || field[x][y] != R.drawable.ship_destroyed || field[x][y] != R.drawable.ship || field[x][y] != R.drawable.ship_selected)
                     validPositions.add(new Coordinates(x, y));
             }
         }
@@ -490,15 +547,19 @@ public class BattleField implements Serializable {
         givenShots.add(c);
     }
 
-    public ArrayList<Coordinates> getGivenShots() {
-        return givenShots;
-    }
-
     public int getShipsHitten() {
         return shipsHitten;
     }
 
     public void setShipsHitten(int shipsHitten) {
         this.shipsHitten = shipsHitten;
+    }
+
+    public boolean isShipsHitten() {
+        for (Ship ship : ships) {
+            if (!ship.isHitten())
+                return false;
+        }
+        return true;
     }
 }

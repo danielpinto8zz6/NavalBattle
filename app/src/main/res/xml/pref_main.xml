@@ -3,7 +3,7 @@
     <PreferenceCategory android:title="General">
         <EditTextPreference
             android:defaultValue="@string/default_username"
-            android:key="@string/key_username"
+            android:key="key_username"
             android:summary="@string/default_username"
             android:title="@string/username" />
 
@@ -11,12 +11,12 @@
             android:capitalize="words"
             android:icon="@drawable/player_avatar"
             android:inputType="textCapWords"
-            android:key="@string/key_avatar"
+            android:key="key_avatar"
             android:summary="@string/choose_avatar"
             android:title="@string/avatar" />
 
         <Preference
-            android:key="@string/key_take_photo"
+            android:key="key_take_photo"
             android:summary="@string/summary_take_photo"
             android:title="@string/title_take_photo" />
 
@@ -33,8 +33,13 @@
             android:title="@string/title_version" />
 
         <Preference
-            android:key="@string/key_send_feedback"
+            android:key="key_send_feedback"
             android:summary="@string/summary_support"
             android:title="@string/title_send_feedback" />
+
+        <Preference
+            android:key="key_credits"
+            android:summary="@string/summary_credits"
+            android:title="@string/credits" />
     </PreferenceCategory>
 </PreferenceScreen>

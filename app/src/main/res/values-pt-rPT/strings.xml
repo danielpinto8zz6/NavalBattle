@@ -5,18 +5,18 @@
     <string name="pref_header_about">Sobre</string>
     <string name="summary_about">Battleship (também Battleships ou Sea Battle) é um jogo de adivinhação para dois jogadores. Joga-se em grades governadas (papel ou tábua) nas quais cada frota de navios de jogadores (inclusive navios de guerra) se marcam. As localizações das frotas são escondidas do outro jogador. Os jogadores alternam turnos chamando \"tiros\" nos navios dos outros jogadores, e o objetivo do jogo é destruir a frota de jogadores adversários.</string>
     <string name="app_version">3.5</string>
-    <string name="summary_support">Tem alguma dúvida? Estamos felizes em ajudar!</string>
+    <string name="summary_support">Tens alguma dúvida? Estamos felizes em ajudar!</string>
     <string name="title_send_feedback">Enviar comentários</string>
     <string name="title_version">Versão</string>
-    <string name="choose_email_client">Escolha o cliente de email</string>
+    <string name="choose_email_client">Escolhe o cliente de email</string>
     <string name="avatar">Avatar</string>
-    <string name="choose_avatar">Clique para escolher seu avatar</string>
+    <string name="choose_avatar">Clica para escolher o teu avatar</string>
     <string name="username">Nome do utilizador</string>
     <string name="default_username">Utilizador</string>
     <string name="title_activity_game">GameActivity</string>
 
     <string name="against_device">Contra o dispositivo</string>
-    <string name="summary_take_photo">Clique para tirar uma foto diretamente da câmera</string>
+    <string name="summary_take_photo">Clica para tirar uma foto diretamente da câmera</string>
     <string name="title_take_photo">Tirar fotos</string>
     <string name="device">Dispositivo</string>
     <string name="title_activity_ship_setup">Configurar navios</string>
@@ -26,27 +26,32 @@
     <string name="navigation_drawer_open">Abrir a gaveta de navegação</string>
     <string name="navigation_drawer_close">Fechar gaveta de navegação</string>
     <string name="dismiss">Dispensar</string>
-    <string name="sure_want_to_exit">Tem certeza que quer sair?</string>
-    <string name="wait_connection">À espera do cliente ...</string>
+    <string name="sure_want_to_exit">Tens a certeza que queres sair?</string>
+    <string name="wait_connection">À espera do cliente …</string>
     <string name="serverdlg_title">Servidor Batalha Naval</string>
     <string name="action_help">Ajuda</string>
     <string name="title_activity_help">Ajuda</string>
-    <string name="large_text">"<b>Modos de jogo</b>\n\nGanhe contra computador: Jogue contra AI de computador. \nAcima de um amigo: jogue contra um amigo conectado à mesma rede que você. \n\n<b>Regras</b>\ n \ nO tabuleiro do jogo é 8x8. \nNo início do jogo, cada jogador é a sua frota em locais que não querem embarcar e guiar os barcos da maneira que quiserem. \ nOs barcos não podem ser colocados nas células adjacentes (verticalmente , horizontalmente ou diagonal). \nO primeiro jogador a fazer tiros no oponente deve ser desenhado no início do jogo. \nCada jogador dá 3 tiros, selecionando a célula desejada.\nSó após indicar os 3 tiros você recebe informações sobre qualquer Acertos que você tem.\nSe um jogador conseguir acertar todos os 3 de seus tiros, ele pode mover um de seus barcos para uma posição.Essa mudança pode ser feita para casas que serão ocupadas por uma embarcação que, entretanto, foi afundada O deslocamento deve respeitar a regra de que não há células adjacentes. \ NO jogo termina quando a frota de um dos oponentes é totalmente afundada. \n\nVocê pode ver as regras tradicionais. aqui: <a href="https://en.wikipedia.org/wiki/Battleship_(game)">Wikipedia</a>"</string>
+    <string name="large_text">"<b>Modos de jogo</b>\n\nGanhe contra computador: Jogue contra AI de computador. \nAcima de um amigo: jogue contra um amigo conectado à mesma rede que você. \n\n<b>Regras</b>\n\nO tabuleiro do jogo é 8x8. \nNo início do jogo, cada jogador é a sua frota em locais que não querem embarcar e guiar os barcos da maneira que quiserem. \nOs barcos não podem ser colocados nas células adjacentes (verticalmente , horizontalmente ou diagonal). \nO primeiro jogador a fazer tiros no oponente deve ser desenhado no início do jogo. \nCada jogador dá 3 tiros, selecionando a célula desejada.\nSó após indicar os 3 tiros você recebe informações sobre qualquer Acertos que você tem.\nSe um jogador conseguir acertar todos os 3 de seus tiros, ele pode mover um de seus barcos para uma posição.Essa mudança pode ser feita para casas que serão ocupadas por uma embarcação que, entretanto, foi afundada O deslocamento deve respeitar a regra de que não há células adjacentes. \nO jogo termina quando a frota de um dos oponentes é totalmente afundada. \n\nVocê pode ver as regras tradicionais. aqui: <a href="https://en.wikipedia.org/wiki/Battleship_(game)">Wikipedia</a>"</string>
     <string name="exit">Sair</string>
     <string name="game_history">Histórico de jogos</string>
     <string name="no_connection">Nenhuma conexão de rede</string>
-    <string name="opponent_disconnected">O seu oponente desconectou-se! A jogar contra o dispositivo</string>
+    <string name="opponent_disconnected">O teu oponente desconectou-se! A jogar contra o dispositivo</string>
     <string name="player">Jogador</string>
     <string name="opponent">Oponente</string>
     <string name="game_over">Fim do jogo</string>
     <string name="has_won">venceu!</string>
     <string name="title_activity_history">Histórico de jogos</string>
-    <string name="waiting_for_opponent">À espera que o seu oponente se conecte"</string>
-    <string name="click_to_rotate">Clique na nave para rodar!</string>
-    <string name="long_press_to_move">Pressione e segure para mover!</string>
+    <string name="waiting_for_opponent">À espera que o teu oponente se conecte</string>
+    <string name="click_to_rotate">Clica na nave para rodar!</string>
+    <string name="long_press_to_move">Pressiona e segura para mover!</string>
     <string name="error_connecting">Erro ao conectar</string>
-    <string name="you_can_move_ship">Você quer mover um de seus navios?</string>
+    <string name="you_can_move_ship">Queres mover um dos teus navios?</string>
     <string name="tree_successful_shots">Três tiros bem sucedidos</string>
     <string name="no">Não</string>
     <string name="yes">Sim</string>
+    <string name="click_to_move">Clica na célula para moveres o navio</string>
+    <string name="cant_move_ship">Não é possivel mover para essa posição</string>
+    <string name="choose_healthy_ship">Escolha um navio saudável</string>
+    <string name="credits">Créditos</string>
+    <string name="summary_credits"><b>Professor Álvaro Santos</b> - AMOV\nPelas aulas lecionadas e enunciado do projeto</string>
 </resources>

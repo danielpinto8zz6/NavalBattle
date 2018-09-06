@@ -130,10 +130,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
 
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.key_username)));
+            bindPreferenceSummaryToValue(findPreference("key_username"));
 
             // feedback preference click listener
-            Preference myPref = findPreference(getString(R.string.key_send_feedback));
+            Preference myPref = findPreference("key_send_feedback");
             myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
                     sendFeedback(getActivity());
@@ -178,7 +178,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                 screen.removePreference(takePhoto);
             }
 
-            Preference avatar = findPreference(getString(R.string.key_avatar));
+            Preference avatar = findPreference("key_avatar");
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -230,7 +230,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) Objects.requireNonNull(extras).get("data");
 
-                Preference avatar = findPreference(getString(R.string.key_avatar));
+                Preference avatar = findPreference("key_avatar");
                 avatar.setIcon(new BitmapDrawable(getResources(), imageBitmap));
 
                 saveImageIntoPreferences(imageBitmap);
@@ -265,7 +265,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
             Bitmap resizedBitmap = getCircleBitmap(Bitmap.createScaledBitmap(
                     BitmapFactory.decodeFile(picturePath), 200, 200, false));
 
-            Preference avatar = findPreference(getString(R.string.key_avatar));
+            Preference avatar = findPreference("key_avatar");
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = preferences.edit();
@@ -288,7 +288,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Ser
 
             Bitmap resizedBitmap = getCircleBitmap(Bitmap.createScaledBitmap(picture, 200, 200, false));
 
-            Preference avatar = findPreference(getString(R.string.key_avatar));
+            Preference avatar = findPreference("key_avatar");
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             SharedPreferences.Editor editor = preferences.edit();

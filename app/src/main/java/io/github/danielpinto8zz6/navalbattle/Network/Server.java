@@ -30,9 +30,7 @@ public class Server {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (socket == null)
-                            activity.ErrorConnecting();
-                        else {
+                        if (socket != null) {
                             activity.getNavalBattle().setSocket(socket);
                             activity.Connected(true);
                         }

@@ -3,13 +3,12 @@ package io.github.danielpinto8zz6.navalbattle.game;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import io.github.danielpinto8zz6.navalbattle.Coordinates;
-
 public class Ship implements Serializable {
     //  Destroyed flag, Position
     private ArrayList<Coordinates> positions;
     private final int type;
     private int rotation;
+    private boolean isHitten = false;
 
     public Ship(int type, int rotation, ArrayList<Coordinates> positions) {
         this.type = type;
@@ -35,5 +34,13 @@ public class Ship implements Serializable {
 
     public void setRotation(int rotation) {
         this.rotation = rotation;
+    }
+
+    public boolean isHitten() {
+        return isHitten;
+    }
+
+    public void setHitten(boolean hitten) {
+        isHitten = hitten;
     }
 }
