@@ -1,5 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
@@ -7,20 +9,18 @@ import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
 
 public class DeviceAI {
-    private final Game game;
     private final GameActivity activity;
-    private int shots = 0;
 
-    public DeviceAI(Game game, GameActivity activity) {
-        this.game = game;
+    public DeviceAI(GameActivity activity) {
         this.activity = activity;
     }
 
-    public void play() {
+    public void play(final Game game) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 if (game.getOpponent().isYourTurn()) {
+                    Log.d("Naval Battle", "Shoots : " + game.getOpponent().getShots());
                     // Wait a bit
                     try {
                         Thread.sleep(1500);
@@ -28,29 +28,24 @@ public class DeviceAI {
                         e.printStackTrace();
                     }
 
-                    while (shots < 3) {
-                        ArrayList<Coordinates> validPositions = getBattleField().getValidPositions();
+                    while (game.getOpponent().getShots() < 3) {
+                        ArrayList<Coordinates> validPositions = game.getPlayer().getBattleField().getValidPositions();
                         Coordinates pos = validPositions.get(generateRandomNumber(0, validPositions.size()));
-                        if (getBattleField().attackPosition(pos)) shots++;
+                        if (game.getPlayer().getBattleField().attackPosition(pos))
+                            game.getOpponent().setShots(game.getOpponent().getShots() + 1);
                     }
 
-                    game.getOpponent().setYourTurn(false);
-                    game.getPlayer().setYourTurn(true);
-                    shots = 0;
+                    game.getOpponent().setShots(0);
 
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            activity.dataChanged();
+                            activity.playerPlay();
                         }
                     });
                 }
             }
         });
         thread.start();
-    }
-
-    private BattleField getBattleField() {
-        return game.getPlayer().getBattleField();
     }
 }

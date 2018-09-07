@@ -50,7 +50,6 @@ import static io.github.danielpinto8zz6.navalbattle.Utils.writeFileOnInternalSto
 public class GameActivity extends AppCompatActivity {
     private DeviceAI device;
     private Game game;
-    private int shots = 0;
     private GridView gridViewPlayer;
     private GridView gridViewOpponent;
     private BattleFieldAdapter battleFieldAdapterPlayer;
@@ -58,7 +57,6 @@ public class GameActivity extends AppCompatActivity {
     private ImageView imageViewOpponent;
     private TextView opponentName;
     private ProgressDialog dialog;
-    private boolean movingShip = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +67,7 @@ public class GameActivity extends AppCompatActivity {
 
         if (mode == Local) {
             game = new Game(this);
-            device = new DeviceAI(game, this);
+            device = new DeviceAI(this);
             game.getPlayer().setYourTurn(true);
         } else {
             game = new Game(this, mode);
@@ -85,9 +83,7 @@ public class GameActivity extends AppCompatActivity {
             }
         }
 
-        if (savedInstanceState != null)
-
-        {
+        if (savedInstanceState != null) {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
         } else {
@@ -104,10 +100,7 @@ public class GameActivity extends AppCompatActivity {
                     getDrawable(R.drawable.grid_border_green));
             gridViewPlayer.setBackgroundColor(0x00000000);
         } else {
-            gridViewPlayer.setBackground(
-
-                    getDrawable(R.drawable.grid_border_red));
-            gridViewOpponent.setBackgroundColor(0x00000000);
+            opponentPlay();
         }
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
@@ -187,15 +180,15 @@ public class GameActivity extends AppCompatActivity {
                 if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y))) {
                     game.getOpponent().getBattleField().addGivenShot(new Coordinates(x, y));
                     battleFieldAdapterOpponent.notifyDataSetChanged();
-                    shots++;
+                    game.getPlayer().setShots(game.getPlayer().getShots() + 1);
                 }
 
                 if (game.isGameOver()) {
                     gameOver();
                 }
 
-                if (shots >= 3) {
-                    shots = 0;
+                if (game.getPlayer().getShots() >= 3) {
+                    game.getPlayer().setShots(0);
 
                     game.getOpponent().getBattleField().clearGivenShots();
                     battleFieldAdapterOpponent.notifyDataSetChanged();
@@ -215,7 +208,7 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-                if (!movingShip) return true;
+                if (!game.getPlayer().isMovingShip()) return true;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
@@ -259,7 +252,7 @@ public class GameActivity extends AppCompatActivity {
 
                         gridViewPlayer.setOnItemClickListener(null);
 
-                        movingShip = false;
+                        game.getPlayer().setMovingShip(false);
 
                         battleFieldAdapterPlayer.notifyDataSetChanged();
                         game.getOpponent().getBattleField().setShipsHitten(0);
@@ -279,11 +272,11 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        movingShip = true;
+                        game.getPlayer().setMovingShip(true);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        movingShip = false;
+                        game.getPlayer().setMovingShip(false);
                         game.getOpponent().getBattleField().setShipsHitten(0);
                         opponentPlay();
                         dialog.cancel();
@@ -361,19 +354,6 @@ public class GameActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void dataChanged() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                battleFieldAdapterPlayer.notifyDataSetChanged();
-                if (game.getPlayer().isYourTurn()) {
-                    gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
-                    gridViewPlayer.setBackgroundColor(0x00000000);
-                }
-            }
-        });
-    }
-
     public void disconnected() {
         Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
@@ -383,7 +363,7 @@ public class GameActivity extends AppCompatActivity {
         opponentName.setText(getResources().getString(R.string.device));
         getCommunication().stop();
         getNavalBattle().setCommunication(null);
-        device = new DeviceAI(game, this);
+        device = new DeviceAI(this);
         opponentPlay();
     }
 
@@ -414,6 +394,14 @@ public class GameActivity extends AppCompatActivity {
         battleFieldAdapterPlayer.notifyDataSetChanged();
     }
 
+    public void playerPlay() {
+        game.getPlayer().setYourTurn(true);
+        game.getOpponent().setYourTurn(false);
+        gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
+        gridViewPlayer.setBackgroundColor(0x00000000);
+        battleFieldAdapterPlayer.notifyDataSetChanged();
+    }
+
     private void opponentPlay() {
         game.getPlayer().setYourTurn(false);
         game.getOpponent().setYourTurn(true);
@@ -421,7 +409,7 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
 
         if (game.getMode() == Local) {
-            device.play();
+            device.play(game);
         } else {
             getCommunication().sendOpponentBattleField(game.getOpponent().getBattleField());
         }

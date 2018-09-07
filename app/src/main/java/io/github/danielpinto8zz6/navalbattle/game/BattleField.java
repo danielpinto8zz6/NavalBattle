@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.github.danielpinto8zz6.navalbattle.R;
+import io.github.danielpinto8zz6.navalbattle.Utils;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
 
@@ -25,7 +26,7 @@ public class BattleField implements Serializable {
         }
 
         // Setup ships from one random predefined setup
-        shipsSetup(2);
+        shipsSetup(generateRandomNumber(1, 5));
 
         // Rotate ships setup random
         rotateShipsRandom();
@@ -52,31 +53,31 @@ public class BattleField implements Serializable {
                 addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 4), new Coordinates(5, 4), new Coordinates(7, 4), new Coordinates(7, 3), new Coordinates(7, 5)))));
                 break;
             case 3:
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
-                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(7, 1)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(6, 7)))));
                 addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
-                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
-                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
-                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 3), new Coordinates(7, 3)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(2, 6), new Coordinates(2, 5), new Coordinates(2, 7)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(5, 5), new Coordinates(4, 5), new Coordinates(6, 5)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 1), new Coordinates(0, 0), new Coordinates(1, 0), new Coordinates(2, 0), new Coordinates(1, 2)))));
                 break;
             case 4:
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
-                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
-                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
-                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
-                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
-                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(0, 0)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(7, 7)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(7, 0), new Coordinates(7, 1)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 6), new Coordinates(4, 6)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(0, 5), new Coordinates(0, 4), new Coordinates(0, 6)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(5, 4), new Coordinates(4, 4), new Coordinates(6, 4)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(2, 1), new Coordinates(4, 1), new Coordinates(4, 0), new Coordinates(4, 2)))));
                 break;
             case 5:
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 1)))));
-                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(1, 3)))));
-                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 1), new Coordinates(4, 1)))));
-                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 3), new Coordinates(4, 3)))));
-                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 2), new Coordinates(6, 1), new Coordinates(6, 3)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(0, 3)))));
+                addShip(new Ship(0, 0, new ArrayList<>(Collections.singletonList(new Coordinates(7, 3)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 0), new Coordinates(2, 0)))));
+                addShip(new Ship(1, 0, new ArrayList<>(Arrays.asList(new Coordinates(3, 5), new Coordinates(4, 5)))));
                 addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(1, 6), new Coordinates(1, 5), new Coordinates(1, 7)))));
-                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(5, 5), new Coordinates(6, 5), new Coordinates(7, 5), new Coordinates(6, 7)))));
+                addShip(new Ship(2, 0, new ArrayList<>(Arrays.asList(new Coordinates(6, 6), new Coordinates(6, 5), new Coordinates(6, 7)))));
+                addShip(new Ship(3, 0, new ArrayList<>(Arrays.asList(new Coordinates(4, 2), new Coordinates(4, 1), new Coordinates(4, 3), new Coordinates(3, 3), new Coordinates(5, 3)))));
                 break;
         }
     }
@@ -104,12 +105,27 @@ public class BattleField implements Serializable {
 
             ship.setHitten(true);
 
+            if (isShipDestroyed(ship)){
+                removeShip(ship);
+            }
+
             return true;
         }
 
         field[c.x][c.y] = R.color.attacked;
 
         return true;
+    }
+
+    private void removeShip(Ship ship) {
+        if (ship == null) return;
+
+        // Still not sure if will keep like that
+        for (Coordinates c : ship.getPositions()) {
+            field[c.x][c.y] = R.color.water;
+        }
+
+        ships.remove(ship);
     }
 
     private boolean isShipDestroyed(Ship sh) {

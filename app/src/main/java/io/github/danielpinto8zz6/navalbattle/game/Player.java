@@ -15,7 +15,9 @@ public class Player implements Serializable {
     private String name;
     private String avatarBase64;
     private BattleField battleField;
-    private boolean isYourTurn = false;
+    private int shots = 0;
+    private boolean movingShip = false;
+    private boolean yourTurn;
 
     public Player(Context c) {
         battleField = new BattleField();
@@ -78,14 +80,6 @@ public class Player implements Serializable {
         }
     }
 
-    public boolean isYourTurn() {
-        return isYourTurn;
-    }
-
-    public void setYourTurn(boolean yourTurn) {
-        isYourTurn = yourTurn;
-    }
-
     public Bitmap getAvatar() {
         return Utils.decodeBase64(avatarBase64);
     }
@@ -96,5 +90,29 @@ public class Player implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getShots() {
+        return shots;
+    }
+
+    public void setShots(int shots) {
+        this.shots = shots;
+    }
+
+    public boolean isMovingShip() {
+        return movingShip;
+    }
+
+    public void setMovingShip(boolean movingShip) {
+        this.movingShip = movingShip;
+    }
+
+    public boolean isYourTurn() {
+        return yourTurn;
+    }
+
+    public void setYourTurn(boolean yourTurn) {
+        this.yourTurn = yourTurn;
     }
 }

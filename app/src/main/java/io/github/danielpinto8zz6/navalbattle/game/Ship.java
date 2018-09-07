@@ -8,7 +8,7 @@ public class Ship implements Serializable {
     private ArrayList<Coordinates> positions;
     private final int type;
     private int rotation;
-    private boolean isHitten = false;
+    private boolean hitten = false;
 
     public Ship(int type, int rotation, ArrayList<Coordinates> positions) {
         this.type = type;
@@ -37,10 +37,10 @@ public class Ship implements Serializable {
     }
 
     public boolean isHitten() {
-        return isHitten;
+        return hitten;
     }
 
     public void setHitten(boolean hitten) {
-        isHitten = hitten;
+        this.hitten = hitten;
     }
 }
