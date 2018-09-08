@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import io.github.danielpinto8zz6.navalbattle.Constants.GameMode;
 
@@ -68,7 +69,7 @@ public class Game implements Serializable {
 
     public String getGameSave() throws JSONException {
         // This will return a json string of the game
-        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
+        DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm", Locale.getDefault());
         String date = df.format(Calendar.getInstance().getTime());
 
         Gson gson = new GsonBuilder().create();

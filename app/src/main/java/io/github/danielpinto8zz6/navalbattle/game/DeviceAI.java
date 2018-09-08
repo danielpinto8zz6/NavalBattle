@@ -1,12 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
-import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-
 import java.util.ArrayList;
 
-import io.github.danielpinto8zz6.navalbattle.R;
 import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;

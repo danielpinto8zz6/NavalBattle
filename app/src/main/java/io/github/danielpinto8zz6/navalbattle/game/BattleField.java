@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.github.danielpinto8zz6.navalbattle.R;
-import io.github.danielpinto8zz6.navalbattle.Utils;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
 

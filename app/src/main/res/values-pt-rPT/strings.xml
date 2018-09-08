@@ -49,7 +49,7 @@
     <string name="no">Não</string>
     <string name="yes">Sim</string>
     <string name="click_to_move">Clica na célula para moveres o navio</string>
-    <string name="cant_move_ship">Não é possivel mover para essa posição</string>
+    <string name="cant_move_ship">Não é possível mover para essa posição</string>
     <string name="choose_healthy_ship">Escolha um navio saudável</string>
     <string name="credits">Créditos</string>
     <string name="summary_credits"><b>Professor Álvaro Santos</b> - AMOV\nPelas aulas lecionadas e enunciado do projeto</string>

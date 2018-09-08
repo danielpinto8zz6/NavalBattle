@@ -63,7 +63,9 @@ public class Communication {
                             });
                         }
                         Log.d(activity.getResources().getString(R.string.app_name), "Message received");
-                        decodeMessage(read);
+
+                        if (!Objects.equals(read, ""))
+                            decodeMessage(read);
                     }
                 } catch (Exception e) {
                     Log.d(activity.getResources().getString(R.string.app_name), e.getMessage());
@@ -142,12 +144,11 @@ public class Communication {
             case "opponent_battle_field_update":
                 Gson gsonO = new Gson();
                 try {
-                    final BattleField battleField = gsonO.fromJson(json.getString("opponent_battle_field"), BattleField.class);
-                    System.out.println(json.getString("opponent_battle_field"));
+                    final BattleField opponentBattleField = gsonO.fromJson(json.getString("opponent_battle_field"), BattleField.class);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            activity.playerPlay(battleField);
+                            activity.playerPlay(opponentBattleField);
                         }
                     });
                 } catch (JSONException e) {
@@ -157,11 +158,11 @@ public class Communication {
             case "player_battle_field_update":
                 Gson gsonP = new Gson();
                 try {
-                    final int[][] field = gsonP.fromJson(json.getString("player_battle_field"), int[][].class);
+                    final BattleField playerBattleField = gsonP.fromJson(json.getString("player_battle_field"), BattleField.class);
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            activity.setOpponentBattleField(field);
+                            activity.setOpponentBattleField(playerBattleField);
                         }
                     });
                 } catch (JSONException e) {
@@ -208,13 +209,13 @@ public class Communication {
         sendMessage(json.toString());
     }
 
-    public void sendPlayerBattleField(int[][] field) {
+    public void sendPlayerBattleField(BattleField battleField) {
         Gson gson = new GsonBuilder().create();
         JSONObject json = new JSONObject();
 
         try {
             json.put("command", "player_battle_field_update");
-            json.put("player_battle_field", gson.toJson(field));
+            json.put("player_battle_field", gson.toJson(battleField));
         } catch (JSONException e) {
             e.printStackTrace();
         }

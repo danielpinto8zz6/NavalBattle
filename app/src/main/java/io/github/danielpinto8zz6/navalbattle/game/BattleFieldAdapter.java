@@ -13,7 +13,7 @@ import io.github.danielpinto8zz6.navalbattle.R;
 
 public class BattleFieldAdapter extends BaseAdapter {
     private final Context context;
-    private final BattleField battleField;
+    private BattleField battleField;
     private final int imageDimension;
 
     public BattleFieldAdapter(Context c, BattleField battleField, int imageDimension) {
@@ -33,6 +33,10 @@ public class BattleFieldAdapter extends BaseAdapter {
         int y = (int) Math.ceil(position / 8);
 
         return battleField.get(x, y);
+    }
+
+    public void setBattleField(BattleField battleField) {
+        this.battleField = battleField;
     }
 
     public long getItemId(int position) {

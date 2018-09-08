@@ -1,7 +1,5 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
