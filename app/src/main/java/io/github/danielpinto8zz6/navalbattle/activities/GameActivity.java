@@ -1,12 +1,15 @@
 package io.github.danielpinto8zz6.navalbattle.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -95,12 +100,13 @@ public class GameActivity extends AppCompatActivity {
         setupGrids();
 
         if (game.getPlayer().isYourTurn()) {
-            gridViewOpponent.setBackground(
-
-                    getDrawable(R.drawable.grid_border_green));
-            gridViewPlayer.setBackgroundColor(0x00000000);
+            playerPlay();
         } else {
-            opponentPlay();
+            if (game.getOpponent().getBattleField().getShipsHitten() == 3) {
+                wannaMoveShip();
+            } else {
+                opponentPlay();
+            }
         }
 
         battleFieldAdapterPlayer.notifyDataSetChanged();
@@ -189,6 +195,15 @@ public class GameActivity extends AppCompatActivity {
 
                 if (game.getPlayer().getShots() >= 3) {
                     game.getPlayer().setShots(0);
+
+                    if (game.getOpponent().getBattleField().getDestroyedShip() != null) {
+                        game.getOpponent().getBattleField().removeShip(game.getOpponent().getBattleField().getDestroyedShip());
+                        game.getOpponent().getBattleField().setDestroyedShip(null);
+
+                        vibrate();
+                        Animation shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
+                        gridViewOpponent.startAnimation(shake);
+                    }
 
                     game.getOpponent().getBattleField().clearGivenShots();
                     battleFieldAdapterOpponent.notifyDataSetChanged();
@@ -288,10 +303,11 @@ public class GameActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameActivity.this);
         builder.setMessage(getString(R.string.you_can_move_ship)).setPositiveButton(getString(R.string.yes), dialogClickListener)
                 .setTitle(getString(R.string.tree_successful_shots))
+                .setCancelable(false)
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show();
     }
 
-    private void gameOver() {
+    public void gameOver() {
         battleFieldAdapterOpponent.notifyDataSetChanged();
         battleFieldAdapterPlayer.notifyDataSetChanged();
         gridViewPlayer.setBackgroundColor(0x00000000);
@@ -457,5 +473,16 @@ public class GameActivity extends AppCompatActivity {
         writeFileOnInternalStorage(this, "history", json);
 
         Log.d("Naval battle", "Saving game...");
+    }
+
+    private void vibrate() {
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(500);
+        }
     }
 }

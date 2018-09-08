@@ -1,5 +1,7 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
+import android.graphics.drawable.Drawable;
+
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
@@ -11,19 +13,11 @@ public class Coordinates implements Serializable {
         this.y = y;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
     @Override
     public boolean equals(Object o) {
 
-        if (o instanceof Coordinates){
-            Coordinates c = (Coordinates)o;
+        if (o instanceof Coordinates) {
+            Coordinates c = (Coordinates) o;
             return c.x == x && c.y == y;
         }
 

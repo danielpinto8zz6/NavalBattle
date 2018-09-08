@@ -17,6 +17,7 @@ public class BattleField implements Serializable {
     private Ship selectedShip = null;
     private final ArrayList<Coordinates> givenShots = new ArrayList<>();
     private int shipsHitten = 0;
+    private Ship destroyedShip = null;
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -26,10 +27,10 @@ public class BattleField implements Serializable {
         }
 
         // Setup ships from one random predefined setup
-        shipsSetup(generateRandomNumber(1, 5));
+        shipsSetup(1);
 
         // Rotate ships setup random
-        rotateShipsRandom();
+//        rotateShipsRandom();
     }
 
     private void shipsSetup(int setup) {
@@ -84,7 +85,7 @@ public class BattleField implements Serializable {
 
     public boolean attackPosition(Coordinates c) {
         // check if position is valid
-        if (c.getX() < 0 || c.getX() >= 8 && c.getY() < 0 || c.getX() >= 8) {
+        if (c.x < 0 || c.x >= 8 && c.y < 0 || c.y >= 8) {
             return false;
         }
 
@@ -97,16 +98,12 @@ public class BattleField implements Serializable {
 
             Ship ship = getShipAtPosition(c);
 
-            if (isShipDestroyed(ship)) {
-                ships.remove(ship);
-            }
-
             shipsHitten++;
 
             ship.setHitten(true);
 
-            if (isShipDestroyed(ship)){
-                removeShip(ship);
+            if (isShipDestroyed(ship)) {
+                destroyedShip = ship;
             }
 
             return true;
@@ -117,12 +114,11 @@ public class BattleField implements Serializable {
         return true;
     }
 
-    private void removeShip(Ship ship) {
+    public void removeShip(Ship ship) {
         if (ship == null) return;
 
-        // Still not sure if will keep like that
         for (Coordinates c : ship.getPositions()) {
-            field[c.x][c.y] = R.color.water;
+            field[c.x][c.y] = R.drawable.ship_sunk;
         }
 
         ships.remove(ship);
@@ -252,7 +248,6 @@ public class BattleField implements Serializable {
 
         return true;
     }
-
 
     private boolean moveShip(Ship ship, ArrayList<Coordinates> newPositions) {
         if (!isMoveValid(newPositions, ship.getPositions()))
@@ -547,7 +542,7 @@ public class BattleField implements Serializable {
 
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                if (field[x][y] != R.color.attacked || field[x][y] != R.drawable.ship_destroyed || field[x][y] != R.drawable.ship || field[x][y] != R.drawable.ship_selected)
+                if (field[x][y] == R.color.water || field[x][y] == R.drawable.ship)
                     validPositions.add(new Coordinates(x, y));
             }
         }
@@ -577,5 +572,13 @@ public class BattleField implements Serializable {
                 return false;
         }
         return true;
+    }
+
+    public Ship getDestroyedShip() {
+        return destroyedShip;
+    }
+
+    public void setDestroyedShip(Ship destroyedShip) {
+        this.destroyedShip = destroyedShip;
     }
 }

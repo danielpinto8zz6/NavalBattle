@@ -1,9 +1,12 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import java.util.ArrayList;
 
+import io.github.danielpinto8zz6.navalbattle.R;
 import io.github.danielpinto8zz6.navalbattle.activities.GameActivity;
 
 import static io.github.danielpinto8zz6.navalbattle.Utils.generateRandomNumber;
@@ -20,7 +23,6 @@ public class DeviceAI {
             @Override
             public void run() {
                 if (game.getOpponent().isYourTurn()) {
-                    Log.d("Naval Battle", "Shoots : " + game.getOpponent().getShots());
                     // Wait a bit
                     try {
                         Thread.sleep(1500);
@@ -33,9 +35,23 @@ public class DeviceAI {
                         Coordinates pos = validPositions.get(generateRandomNumber(0, validPositions.size()));
                         if (game.getPlayer().getBattleField().attackPosition(pos))
                             game.getOpponent().setShots(game.getOpponent().getShots() + 1);
+
+                        if (game.isGameOver()) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    activity.gameOver();
+                                }
+                            });
+                        }
                     }
 
                     game.getOpponent().setShots(0);
+
+                    if (game.getPlayer().getBattleField().getDestroyedShip() != null) {
+                        game.getPlayer().getBattleField().removeShip(game.getPlayer().getBattleField().getDestroyedShip());
+                        game.getPlayer().getBattleField().setDestroyedShip(null);
+                    }
 
                     activity.runOnUiThread(new Runnable() {
                         @Override
