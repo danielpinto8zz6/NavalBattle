@@ -24,7 +24,7 @@ public class Communication {
     private PrintWriter output = null;
     private BufferedReader input = null;
     private final Thread thread;
-    private final GameActivity activity;
+    private GameActivity activity;
     private boolean connected = false;
 
     public Communication(final Socket socket, final GameActivity activity) {
@@ -73,6 +73,10 @@ public class Communication {
             }
         });
         thread.start();
+    }
+
+    public void setActivity(GameActivity activity) {
+        this.activity = activity;
     }
 
     public void stop() {
