@@ -16,7 +16,7 @@ public class BattleField implements Serializable {
     private Ship selectedShip = null;
     private final ArrayList<Coordinates> givenShots = new ArrayList<>();
     private int shipsHitten = 0;
-    private Ship destroyedShip = null;
+    private boolean shipGotDestroyed = false;
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -26,10 +26,10 @@ public class BattleField implements Serializable {
         }
 
         // Setup ships from one random predefined setup
-        shipsSetup(1);
+        shipsSetup(generateRandomNumber(1, 5));
 
         // Rotate ships setup random
-//        rotateShipsRandom();
+        rotateShipsRandom();
     }
 
     private void shipsSetup(int setup) {
@@ -88,7 +88,7 @@ public class BattleField implements Serializable {
             return false;
         }
 
-        if (field[c.x][c.y] == R.color.attacked || field[c.x][c.y] == R.drawable.ship_destroyed) {
+        if (field[c.x][c.y] == R.color.attacked || field[c.x][c.y] == R.drawable.ship_destroyed || field[c.x][c.y] == R.drawable.ship_sunk) {
             return false;
         }
 
@@ -102,7 +102,8 @@ public class BattleField implements Serializable {
             ship.setHitten(true);
 
             if (isShipDestroyed(ship)) {
-                destroyedShip = ship;
+                shipGotDestroyed = true;
+                ship.setDestroyed(true);
             }
 
             return true;
@@ -113,14 +114,14 @@ public class BattleField implements Serializable {
         return true;
     }
 
-    public void removeShip(Ship ship) {
-        if (ship == null) return;
-
-        for (Coordinates c : ship.getPositions()) {
-            field[c.x][c.y] = R.drawable.ship_sunk;
+    public void removeDestroyedShipsFromMap() {
+        for (Ship ship : ships) {
+            if (ship.isDestroyed() && !ship.isRemoved())
+                for (Coordinates c : ship.getPositions()) {
+                    field[c.x][c.y] = R.drawable.ship_sunk;
+                    ship.setRemoved(true);
+                }
         }
-
-        ships.remove(ship);
     }
 
     private boolean isShipDestroyed(Ship sh) {
@@ -533,7 +534,11 @@ public class BattleField implements Serializable {
     }
 
     public boolean isShipsDestroyed() {
-        return ships.size() <= 0;
+        for (Ship ship : ships) {
+            if (!ship.isDestroyed())
+                return false;
+        }
+        return true;
     }
 
     public ArrayList<Coordinates> getValidPositions() {
@@ -573,11 +578,11 @@ public class BattleField implements Serializable {
         return true;
     }
 
-    public Ship getDestroyedShip() {
-        return destroyedShip;
+    public boolean isShipGotDestroyed() {
+        return shipGotDestroyed;
     }
 
-    public void setDestroyedShip(Ship destroyedShip) {
-        this.destroyedShip = destroyedShip;
+    public void setShipGotDestroyed(boolean shipGotDestroyed) {
+        this.shipGotDestroyed = shipGotDestroyed;
     }
 }

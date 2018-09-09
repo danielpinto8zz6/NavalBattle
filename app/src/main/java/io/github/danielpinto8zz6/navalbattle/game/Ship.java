@@ -9,6 +9,8 @@ public class Ship implements Serializable {
     private final int type;
     private int rotation;
     private boolean hitten = false;
+    private boolean destroyed = false;
+    private boolean removed = false;
 
     public Ship(int type, int rotation, ArrayList<Coordinates> positions) {
         this.type = type;
@@ -42,5 +44,21 @@ public class Ship implements Serializable {
 
     public void setHitten(boolean hitten) {
         this.hitten = hitten;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed;
+    }
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
     }
 }

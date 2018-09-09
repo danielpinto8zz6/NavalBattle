@@ -44,6 +44,7 @@ import io.github.danielpinto8zz6.navalbattle.game.Coordinates;
 import io.github.danielpinto8zz6.navalbattle.game.DeviceAI;
 import io.github.danielpinto8zz6.navalbattle.game.Game;
 import io.github.danielpinto8zz6.navalbattle.R;
+import io.github.danielpinto8zz6.navalbattle.game.Player;
 import io.github.danielpinto8zz6.navalbattle.game.Ship;
 
 import static io.github.danielpinto8zz6.navalbattle.Constants.GameMode.Local;
@@ -69,16 +70,16 @@ public class GameActivity extends AppCompatActivity {
         if (mode == Local) {
             game = new Game(this);
             device = new DeviceAI(this);
-            game.getPlayer().setYourTurn(true);
+            getPlayer().setYourTurn(true);
         } else {
             game = new Game(this, mode);
 
             if (savedInstanceState == null) {
                 Communication communication = new Communication(getNavalBattle().getSocket(), this);
                 getNavalBattle().setCommunication(communication);
-                communication.sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
+                communication.sendProfile(getPlayer().getName(), getPlayer().getAvatarBase64());
                 if (Objects.requireNonNull(getIntent().getExtras()).getBoolean("is_server"))
-                    game.getPlayer().setYourTurn(true);
+                    getPlayer().setYourTurn(true);
             } else {
                 getCommunication().setActivity(this);
             }
@@ -88,19 +89,19 @@ public class GameActivity extends AppCompatActivity {
             game = (Game)
                     savedInstanceState.getSerializable("game_obj");
         } else {
-            game.getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
+            getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
         }
 
         setupToolbar();
 
         setupGrids();
 
-        if (game.getPlayer().isYourTurn()) {
+        if (getPlayer().isYourTurn()) {
             gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
             gridViewPlayer.setBackgroundColor(0x00000000);
         } else {
-            if (game.getOpponent().getBattleField().getShipsHitten() == 3) {
-                game.getOpponent().getBattleField().setShipsHitten(0);
+            if (getOpponentBattleField().getShipsHitten() == 3) {
+                getOpponentBattleField().setShipsHitten(0);
                 wannaMoveShip();
             } else {
                 gridViewOpponent.setBackgroundColor(0x00000000);
@@ -173,52 +174,51 @@ public class GameActivity extends AppCompatActivity {
             gridViewOpponent.setLayoutParams(layoutParams);
         }
 
-        gridViewPlayer.setAdapter(new BattleFieldAdapter(this, game.getPlayer().getBattleField(), imageDimension));
+        gridViewPlayer.setAdapter(new BattleFieldAdapter(this, getPlayerBattleField(), imageDimension));
 
-        gridViewOpponent.setAdapter(new BattleFieldAdapter(this, game.getOpponent().getBattleField(), imageDimension));
+        gridViewOpponent.setAdapter(new BattleFieldAdapter(this, getOpponentBattleField(), imageDimension));
 
         AdapterView.OnItemClickListener onItemClickListener;
         gridViewOpponent.setOnItemClickListener(onItemClickListener = new AdapterView.OnItemClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                if (!game.getPlayer().isYourTurn()) return;
+                if (!getPlayer().isYourTurn()) return;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                if (game.getOpponent().getBattleField().attackPosition(new Coordinates(x, y))) {
-                    game.getOpponent().getBattleField().addGivenShot(new Coordinates(x, y));
+                if (getOpponentBattleField().attackPosition(new Coordinates(x, y))) {
+                    getOpponentBattleField().addGivenShot(new Coordinates(x, y));
                     getOpponentBattleFieldAdapter().notifyDataSetChanged();
-                    game.getPlayer().setShots(game.getPlayer().getShots() + 1);
+                    getPlayer().setShots(getPlayer().getShots() + 1);
                 }
 
                 if (game.isGameOver()) {
                     gameOver();
                 }
 
-                if (game.getPlayer().getShots() >= 3) {
-                    game.getPlayer().setShots(0);
+                if (getPlayer().getShots() >= 3) {
+                    getPlayer().setShots(0);
 
-                    if (game.getOpponent().getBattleField().getDestroyedShip() != null) {
-                        game.getOpponent().getBattleField().removeShip(game.getOpponent().getBattleField().getDestroyedShip());
-                        game.getOpponent().getBattleField().setDestroyedShip(null);
+                    if (getOpponentBattleField().isShipGotDestroyed()) {
+                        getOpponentBattleField().removeDestroyedShipsFromMap();
+                        getOpponentBattleField().setShipGotDestroyed(false);
 
-                        vibrate();
+                        vibrate(500);
                         Animation shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
                         gridViewOpponent.startAnimation(shake);
                     }
 
-                    game.getOpponent().getBattleField().clearGivenShots();
+                    getOpponentBattleField().clearGivenShots();
+
                     getOpponentBattleFieldAdapter().notifyDataSetChanged();
 
-                    if (game.getOpponent().getBattleField().getShipsHitten() == 3 && !game.getOpponent().getBattleField().isShipsHitten()) {
-                        game.getOpponent().getBattleField().setShipsHitten(0);
-//                        game.getPlayer().setYourTurn(false);
-//                        gridViewOpponent.setBackgroundColor(0x00000000);
+                    if (getOpponentBattleField().getShipsHitten() == 3 && !getOpponentBattleField().isShipsHitten()) {
+                        getOpponentBattleField().setShipsHitten(0);
                         wannaMoveShip();
                     } else {
-                        game.getOpponent().getBattleField().setShipsHitten(0);
+                        getOpponentBattleField().setShipsHitten(0);
                         opponentPlay();
                     }
                 }
@@ -228,17 +228,17 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-                if (!game.getPlayer().isMovingShip()) return true;
+                if (!getPlayer().isMovingShip()) return true;
 
                 int x = position % 8;
                 int y = (int) Math.ceil(position / 8);
 
-                final int field[][] = game.getPlayer().getBattleField().getField();
+                final int field[][] = getPlayerBattleField().getField();
 
                 if (field[x][y] != R.drawable.ship && field[x][y] != R.drawable.ship_destroyed)
                     return true;
 
-                final Ship ship = game.getPlayer().getBattleField().getShipAtPosition(new Coordinates(x, y));
+                final Ship ship = getPlayerBattleField().getShipAtPosition(new Coordinates(x, y));
 
                 if (ship == null) return true;
 
@@ -247,7 +247,7 @@ public class GameActivity extends AppCompatActivity {
                     return true;
                 }
 
-                game.getPlayer().getBattleField().setSelectedShip(ship);
+                getPlayerBattleField().setSelectedShip(ship);
 
                 getPlayerBattleFieldAdapter().notifyDataSetChanged();
 
@@ -260,18 +260,18 @@ public class GameActivity extends AppCompatActivity {
                         int x = position % 8;
                         int y = (int) Math.ceil(position / 8);
 
-                        game.getPlayer().getBattleField().setSelectedShip(null);
+                        getPlayerBattleField().setSelectedShip(null);
 
-                        if (game.getPlayer().getBattleField().move(ship, new Coordinates(x, y))) {
+                        if (getPlayerBattleField().move(ship, new Coordinates(x, y))) {
                             Toast.makeText(GameActivity.this, R.string.cant_move_ship, Toast.LENGTH_SHORT).show();
                         } else {
                             if (game.getMode() == Network)
-                                getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField());
+                                getCommunication().sendPlayerBattleField(getPlayerBattleField());
                         }
 
                         gridViewPlayer.setOnItemClickListener(null);
 
-                        game.getPlayer().setMovingShip(false);
+                        getPlayer().setMovingShip(false);
 
                         getPlayerBattleFieldAdapter().notifyDataSetChanged();
 
@@ -291,11 +291,11 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        game.getPlayer().setMovingShip(true);
+                        getPlayer().setMovingShip(true);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        game.getPlayer().setMovingShip(false);
+                        getPlayer().setMovingShip(false);
                         opponentPlay();
                         dialog.cancel();
                         break;
@@ -352,11 +352,11 @@ public class GameActivity extends AppCompatActivity {
         TextView playerName = findViewById(R.id.player_name);
         TextView opponentName = findViewById(R.id.opponent_name);
 
-        imageViewPlayer.setImageBitmap(game.getPlayer().getAvatar());
-        imageViewOpponent.setImageBitmap(game.getOpponent().getAvatar());
+        imageViewPlayer.setImageBitmap(getPlayer().getAvatar());
+        imageViewOpponent.setImageBitmap(getOpponent().getAvatar());
 
-        playerName.setText(game.getPlayer().getName());
-        opponentName.setText(game.getOpponent().getName());
+        playerName.setText(getPlayer().getName());
+        opponentName.setText(getOpponent().getName());
     }
 
     @Override
@@ -376,8 +376,8 @@ public class GameActivity extends AppCompatActivity {
     public void disconnected() {
         Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
         game.setMode(Local);
-        game.getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
-        game.getOpponent().setName(getResources().getString(R.string.device));
+        getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
+        getOpponent().setName(getResources().getString(R.string.device));
         ImageView imageView = findViewById(R.id.opponent_avatar);
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.device));
         TextView textView = findViewById(R.id.opponent_name);
@@ -409,34 +409,36 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void playerPlay(BattleField battleField) {
-        game.getPlayer().setBattleField(battleField);
+        getPlayer().setBattleField(battleField);
         getPlayerBattleFieldAdapter().setBattleField(battleField);
-        game.getPlayer().getBattleField().setShowShips(true);
-        game.getPlayer().setYourTurn(true);
-        game.getOpponent().setYourTurn(false);
+        getPlayerBattleField().setShowShips(true);
+        getPlayer().setYourTurn(true);
+        getOpponent().setYourTurn(false);
         gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
         gridViewPlayer.setBackgroundColor(0x00000000);
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
+        vibrate(100);
     }
 
     public void playerPlay() {
-        game.getPlayer().setYourTurn(true);
-        game.getOpponent().setYourTurn(false);
+        getPlayer().setYourTurn(true);
+        getOpponent().setYourTurn(false);
         gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
         gridViewPlayer.setBackgroundColor(0x00000000);
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
+        vibrate(100);
     }
 
     private void opponentPlay() {
-        game.getPlayer().setYourTurn(false);
-        game.getOpponent().setYourTurn(true);
+        getPlayer().setYourTurn(false);
+        getOpponent().setYourTurn(true);
         gridViewOpponent.setBackgroundColor(0x00000000);
         gridViewPlayer.setBackground(getDrawable(R.drawable.grid_border_red));
 
         if (game.getMode() == Local) {
             device.play(game);
         } else {
-            getCommunication().sendOpponentBattleField(game.getOpponent().getBattleField());
+            getCommunication().sendOpponentBattleField(getOpponentBattleField());
         }
     }
 
@@ -445,14 +447,14 @@ public class GameActivity extends AppCompatActivity {
         imageView.setImageBitmap(Utils.decodeBase64(avatar));
         TextView textView = findViewById(R.id.opponent_name);
         textView.setText(name);
-        game.getOpponent().setName(name);
-        game.getOpponent().setAvatarBase64(avatar);
+        getOpponent().setName(name);
+        getOpponent().setAvatarBase64(avatar);
     }
 
     public void setOpponentBattleField(BattleField battleField) {
-        game.getOpponent().setBattleField(battleField);
+        getOpponent().setBattleField(battleField);
         getOpponentBattleFieldAdapter().setBattleField(battleField);
-        game.getOpponent().getBattleField().setShowShips(false);
+        getOpponentBattleField().setShowShips(false);
         getOpponentBattleFieldAdapter().notifyDataSetChanged();
 
         if (dialog != null && dialog.isShowing())
@@ -460,8 +462,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void connect() {
-        getCommunication().sendProfile(game.getPlayer().getName(), game.getPlayer().getAvatarBase64());
-        getCommunication().sendPlayerBattleField(game.getPlayer().getBattleField());
+        getCommunication().sendProfile(getPlayer().getName(), getPlayer().getAvatarBase64());
+        getCommunication().sendPlayerBattleField(getPlayerBattleField());
     }
 
     private void saveGameToHistory() {
@@ -488,22 +490,37 @@ public class GameActivity extends AppCompatActivity {
         Log.d("Naval battle", "Saving game...");
     }
 
-    private void vibrate() {
+    private void vibrate(int intensity) {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Objects.requireNonNull(v).vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            Objects.requireNonNull(v).vibrate(VibrationEffect.createOneShot(intensity, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             //deprecated in API 26
-            Objects.requireNonNull(v).vibrate(500);
+            Objects.requireNonNull(v).vibrate(intensity);
         }
     }
 
-    public BattleFieldAdapter getOpponentBattleFieldAdapter() {
+    private BattleFieldAdapter getOpponentBattleFieldAdapter() {
         return (BattleFieldAdapter) gridViewOpponent.getAdapter();
     }
 
-    public BattleFieldAdapter getPlayerBattleFieldAdapter() {
+    private BattleFieldAdapter getPlayerBattleFieldAdapter() {
         return (BattleFieldAdapter) gridViewPlayer.getAdapter();
+    }
+
+    private Player getPlayer() {
+        return game.getPlayer();
+    }
+
+    private Player getOpponent() {
+        return game.getOpponent();
+    }
+
+    private BattleField getPlayerBattleField() {
+        return getPlayer().getBattleField();
+    }
+
+    private BattleField getOpponentBattleField() {
+        return getOpponent().getBattleField();
     }
 }

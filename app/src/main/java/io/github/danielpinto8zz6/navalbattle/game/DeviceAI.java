@@ -43,9 +43,9 @@ public class DeviceAI {
 
                     game.getOpponent().setShots(0);
 
-                    if (game.getPlayer().getBattleField().getDestroyedShip() != null) {
-                        game.getPlayer().getBattleField().removeShip(game.getPlayer().getBattleField().getDestroyedShip());
-                        game.getPlayer().getBattleField().setDestroyedShip(null);
+                    if (game.getPlayer().getBattleField().isShipGotDestroyed()) {
+                        game.getPlayer().getBattleField().removeDestroyedShipsFromMap();
+                        game.getPlayer().getBattleField().setShipGotDestroyed(false);
                     }
 
                     activity.runOnUiThread(new Runnable() {
