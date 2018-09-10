@@ -203,45 +203,61 @@ public class BattleField implements Serializable {
                 return false;
 
             if (c.x > 0 && c.y > 0)
-                if (field[c.x - 1][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
+                if (field[c.x - 1][c.y - 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)) ||
+                        field[c.x - 1][c.y - 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)) ||
+                        field[c.x - 1][c.y - 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x - 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y - 1)))
                         return false;
 
             if (c.x < 7 && c.y < 7)
-                if (field[c.x + 1][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
+                if (field[c.x + 1][c.y + 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)) ||
+                        field[c.x + 1][c.y + 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)) ||
+                        field[c.x + 1][c.y + 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x + 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y + 1)))
                         return false;
 
             if (c.x < 7 && c.y > 0)
-                if (field[c.x + 1][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
+                if (field[c.x + 1][c.y - 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)) ||
+                        field[c.x + 1][c.y - 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)) ||
+                        field[c.x + 1][c.y - 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x + 1, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y - 1)))
                         return false;
 
             if (c.x > 0 && c.y < 7)
-                if (field[c.x - 1][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
+                if (field[c.x - 1][c.y + 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)) ||
+                        field[c.x - 1][c.y + 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)) ||
+                        field[c.x - 1][c.y + 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x - 1, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x - 1, c.y + 1)))
                         return false;
 
             if (c.x > 0)
-                if (field[c.x - 1][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
+                if (field[c.x - 1][c.y] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x - 1, c.y)) ||
+                        field[c.x - 1][c.y] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x - 1, c.y)) ||
+                        field[c.x - 1][c.y] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x - 1, c.y)))
                     // If position is not part of the ship than it means position is not valid to be occupied
                     if (!pos.contains(new Coordinates(c.x - 1, c.y)))
                         return false;
 
 
             if (c.y > 0)
-                if (field[c.x][c.y - 1] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
+                if (field[c.x][c.y - 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x, c.y - 1)) ||
+                        field[c.x][c.y - 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x, c.y - 1)) ||
+                        field[c.x][c.y - 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x, c.y - 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y - 1)))
                         return false;
 
 
             if (c.x < 7)
-                if (field[c.x + 1][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
+                if (field[c.x + 1][c.y] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x + 1, c.y)) ||
+                        field[c.x + 1][c.y] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x + 1, c.y)) ||
+                        field[c.x + 1][c.y] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x + 1, c.y)))
                     if (!pos.contains(new Coordinates(c.x + 1, c.y)))
                         return false;
 
             if (c.y < 7)
-                if (field[c.x][c.y + 1] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
+                if (field[c.x][c.y + 1] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x, c.y + 1)) ||
+                        field[c.x][c.y + 1] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x, c.y + 1)) ||
+                        field[c.x][c.y + 1] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x, c.y + 1)))
                     if (!pos.contains(new Coordinates(c.x, c.y + 1)))
                         return false;
         }
