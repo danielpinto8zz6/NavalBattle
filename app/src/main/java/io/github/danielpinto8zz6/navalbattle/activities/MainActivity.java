@@ -162,13 +162,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mShadowView.setVisibility(View.GONE);
 
         layoutCreateServer.setVisibility(View.INVISIBLE);
-        layoutCreateServer.startAnimation(fabCloseAnimation);
+        layoutCreateServer.clearAnimation();
 
         layoutJoinServer.setVisibility(View.INVISIBLE);
-        layoutJoinServer.startAnimation(fabCloseAnimation);
+        layoutJoinServer.clearAnimation();
 
         layoutAgainstDevice.setVisibility(View.INVISIBLE);
-        layoutAgainstDevice.startAnimation(fabCloseAnimation);
+        layoutAgainstDevice.clearAnimation();
 
         fab.setImageResource(R.drawable.ic_play);
         isFabMenuOpen = false;

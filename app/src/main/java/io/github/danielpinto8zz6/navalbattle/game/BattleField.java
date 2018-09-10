@@ -199,7 +199,9 @@ public class BattleField implements Serializable {
                 return false;
 
             // Check if position is not occupied
-            if (field[c.x][c.y] != R.color.water && !whiteList.contains(new Coordinates(c.x, c.y)))
+            if (field[c.x][c.y] == R.drawable.ship && !whiteList.contains(new Coordinates(c.x, c.y)) ||
+                    field[c.x][c.y] == R.drawable.ship_destroyed && !whiteList.contains(new Coordinates(c.x, c.y)) ||
+                    field[c.x][c.y] == R.drawable.ship_selected && !whiteList.contains(new Coordinates(c.x, c.y)))
                 return false;
 
             if (c.x > 0 && c.y > 0)

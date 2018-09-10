@@ -46,7 +46,8 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name="io.github.danielpinto8zz6.navalbattle.activities.HistoryActivity"
-            android:label="@string/title_activity_history" />
+            android:label="@string/title_activity_history"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

@@ -1,7 +1,5 @@
 package io.github.danielpinto8zz6.navalbattle.game;
 
-import android.content.Context;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -21,19 +19,14 @@ public class Game implements Serializable {
     private final Player opponent;
     private GameMode mode;
     private Player winner;
+    private boolean over = false;
+    private boolean started = false;
 
-    public Game(Context c) {
-        player = new Player(c);
-        opponent = new Player(c, true, true);
-
-        mode = GameMode.Local;
-    }
-
-    public Game(Context c, GameMode mode) {
+    public Game(GameMode mode) {
         this.mode = mode;
 
-        player = new Player(c);
-        opponent = new Player(c, false, true);
+        player = new Player();
+        opponent = new Player();
     }
 
     public Player getPlayer() {
@@ -53,11 +46,14 @@ public class Game implements Serializable {
     }
 
     public boolean isGameOver() {
-        if (getPlayer().getBattleField().isShipsDestroyed()) {
+        if (over) return true;
+        else if (getPlayer().getBattleField().isShipsDestroyed()) {
             winner = opponent;
+            over = true;
             return true;
         } else if (getOpponent().getBattleField().isShipsDestroyed()) {
             winner = player;
+            over = true;
             return true;
         }
         return false;
@@ -81,5 +77,13 @@ public class Game implements Serializable {
         json.put("date", date);
 
         return json.toString();
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }

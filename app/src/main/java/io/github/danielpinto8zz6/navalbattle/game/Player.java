@@ -19,30 +19,14 @@ public class Player implements Serializable {
     private boolean movingShip = false;
     private boolean yourTurn;
 
-    public Player(Context c) {
-        battleField = new BattleField();
-
-        setupPlayerProfile(c);
+    public Player (String name, String avatarBase64) {
+        this.name = name;
+        this.avatarBase64 = avatarBase64;
     }
 
-    public Player(Context c, boolean isDevice, boolean isEnemy) {
+    public Player() {
         battleField = new BattleField();
-
-        if (isDevice) {
-            name = c.getResources().getString(R.string.device);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.device));
-        } else
-            setupPlayerProfile(c);
-
-        if (isEnemy)
-            battleField.setShowShips(false);
-
-        if (isEnemy && !isDevice) {
-            name = c.getResources().getString(R.string.opponent);
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.opponent_avatar));
-        }
     }
-
 
     public String getName() {
         return name;
@@ -58,26 +42,6 @@ public class Player implements Serializable {
 
     public void setBattleField(BattleField battleField) {
         this.battleField = battleField;
-    }
-
-    private void setupPlayerProfile(Context c) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
-
-        String playerAvatarBase64 = prefs.getString("avatar", "");
-
-        String playerUsername = prefs.getString("key_username", "");
-
-        if (playerAvatarBase64.length() > 0) {
-            avatarBase64 = playerAvatarBase64;
-        } else {
-            avatarBase64 = Utils.encodeTobase64(BitmapFactory.decodeResource(c.getResources(), R.drawable.player_avatar));
-        }
-
-        if (playerUsername.length() > 0) {
-            name = playerUsername;
-        } else {
-            name = c.getResources().getString(R.string.player);
-        }
     }
 
     public Bitmap getAvatar() {

@@ -35,7 +35,7 @@ public class DeviceAI {
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    activity.gameOver();
+                                    activity.gameOver(false);
                                 }
                             });
                         }

@@ -3,6 +3,7 @@ package io.github.danielpinto8zz6.navalbattle.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -68,11 +70,11 @@ public class GameActivity extends AppCompatActivity {
         Constants.GameMode mode = (Constants.GameMode) getIntent().getSerializableExtra("game_mode");
 
         if (mode == Local) {
-            game = new Game(this);
+            game = new Game(Local);
             device = new DeviceAI(this);
             getPlayer().setYourTurn(true);
         } else {
-            game = new Game(this, mode);
+            game = new Game(mode);
 
             if (savedInstanceState == null) {
                 Communication communication = new Communication(getNavalBattle().getSocket(), this);
@@ -92,11 +94,15 @@ public class GameActivity extends AppCompatActivity {
             getPlayer().setBattleField((BattleField) getIntent().getSerializableExtra("battle_field"));
         }
 
+        setupPlayers();
+
         setupToolbar();
 
         setupGrids();
 
-        if (getPlayer().isYourTurn()) {
+        if (game.isGameOver()) {
+            gameOver(false);
+        } else if (getPlayer().isYourTurn()) {
             gridViewOpponent.setBackground(getDrawable(R.drawable.grid_border_green));
             gridViewPlayer.setBackgroundColor(0x00000000);
         } else {
@@ -116,7 +122,7 @@ public class GameActivity extends AppCompatActivity {
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
         getOpponentBattleFieldAdapter().notifyDataSetChanged();
 
-        if (mode == Network && savedInstanceState == null) {
+        if (mode == Network && !game.isStarted()) {
             Log.d("Naval Battle", "waiting opponent to connect");
             getCommunication().sendMessage("");
             dialog = new ProgressDialog(GameActivity.this);
@@ -125,6 +131,39 @@ public class GameActivity extends AppCompatActivity {
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
             dialog.show();
+        }
+    }
+
+    private void setupPlayers() {
+        /*
+        Configure player
+         */
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String avatarBase64 = prefs.getString("avatar", "");
+        String username = prefs.getString("key_username", "");
+
+        if (username.length() == 0)
+            getPlayer().setName(getString(R.string.player));
+        else
+            getPlayer().setName(username);
+
+        if (avatarBase64.length() == 0)
+            getPlayer().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(),
+                    R.drawable.player_avatar)));
+        else
+            getPlayer().setAvatarBase64(avatarBase64);
+
+        /*
+        Configure opponent
+         */
+        if (game.getMode() == Local) {
+            getOpponent().setName(getString(R.string.device));
+            getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(),
+                    R.drawable.device)));
+        } else {
+            getOpponent().setName(getString(R.string.opponent));
+            getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(),
+                    R.drawable.opponent_avatar)));
         }
     }
 
@@ -195,7 +234,7 @@ public class GameActivity extends AppCompatActivity {
                 }
 
                 if (game.isGameOver()) {
-                    gameOver();
+                    gameOver(true);
                 }
 
                 if (getPlayer().getShots() >= 3) {
@@ -310,7 +349,12 @@ public class GameActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.no), dialogClickListener).show();
     }
 
-    public void gameOver() {
+    public void gameOver(boolean tellOpponent) {
+        if (game.getMode() == Network && tellOpponent) {
+            getCommunication().sendOpponentBattleField(getOpponentBattleField());
+        }
+        if (game.getMode() == Network) getCommunication().stop();
+
         getOpponentBattleFieldAdapter().notifyDataSetChanged();
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
         gridViewPlayer.setBackgroundColor(0x00000000);
@@ -319,11 +363,7 @@ public class GameActivity extends AppCompatActivity {
         Drawable drawable = new BitmapDrawable(getResources(), game.getWinner().getAvatar());
 
         AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(GameActivity.this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(GameActivity.this);
-        }
+        builder = new AlertDialog.Builder(GameActivity.this);
         builder.setCancelable(false);
         builder.setTitle(getResources().getString(R.string.game_over))
                 .setMessage(game.getWinner().getName() + " " + getResources().getString(R.string.has_won))
@@ -335,6 +375,8 @@ public class GameActivity extends AppCompatActivity {
                 .setIcon(drawable)
                 .show();
 
+        vibrate(1000);
+
         saveGameToHistory();
     }
 
@@ -345,7 +387,6 @@ public class GameActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
         // Set player & opponent avatar/username
-
         ImageView imageViewPlayer = findViewById(R.id.player_avatar);
         ImageView imageViewOpponent = findViewById(R.id.opponent_avatar);
 
@@ -374,18 +415,20 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void disconnected() {
-        Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
-        game.setMode(Local);
-        getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
-        getOpponent().setName(getResources().getString(R.string.device));
-        ImageView imageView = findViewById(R.id.opponent_avatar);
-        imageView.setImageDrawable(getResources().getDrawable(R.drawable.device));
-        TextView textView = findViewById(R.id.opponent_name);
-        textView.setText(getResources().getString(R.string.device));
-        getCommunication().stop();
-        getNavalBattle().setCommunication(null);
-        device = new DeviceAI(this);
-        opponentPlay();
+        if (!game.isGameOver()) {
+            Toast.makeText(GameActivity.this, R.string.opponent_disconnected, Toast.LENGTH_LONG).show();
+            game.setMode(Local);
+            getOpponent().setAvatarBase64(Utils.encodeTobase64(BitmapFactory.decodeResource(getResources(), R.drawable.player_avatar)));
+            getOpponent().setName(getResources().getString(R.string.device));
+            ImageView imageView = findViewById(R.id.opponent_avatar);
+            imageView.setImageDrawable(getResources().getDrawable(R.drawable.device));
+            TextView textView = findViewById(R.id.opponent_name);
+            textView.setText(getResources().getString(R.string.device));
+            getCommunication().stop();
+            getNavalBattle().setCommunication(null);
+            device = new DeviceAI(this);
+            opponentPlay();
+        }
     }
 
     @Override
@@ -418,6 +461,10 @@ public class GameActivity extends AppCompatActivity {
         gridViewPlayer.setBackgroundColor(0x00000000);
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
         vibrate(100);
+
+        if (game.isGameOver()) {
+            gameOver(false);
+        }
     }
 
     public void playerPlay() {
@@ -443,12 +490,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setOpponentProfile(String name, String avatar) {
-        ImageView imageView = findViewById(R.id.opponent_avatar);
-        imageView.setImageBitmap(Utils.decodeBase64(avatar));
-        TextView textView = findViewById(R.id.opponent_name);
-        textView.setText(name);
         getOpponent().setName(name);
         getOpponent().setAvatarBase64(avatar);
+        ImageView imageView = findViewById(R.id.opponent_avatar);
+        imageView.setImageBitmap(getOpponent().getAvatar());
+        TextView textView = findViewById(R.id.opponent_name);
+        textView.setText(getOpponent().getName());
     }
 
     public void setOpponentBattleField(BattleField battleField) {
@@ -459,6 +506,8 @@ public class GameActivity extends AppCompatActivity {
 
         if (dialog != null && dialog.isShowing())
             dialog.dismiss();
+
+        if (!game.isStarted()) game.setStarted(true);
     }
 
     public void connect() {
