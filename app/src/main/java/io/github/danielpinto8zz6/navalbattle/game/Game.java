@@ -27,6 +27,7 @@ public class Game implements Serializable {
 
         player = new Player();
         opponent = new Player();
+        opponent.getBattleField().setShowShips(false);
     }
 
     public Player getPlayer() {
