@@ -353,7 +353,6 @@ public class GameActivity extends AppCompatActivity {
         if (game.getMode() == Network && tellOpponent) {
             getCommunication().sendOpponentBattleField(getOpponentBattleField());
         }
-        if (game.getMode() == Network) getCommunication().stop();
 
         getOpponentBattleFieldAdapter().notifyDataSetChanged();
         getPlayerBattleFieldAdapter().notifyDataSetChanged();
@@ -378,6 +377,8 @@ public class GameActivity extends AppCompatActivity {
         vibrate(1000);
 
         saveGameToHistory();
+
+        if (game.getMode() == Network) getCommunication().stop();
     }
 
     private void setupToolbar() {

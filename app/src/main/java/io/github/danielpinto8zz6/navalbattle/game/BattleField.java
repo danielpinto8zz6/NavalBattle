@@ -17,6 +17,7 @@ public class BattleField implements Serializable {
     private final ArrayList<Coordinates> givenShots = new ArrayList<>();
     private int shipsHitten = 0;
     private boolean shipGotDestroyed = false;
+    private boolean removeShips = false;
 
     public BattleField() {
         for (int x = 0; x < 8; x++) {
@@ -118,7 +119,10 @@ public class BattleField implements Serializable {
         for (Ship ship : ships) {
             if (ship.isDestroyed() && !ship.isRemoved())
                 for (Coordinates c : ship.getPositions()) {
-                    field[c.x][c.y] = R.drawable.ship_sunk;
+                    if (removeShips)
+                        field[c.x][c.y] = R.color.water;
+                    else
+                        field[c.x][c.y] = R.drawable.ship_sunk;
                     ship.setRemoved(true);
                 }
         }
