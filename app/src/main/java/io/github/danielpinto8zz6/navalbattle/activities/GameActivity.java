@@ -491,12 +491,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setOpponentProfile(String name, String avatar) {
-        getOpponent().setName(name);
-        getOpponent().setAvatarBase64(avatar);
-        ImageView imageView = findViewById(R.id.opponent_avatar);
-        imageView.setImageBitmap(getOpponent().getAvatar());
-        TextView textView = findViewById(R.id.opponent_name);
-        textView.setText(getOpponent().getName());
+        if (name.length() != 0) {
+            getOpponent().setName(name);
+            TextView textView = findViewById(R.id.opponent_name);
+            textView.setText(getOpponent().getName());
+        }
+        if (avatar.length() != 0) {
+            getOpponent().setAvatarBase64(avatar);
+            ImageView imageView = findViewById(R.id.opponent_avatar);
+            imageView.setImageBitmap(getOpponent().getAvatar());
+        }
     }
 
     public void setOpponentBattleField(BattleField battleField) {
@@ -512,7 +516,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void connect() {
-        getCommunication().sendProfile(getPlayer().getName(), getPlayer().getAvatarBase64());
+        if (getPlayer().getName() != getString(R.string.player))
+            getCommunication().sendProfile(getPlayer().getName(), getPlayer().getAvatarBase64());
         getCommunication().sendPlayerBattleField(getPlayerBattleField());
     }
 

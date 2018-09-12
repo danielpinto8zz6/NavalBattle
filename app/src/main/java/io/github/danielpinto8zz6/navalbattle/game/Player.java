@@ -19,11 +19,6 @@ public class Player implements Serializable {
     private boolean movingShip = false;
     private boolean yourTurn;
 
-    public Player (String name, String avatarBase64) {
-        this.name = name;
-        this.avatarBase64 = avatarBase64;
-    }
-
     public Player() {
         battleField = new BattleField();
     }
